@@ -29,10 +29,43 @@
 </property>
 
 <property>
+  <name>dfs.block.size</name>
+  <value>1048576</value>
+</property>
+
+<property>
+  <name>raid.config.file</name>
+  <value>/home/ncsgroup/hadoop-20/conf/raid.xml</value>
+</property>
+
+<property>
+  <name>raid.mod.time.period</name>
+  <value>0</value>
+</property>
+
+<property>
+  <name>raid.classname</name>
+  <value>org.apache.hadoop.raid.DistRaidNode</value>
+  <description>Specify which implementation of RaidNode to use (class name).</description>
+</property>
+
+<property>
+  <name>raid.policy.rescan.interval</name>
+  <value>10000</value>
+</property>
+
+<property>
+  <name>fs.hdfs.impl</name>
+  <value>org.apache.hadoop.hdfs.DistributedRaidFileSystem</value>
+  <description>The FileSystem for hdfs: uris.</description>
+</property>
+
+<property>
   <name>dfs.datanode.flush_kb</name>
   <value>1024</value>
   <description>Enables datanode to call fsync to write to disk every 'value' number
   of KB. To disable the feature, set the value to zero. The default is 1024 KB
   </description>
 </property>
+
 </configuration>

@@ -5,6 +5,15 @@
 
 <configuration>
 
+  <property>
+    <name>mapred.job.tracker</name>
+    <value>192.168.0.21:30013</value>
+  </property>
+  <property>
+    <name>mapred.task.tracker.http.address</name>
+    <value>0.0.0.0:30014</value>
+  </property>
+
 <property>
   <name>mapred.max.tracker.blacklists</name>
   <value>4</value>

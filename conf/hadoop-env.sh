@@ -10,7 +10,7 @@ if [[ "$IS_HADOOP_ENV_ALREADY_SOURCED" != "true" ]]; then
   # remote nodes.
 
   # The java implementation to use.  Required.
-  # export JAVA_HOME=/usr/lib/j2sdk1.5-sun
+  export JAVA_HOME=/usr/lib/jvm/jdk1.6.0_45
 
   # Extra Java CLASSPATH elements.  Optional.
   # export HADOOP_CLASSPATH=
@@ -32,7 +32,7 @@ if [[ "$IS_HADOOP_ENV_ALREADY_SOURCED" != "true" ]]; then
 
   # The only user who can start hadoop daemons.
   # If this is not set, any user can start hadoop daemons.
-  export HADOOP_USERNAME="hadoop"
+  # export HADOOP_USERNAME="hadoop"
 
   # Java Runtime garbage collection options to pass to all Hadoop
   # servers (Namenode, Jobtracker, Datanode, Tasktracker). This must end
