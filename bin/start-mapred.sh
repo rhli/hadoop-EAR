@@ -27,5 +27,6 @@ bin=`cd "$bin"; pwd`
 # start jobtracker first to minimize connection errors at startup
 "$bin"/hadoop-daemon.sh --config $HADOOP_CONF_DIR start jobtracker
 "$bin"/hadoop-daemons.sh --config $HADOOP_CONF_DIR start tasktracker
-"$bin"/start-raidnode-remote.sh --config $HADOOP_CONF_DIR
-"$bin"/start-hmon-remote.sh --config $HADOOP_CONF_DIR
+#"$bin"/start-raidnode-remote.sh --config $HADOOP_CONF_DIR
+"$bin"/start-raidnode.sh --config $HADOOP_CONF_DIR
+#"$bin"/start-hmon-remote.sh --config $HADOOP_CONF_DIR

@@ -6,8 +6,13 @@
 <configuration>
 
 <property>
+   <name>hadoop.tmp.dir</name>
+   <value>/home/ncsgroup/tmp</value>
+</property>
+
+<property>
    <name>fs.default.name</name>
-   <value>hdfs://localhost:9000</value>
+   <value>hdfs://192.168.0.21:9000</value>
 </property>
 
 </configuration>
