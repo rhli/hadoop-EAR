@@ -161,6 +161,7 @@ public class PolicyInfo implements Writable {
    * @param name property name.
    */
   public String getProperty(String name) {
+      LOG.info(name + " " + properties.getProperty(name) + " " + this.toString());
     return properties.getProperty(name);
   }
   

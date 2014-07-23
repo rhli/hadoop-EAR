@@ -2151,6 +2151,7 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
     Class<?> stripeStoreClass = null;
     stripeStoreClass = conf.getClass(RAID_STRIPE_STORE_CLASS_KEY, null);
     if (stripeStoreClass == null) {
+        LOG.info("stripeStoreClass is null");
       return null;
     }
     StripeStore stripeStore = (StripeStore) ReflectionUtils.newInstance(

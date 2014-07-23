@@ -120,6 +120,16 @@ public class DistributedRaidFileSystem extends FilterFileSystem {
     return fs;
   }
 
+  /* Add by RH to fix bugs in StatisticsCollector.java start*/
+  public DFSClient getClient(){
+      return ((DistributedFileSystem)fs).getClient();
+  }
+
+  public DistributedFileSystem toDistributedFileSystem(){
+      return (DistributedFileSystem)fs;
+  }
+  /* Add by RH to fix bugs in StatisticsCollector.java end */
+
   @Override
   public FSDataInputStream open(Path f, int bufferSize) throws IOException {
     // We want to use RAID logic only on instance of DFS.

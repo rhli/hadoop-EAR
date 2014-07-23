@@ -253,6 +253,7 @@ class ConfigManager {
         continue;
       }
       Element policy = (Element)node;
+        LOG.info("Policy " + i + " name: " + policy.getAttribute("name"));
       if ("policy".equalsIgnoreCase(policy.getTagName())) {
         String policyName = policy.getAttribute("name");
         PolicyInfo curr = new PolicyInfo(policyName, conf);

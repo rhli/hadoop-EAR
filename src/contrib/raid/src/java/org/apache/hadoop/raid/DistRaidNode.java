@@ -112,6 +112,8 @@ public class DistRaidNode extends RaidNode {
    */
   @Override
   int getRunningJobsForPolicy(String policyName) {
+     //LOG.info(policyName); 
+     //LOG.info(jobMonitor.runningJobsCount(policyName)); 
     return jobMonitor.runningJobsCount(policyName);
   }
 

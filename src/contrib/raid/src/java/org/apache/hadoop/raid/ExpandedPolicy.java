@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.Path;
@@ -33,6 +36,9 @@ class ExpandedPolicy {
   final Codec codec;
   final int targetReplication;
   final PolicyInfo parentPolicy;
+
+  public static final Log LOG = LogFactory.getLog(
+                                  "org.apache.hadoop.raid.ExpandedPolicy");
 
   ExpandedPolicy(String srcPrefix, long modTimePeriod,
       Codec codec, int targetReplication, PolicyInfo parentPolicy) {
@@ -82,9 +88,10 @@ class ExpandedPolicy {
     List<ExpandedPolicy> result = new ArrayList<ExpandedPolicy>();
     for (Path srcPath : info.getSrcPathExpanded()) {
       String srcPrefix = normalizePath(srcPath);
-      long modTimePeriod = Long.parseLong(info.getProperty("modTimePeriod"));
+      LOG.info(info.getProperty("targetReplication"));
       int targetReplication =
         Integer.parseInt(info.getProperty("targetReplication"));
+      long modTimePeriod = Long.parseLong(info.getProperty("modTimePeriod"));
       Codec codec = Codec.getCodec(info.getCodecId());
       ExpandedPolicy ePolicy = new ExpandedPolicy(
           srcPrefix, modTimePeriod, codec, targetReplication, info);

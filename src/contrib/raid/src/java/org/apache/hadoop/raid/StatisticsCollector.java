@@ -34,9 +34,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.DFSClient;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
+import org.apache.hadoop.hdfs.DistributedRaidFileSystem;
 import org.apache.hadoop.raid.Statistics.Counters;
 import org.apache.hadoop.raid.protocol.PolicyInfo;
 import org.apache.hadoop.util.StringUtils;
@@ -265,7 +266,16 @@ public class StatisticsCollector implements Runnable {
     DFSClient dfs;
     double totalPhysical;
     try {
-      dfs = ((DistributedFileSystem)FileSystem.get(conf)).getClient();
+        /* Add by RH start */
+        if(FileSystem.get(conf) instanceof DistributedRaidFileSystem){
+            dfs = ((DistributedRaidFileSystem)FileSystem.get(conf)).getClient();
+        }else{
+            dfs = ((DistributedFileSystem)FileSystem.get(conf)).getClient();
+        }
+        /* Add by RH end */
+        /* Delete by RH start */
+      //dfs = ((DistributedFileSystem)FileSystem.get(conf)).getClient();
+        /* Delete by RH end */
       totalPhysical = dfs.getNSDiskStatus().getDfsUsed();
     } catch (IOException e) {
       return -1;
@@ -519,6 +529,7 @@ public class StatisticsCollector implements Runnable {
     try {
       int maxFilesPerJob = configManager.getMaxFilesPerJob();
       int maxJobs = configManager.getMaxJobsPerPolicy();
+      LOG.info("policyname: " + info.getName() + " " + raidNode.getRunningJobsForPolicy(info.getName()));
       while (!filesToRaid.isEmpty() &&
           (submitAll || filesToRaid.size() >= maxFilesPerJob) &&
           raidNode.getRunningJobsForPolicy(info.getName()) < maxJobs) {

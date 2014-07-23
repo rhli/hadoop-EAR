@@ -66,6 +66,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.RemoteIterator;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
+import org.apache.hadoop.hdfs.DistributedRaidFileSystem;
 import org.apache.hadoop.hdfs.tools.DFSck;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.SequenceFile;
@@ -1580,8 +1581,19 @@ public class DistBlockIntegrityMonitor extends BlockIntegrityMonitor {
                   detectTime);
             }
           }
-          boolean isFileCorrupt = RaidShell.isFileCorrupt((DistributedFileSystem)fs,
-              stat, false, getConf(), null, null);
+          /* modified by RH start */
+          //boolean isFileCorrupt = RaidShell.isFileCorrupt((DistributedFileSystem)fs,
+          //    stat, false, getConf(), null, null);
+          boolean isFileCorrupt; 
+          if (fs instanceof DistributedRaidFileSystem) {
+              isFileCorrupt = RaidShell.isFileCorrupt(
+                      ((DistributedRaidFileSystem)fs).toDistributedFileSystem(), 
+                      stat, false, getConf(), null, null);
+          }else{
+              isFileCorrupt = RaidShell.isFileCorrupt((DistributedFileSystem)fs, 
+                      stat, false, getConf(), null, null);
+          }
+          /* modified by RH end */
           if (isFileCorrupt) {
             cf.fileStatus = CorruptFileStatus.RAID_UNRECOVERABLE;
           } else {
