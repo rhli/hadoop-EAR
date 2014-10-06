@@ -34,9 +34,6 @@ fi
 
 export HADOOP_OPTS="$HADOOP_OPTS $HADOOP_RAIDNODE_OPTS"
 
-<<<<<<< HEAD
 # Bug fixed by RH
-=======
->>>>>>> aee8ea90c4eb52d84bdaa95810b6a1327d0f715d
 #"$bin"/hadoop-daemon.sh --config $HADOOP_CONF_DIR stop org.apache.hadoop.raid.RaidNode
 "$bin"/hadoop-daemon.sh --config $HADOOP_CONF_DIR stop raidnode

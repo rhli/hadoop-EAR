@@ -33,6 +33,11 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+/* Added by RH, Oct 5th, 2014 begins */
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Map.Entry;
+/* Added by RH, Oct 5th, 2014 ends */
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -70,6 +75,11 @@ import org.apache.hadoop.ipc.ProtocolSignature;
 import org.apache.hadoop.ipc.RPC;
 import org.apache.hadoop.ipc.Server;
 import org.apache.hadoop.net.NetUtils;
+/* Added by RH Oct 4th, 2014 begins
+ * Add locality info for stripes */
+import org.apache.hadoop.net.Node;
+import org.apache.hadoop.net.NodeBase;
+/* Added by RH Oct 4th, 2014 ends */
 import org.apache.hadoop.raid.Decoder.DecoderInputStream;
 import org.apache.hadoop.raid.DistBlockIntegrityMonitor.CorruptFile;
 import org.apache.hadoop.raid.DistBlockIntegrityMonitor.CorruptFileStatus;
@@ -1333,14 +1343,93 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
       }
       long numStripes = RaidNode.numStripes(numBlocks, codec.stripeLength);
       String encodingId = System.currentTimeMillis() + "." + rand.nextLong();
+      /* Added by RH, Oct 3rd, 2014 begins 
+       * TODO: add support for intra-file encoding also */
+      List<FileStatus> lfs = RaidNode.listDirectoryRaidFileStatus(
+          conf,s.getPath().getFileSystem(conf), s.getPath());
+      LOG.info("splitFile():" + s.getPath() + " " + numStripes + lfs.size());
+      DirectoryStripeReader dsr = new DirectoryStripeReader(conf,codec,srcFs,(long)0,
+              encodingUnit,s.getPath(),lfs);
+      for(FileStatus fs: lfs){
+          LOG.info(fs);
+      }
+      /* Added by RH, Oct 3rd, 2014 ends */
       for (long startStripe = 0; startStripe < numStripes;
            startStripe += encodingUnit) {
         lec.add(new EncodingCandidate(s, startStripe, encodingId, encodingUnit,
             s.getModificationTime()));
+        /* Added by RH, Oct 3rd, 2014 begins */
+        BlockLocation[] bLoc = dsr.getNextStripeBlockLocations();
+        LOG.info("best rack for current stripe: " + getPreHost(bLoc));
+        /* Added by RH, Oct 3rd, 2014 ends */
       }
     }
     return lec;
   }
+
+  /* Added by RH, Oct 3rd, 2014 begins */
+  public static String getPreHost(BlockLocation[] bls) throws IOException{
+    Map<String,Integer> rackBCount = new HashMap<String,Integer>();
+    /* Stores a host of this rack */
+    Map<String,String> rackRep = new HashMap<String,String>();
+    //LOG.info("getPreHost start " + bls.length);
+    if(bls == null){
+        return null;
+    }
+    for (BlockLocation bl : bls){
+      if (bl!=null){
+        //LOG.info("getPreHost" + " " + getRack(bl.getTopologyPaths()[0]));
+        Set<String> racks = new HashSet<String>();
+        for (String host : bl.getTopologyPaths()){
+          if (!racks.contains(getRack(host))){
+            racks.add(getRack(host));
+            if (!rackRep.containsKey(getRack(host))){
+              rackRep.put(getRack(host),getHost(host));
+            }
+          }
+        }
+        String[] strRacks = racks.toArray(new String[0]);
+        for (String str : strRacks){
+          if (rackBCount.containsKey(str)){
+            rackBCount.put(str,rackBCount.get(str)+1);
+          } else {
+            rackBCount.put(str,1);
+          }
+        }
+      }
+    }
+
+    Entry<String,Integer> curMax = null;
+    int curMaxVal = 0;
+    for (Entry<String,Integer> curEnt : rackBCount.entrySet()){
+      if (curMax == null) {
+        curMax = curEnt;
+        curMaxVal = curEnt.getValue();
+      } else if (curEnt.getValue()>curMaxVal) {
+        curMax = curEnt;
+        curMaxVal = curEnt.getValue();
+      }
+    }
+    
+    if (curMax == null) {
+        return null;
+    } else {
+        return curMax.getKey();
+    }
+    //LOG.info("getPreHost end");
+  }
+  
+  private static String getRack(String topoPath){
+      // remove the host info
+      return topoPath.substring(0,topoPath.lastIndexOf("/"));
+  }
+
+  private static String getHost(String topoPath){
+      // remove the host info
+      String hostName = topoPath.substring(topoPath.lastIndexOf("/")+1);
+      return hostName.substring(0,hostName.lastIndexOf(":"));
+  }
+  /* Added by RH, Oct 3rd, 2014 ends */
 
   /**
    * RAID a list of files / directories

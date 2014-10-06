@@ -6,24 +6,6 @@
 <configuration>
 
 <property>
-  <name>dfs.support.append</name>
-  <value>true</value>
-  <description>Allow append support since we have the HDFS-200 patch and
-               need append/close support for HLog.java#splitLog</description>
-</property>
-
-<property>
-  <name>dfs.client.shutdownhook.enable</name>
-  <value>true</value>
-  <description>If true, the HDFS FileSystem will register a shutdown hook
-    to close all file systems if a shutdown occurs.  This is the default.
-    Set this to false if your application is registering its own shutdown
-    hook; in this case, HDFS will not register one, so the application
-    shutdown should include calling FileSystem.closeAll().
-  </description>
-</property>
-
-<property>
   <name>dfs.replication</name>
   <value>1</value>
 </property>
@@ -38,34 +20,54 @@
   <value>/home/ncsgroup/hadoop-20/conf/raid.xml</value>
 </property>
 
-<property>
-  <name>raid.mod.time.period</name>
-  <value>0</value>
-</property>
-
+<!--
 <property>
   <name>raid.classname</name>
-  <value>org.apache.hadoop.raid.DistRaidNode</value>
-  <description>Specify which implementation of RaidNode to use (class name).</description>
+  <value>org.apache.hadoop.raid.LocalRaidNode</value>
+</property>
+-->
+
+<property>
+  <name>raid.blockfix.classname</name>
+  <value>org.apache.hadoop.raid.LocalBlockIntegrityMonitor</value>
 </property>
 
 <property>
   <name>raid.policy.rescan.interval</name>
-  <value>10000</value>
+  <value>300000</value>
+</property>
+
+<property>
+  <name>hdfs.raid.stripe.store.class</name>
+  <value>org.apache.hadoop.raid.LocalStripeStore</value>
+</property>
+
+<property>
+  <name>hdfs.raid.local.stripe.dir</name>
+  <value>/home/ncsgroup/hadoop-20/stripeStore</value>
 </property>
 
 <property>
   <name>fs.hdfs.impl</name>
   <value>org.apache.hadoop.hdfs.DistributedRaidFileSystem</value>
-  <description>The FileSystem for hdfs: uris.</description>
 </property>
 
+<!--
 <property>
-  <name>dfs.datanode.flush_kb</name>
-  <value>1024</value>
-  <description>Enables datanode to call fsync to write to disk every 'value' number
-  of KB. To disable the feature, set the value to zero. The default is 1024 KB
-  </description>
+  <name>fs.hdfs.impl.disable.cache</name>
+  <value>true</value>
+</property>
+-->
+
+<property>
+  <name>dfs.safemode.threshold.pct</name>
+  <value>0</value>
+</property>
+
+<property> 
+    <name>dfs.datanode.address</name> 
+    <value>0.0.0.0:30010</value> 
 </property>
 
 </configuration>
+
