@@ -194,10 +194,10 @@ public class DistRaid {
       String host = null;
       String rack = null;
       if (!keys[5].equals("null")){
-          host = key[5];
+          host = keys[5];
       }
       if (!keys[6].equals("null")){
-          rack = key[6];
+          rack = keys[6];
       }
       return new EncodingCandidate(srcStat, startStripe, keys[1],
           encodingUnit, modificationTime,host,rack);
@@ -313,7 +313,7 @@ public class DistRaid {
             /* added by RH on Oct 7th, begins 
              * TODO: currently, we suppose one stripe per map task, but we need to 
              * generalize our split method */
-            String[] keySplit = key.split(" ",7);
+            String[] keySplit = key.toString().split(" ",7);
             String[] hosts = new String[1];
             hosts[0] = keySplit[6];
             LOG.info("prefered host of map task is " + hosts[0]);
