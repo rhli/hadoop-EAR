@@ -325,6 +325,16 @@ public class JobConf extends Configuration {
    */
   public static final String MAX_TASK_MEMORY_MB = "mapred.child.java.max.memory.mb";
 
+  /* Added by RH, Oct 7th, 2014 begins */
+  public boolean _isEncoding=false;
+  public void setEncoding(boolean val){
+      _isEncoding=val;
+  }
+  public void getEncoding(){
+      return _isEncoding;
+  }
+  /* Added by RH, Oct 7th, 2014 ends */
+
   public static final int MAX_TASK_MEMORY_MB_DEFAULT = 4096;
 
   /**

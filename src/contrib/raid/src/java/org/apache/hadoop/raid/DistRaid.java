@@ -458,6 +458,7 @@ public class DistRaid {
     jobName = NAME + " " + dateForm.format(new Date(RaidNode.now()));
     jobconf.setUser(RaidNode.JOBUSER);
     /* Added by RH for test Oct 7th, 2014, begins */ 
+    jobconf.setEncoding(true);
     LOG.info("createJobConf: " + RaidNode.JOBUSER + " " + jobconf.getUser()); 
     /* Added by RH for test Oct 7th, 2014, ends */
     jobconf.setJobName(jobName);
@@ -491,17 +492,16 @@ public class DistRaid {
   public boolean startDistRaid() throws IOException {
     assert(raidPolicyPathPairList.size() > 0);
     if (setup()) {
-      /* Modified by RH for test, Oct 7th, 2014 begins */
-      LOG.info("Job Started 0: " + jobconf.getUser());
-      /* Modified by RH for test, Oct 7th, 2014 ends */
       this.jobClient = new JobClient(jobconf);
-      /* Modified by RH for test, Oct 7th, 2014 begins */
-      LOG.info("Job Started 1: " + jobconf.getUser());
-      /* Modified by RH for test, Oct 7th, 2014 ends */
       this.runningJob = this.jobClient.submitJob(jobconf);
       /* Modified by RH for test, Oct 7th, 2014 begins */
-      LOG.info("Job Started 2: " + runningJob.getID() + " " + jobconf.getUser());
+      if (jobconf.getEncoding()==true){
+        LOG.info("setEncoding success");
+      } else {
+        LOG.info("setEncoding failed");
+      }
       /* Modified by RH for test, Oct 7th, 2014 ends */
+      LOG.info("Job Started " + runningJob.getID());
       this.startTime = System.currentTimeMillis();
       return true;
     }
