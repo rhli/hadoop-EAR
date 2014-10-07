@@ -457,10 +457,6 @@ public class DistRaid {
     JobConf jobconf = new JobConf(conf, DistRaid.class);
     jobName = NAME + " " + dateForm.format(new Date(RaidNode.now()));
     jobconf.setUser(RaidNode.JOBUSER);
-    /* Added by RH for test Oct 7th, 2014, begins */ 
-    jobconf.setEncoding(true);
-    LOG.info("createJobConf: " + RaidNode.JOBUSER + " " + jobconf.getUser()); 
-    /* Added by RH for test Oct 7th, 2014, ends */
     jobconf.setJobName(jobName);
     jobconf.setMapSpeculativeExecution(false);
     RaidUtils.parseAndSetOptions(jobconf, SCHEDULER_OPTION_LABEL);
@@ -494,13 +490,6 @@ public class DistRaid {
     if (setup()) {
       this.jobClient = new JobClient(jobconf);
       this.runningJob = this.jobClient.submitJob(jobconf);
-      /* Modified by RH for test, Oct 7th, 2014 begins */
-      if (jobconf.getEncoding()==true){
-        LOG.info("setEncoding success");
-      } else {
-        LOG.info("setEncoding failed");
-      }
-      /* Modified by RH for test, Oct 7th, 2014 ends */
       LOG.info("Job Started " + runningJob.getID());
       this.startTime = System.currentTimeMillis();
       return true;
