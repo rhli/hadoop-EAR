@@ -487,7 +487,9 @@ public class DistRaid {
     if (setup()) {
       this.jobClient = new JobClient(jobconf);
       this.runningJob = this.jobClient.submitJob(jobconf);
-      LOG.info("Job Started: " + runningJob.getID());
+      /* Modified by RH for test, Oct 7th, 2014 begins */
+      LOG.info("Job Started: " + runningJob.getID() + " " + jobconf.getUser());
+      /* Modified by RH for test, Oct 7th, 2014 ends */
       this.startTime = System.currentTimeMillis();
       return true;
     }
