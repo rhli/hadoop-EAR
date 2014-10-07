@@ -174,7 +174,7 @@ public class DistRaid {
       /* Added by RH Oct 1st, 2014, starts */
       return startStripe + delim + encodingId + delim + encodingUnit 
             + delim + modificationTime + delim + this.srcStat.getPath().toString() +
-            delim + preferedHosts + delim + preferedRack;
+            delim + preferedRack + delim + preferedHosts;
       /* Added by RH Oct 1st, 2014, ends */
       /* Commented by RH Oct 1st, 2014, starts */
       //return startStripe + delim + encodingId + delim + encodingUnit 

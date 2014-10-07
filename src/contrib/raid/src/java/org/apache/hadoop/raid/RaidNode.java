@@ -1359,7 +1359,7 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
         /* Added by RH, Oct 3rd, 2014 begins */
         BlockLocation[] bLoc = dsr.getNextStripeBlockLocations();
         String[] keys = getPreHost(bLoc).split(" ",2);
-        LOG.info("prefered rack: " + keys[0] + "prefered host: " + keys[1]);
+        LOG.info("prefered rack: " + keys[0] + " prefered host: " + keys[1]);
         /* Added by RH, Oct 3rd, 2014 ends */
         /* Commented by RH, Oct 7th, 2014 begins */
         lec.add(new EncodingCandidate(s, startStripe, encodingId, encodingUnit,
