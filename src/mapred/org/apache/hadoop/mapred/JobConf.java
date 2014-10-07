@@ -330,7 +330,7 @@ public class JobConf extends Configuration {
   public void setEncoding(boolean val){
       _isEncoding=val;
   }
-  public void getEncoding(){
+  public boolean getEncoding(){
       return _isEncoding;
   }
   /* Added by RH, Oct 7th, 2014 ends */
