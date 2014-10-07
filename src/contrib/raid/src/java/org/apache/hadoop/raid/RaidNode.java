@@ -1363,7 +1363,7 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
         /* Added by RH, Oct 3rd, 2014 ends */
         /* Commented by RH, Oct 7th, 2014 begins */
         lec.add(new EncodingCandidate(s, startStripe, encodingId, encodingUnit,
-            s.getModificationTime()),keys[0],keys[1]);
+            s.getModificationTime(),keys[0],keys[1]));
         /* Commented by RH, Oct 7th, 2014 ends */
       }
     }

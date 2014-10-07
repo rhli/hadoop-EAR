@@ -147,7 +147,7 @@ public class DistRaid {
       /* Added by RH Oct 1st, 2014, ends */
     }
     
-    /* Added by RH Oct 2nd, 2014, starts */
+    /* Added by RH Oct 2nd, 2014, begins */
     EncodingCandidate(FileStatus newStat, long newStartStripe,
         String newEncodingId, long newEncodingUnit, long newModificationTime,
         String preRack, String preHost) {
