@@ -131,6 +131,7 @@ public class DistRaid {
     /* Added by RH Sep 30th, 2014 starts
      * We add a prefered host which locates in the core rack of the stripe.  */
     public String preferedHosts;
+    public String preferedRack;
     /* Added by RH Sep 30th, 2014 ends */
     
     EncodingCandidate(FileStatus newStat, long newStartStripe,
@@ -142,37 +143,38 @@ public class DistRaid {
       this.modificationTime = newModificationTime;
       /* Added by RH Oct 1st, 2014, starts */
       this.preferedHosts = null;
+      this.preferedRack = null;
       /* Added by RH Oct 1st, 2014, ends */
     }
     
     /* Added by RH Oct 2nd, 2014, starts */
     EncodingCandidate(FileStatus newStat, long newStartStripe,
         String newEncodingId, long newEncodingUnit, long newModificationTime,
-        String preHost) {
+        String preRack, String preHost) {
       this.srcStat = newStat;
       this.startStripe = newStartStripe;
       this.encodingId = newEncodingId;
       this.encodingUnit = newEncodingUnit;
       this.modificationTime = newModificationTime;
+      this.preferedRack = preRack;
       this.preferedHosts = preHost;
     }
 
-    public void setPreHost(String preHost){
+    public String getPreHost(){
+        return preferedHosts;
+    }
+
+    public void setPreHost(String preHost,String preRack){
       this.preferedHosts = preHost;
+      this.preferedRack = preRack;
     }
     /* Added by RH Oct 2nd, 2014, ends */
     
     public String toString() {
       /* Added by RH Oct 1st, 2014, starts */
-      if(preferedHosts != null){
-        return startStripe + delim + encodingId + delim + encodingUnit 
-            + delim + modificationTime + delim + this.srcStat.getPath().toString()
-            + delim + preferedHosts;
-      }else{
-        return startStripe + delim + encodingId + delim + encodingUnit 
-            + delim + modificationTime + delim + this.srcStat.getPath().toString()
-            + delim + "null";
-      }
+      return startStripe + delim + encodingId + delim + encodingUnit 
+            + delim + modificationTime + delim + this.srcStat.getPath().toString() +
+            delim + preferedHosts + delim + preferedRack;
       /* Added by RH Oct 1st, 2014, ends */
       /* Commented by RH Oct 1st, 2014, starts */
       //return startStripe + delim + encodingId + delim + encodingUnit 
@@ -182,31 +184,24 @@ public class DistRaid {
     
     public static EncodingCandidate getEncodingCandidate(String key,
         Configuration jobconf) throws IOException {
-        /* Commented by RH Oct 3rd, 2014 begins */
-      String[] keys = key.split(delim, 5);
+      String[] keys = key.split(delim, 7);
       Path p = new Path(keys[4]);
       long startStripe = Long.parseLong(keys[0]);
       long modificationTime = Long.parseLong(keys[3]);
       FileStatus srcStat = getSrcStatus(jobconf, p);
       long encodingUnit = Long.parseLong(keys[2]);
+        /* Added by RH Oct 3rd, 2014 begins */
+      String host = null;
+      String rack = null;
+      if (!keys[5].equals("null")){
+          host = key[5];
+      }
+      if (!keys[6].equals("null")){
+          rack = key[6];
+      }
       return new EncodingCandidate(srcStat, startStripe, keys[1],
-          encodingUnit, modificationTime);
-        /* Commented by RH Oct 3rd, 2014 ends */
-        /* Added by RH Oct 3rd, 2014 begins */
-      //String[] keys = key.split(delim, 6);
-      //Path p = new Path(keys[4]);
-      //long startStripe = Long.parseLong(keys[0]);
-      //long modificationTime = Long.parseLong(keys[3]);
-      //FileStatus srcStat = getSrcStatus(jobconf, p);
-      //long encodingUnit = Long.parseLong(keys[2]);
-      //if(keys[5].equals("null")){
-      //  return new EncodingCandidate(srcStat, startStripe, keys[1],
-      //      encodingUnit, modificationTime);
-      //}else{
-      //  return new EncodingCandidate(srcStat, startStripe, keys[1],
-      //      encodingUnit, modificationTime,key[5]);
-      //}
-        /* Added by RH Oct 3rd, 2014 begins */
+          encodingUnit, modificationTime,host,rack);
+        /* Added by RH Oct 3rd, 2014 ends */
     }
 
     /* Added by RH Oct 2nd, 2014, starts */
@@ -315,11 +310,15 @@ public class DistRaid {
           if (++count > targetcount) {
             count = 0;
             //splits.add(new FileSplit(srcs, prev, delta, (String[]) null));
-            /* added by RH for test start */
+            /* added by RH on Oct 7th, begins 
+             * TODO: currently, we suppose one stripe per map task, but we need to 
+             * generalize our split method */
+            String[] keySplit = key.split(" ",7);
             String[] hosts = new String[1];
-            hosts[0] = "testbed-node11";
+            hosts[0] = keySplit[6];
+            LOG.info("prefered host of map task is " + hosts[0]);
             splits.add(new FileSplit(srcs, prev, delta, hosts));
-            /* added by RH for test end*/
+            /* added by RH on Oct 7th, ends */
             prev = curr;
           }
         }

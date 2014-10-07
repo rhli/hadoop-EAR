@@ -1356,12 +1356,15 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
       /* Added by RH, Oct 3rd, 2014 ends */
       for (long startStripe = 0; startStripe < numStripes;
            startStripe += encodingUnit) {
-        lec.add(new EncodingCandidate(s, startStripe, encodingId, encodingUnit,
-            s.getModificationTime()));
         /* Added by RH, Oct 3rd, 2014 begins */
         BlockLocation[] bLoc = dsr.getNextStripeBlockLocations();
-        LOG.info("best rack for current stripe: " + getPreHost(bLoc));
+        String[] keys = getPreHost(bLoc).split(" ",2);
+        LOG.info("prefered rack: " + keys[0] + "prefered host: " + keys[1]);
         /* Added by RH, Oct 3rd, 2014 ends */
+        /* Commented by RH, Oct 7th, 2014 begins */
+        lec.add(new EncodingCandidate(s, startStripe, encodingId, encodingUnit,
+            s.getModificationTime()),keys[0],keys[1]);
+        /* Commented by RH, Oct 7th, 2014 ends */
       }
     }
     return lec;
@@ -1414,7 +1417,7 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
     if (curMax == null) {
         return null;
     } else {
-        return curMax.getKey();
+        return curMax.getKey() + " " + rackRep.get(curMax.getKey());
     }
     //LOG.info("getPreHost end");
   }
