@@ -611,7 +611,7 @@ public class JobInProgress extends JobInProgressTraits {
 
   Map<Node, List<TaskInProgress>> createCache(JobClient.RawSplit[] splits,
                                               int maxLevel) {
-      LOG.info("jobuser: " + getJobConf().getJobName());
+      LOG.debug("jobName: " + this.getJobConf().getJobName());
     Map<Node, List<TaskInProgress>> cache =
       new IdentityHashMap<Node, List<TaskInProgress>>(maxLevel);
 
