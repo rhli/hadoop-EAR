@@ -451,6 +451,9 @@ public class DistRaid {
     JobConf jobconf = new JobConf(conf, DistRaid.class);
     jobName = NAME + " " + dateForm.format(new Date(RaidNode.now()));
     jobconf.setUser(RaidNode.JOBUSER);
+    /* Added by RH for test Oct 7th, 2014, begins */ 
+    LOG.info("createJobConf" + RaidNode.JOBUSER + " " + jobconf.getUser()); 
+    /* Added by RH for test Oct 7th, 2014, ends */
     jobconf.setJobName(jobName);
     jobconf.setMapSpeculativeExecution(false);
     RaidUtils.parseAndSetOptions(jobconf, SCHEDULER_OPTION_LABEL);
