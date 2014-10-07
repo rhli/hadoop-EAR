@@ -611,9 +611,9 @@ public class JobInProgress extends JobInProgressTraits {
 
   Map<Node, List<TaskInProgress>> createCache(JobClient.RawSplit[] splits,
                                               int maxLevel) {
-      LOG.debug("jobName: " + this.getJobConf().getJobName());
     Map<Node, List<TaskInProgress>> cache =
       new IdentityHashMap<Node, List<TaskInProgress>>(maxLevel);
+    LOG.debug("jobName: " + this.getJobConf().getJobName());
 
     for (int i = 0; i < splits.length; i++) {
       String[] splitLocations = splits[i].getLocations();
@@ -627,6 +627,7 @@ public class JobInProgress extends JobInProgressTraits {
         if (node == null) {
           node = jobtracker.resolveAndAddToTopology(host);
         }
+        LOG.debug("tip:" + maps[i].getTIPId() + " has split on node:" + node);
         LOG.debug("tip:" + maps[i].getTIPId() + " has split on node:" + node);
         for (int j = 0; j < maxLevel; j++) {
           List<TaskInProgress> hostMaps = cache.get(node);
