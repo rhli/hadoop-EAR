@@ -79,6 +79,9 @@ public class DistRaid {
     if (jobconf != conf) {
       jobconf = conf instanceof JobConf ? (JobConf) conf : new JobConf(conf);
     }
+    /* Added by RH for test Oct 7th, 2014, begins */ 
+    LOG.info("setConf: " + RaidNode.JOBUSER + " " + jobconf.getUser()); 
+    /* Added by RH for test Oct 7th, 2014, ends */
   }
 
   /** {@inheritDoc} */
@@ -88,6 +91,9 @@ public class DistRaid {
 
   public DistRaid(Configuration conf) {
     setConf(createJobConf(conf));
+    /* Added by RH for test Oct 7th, 2014, begins */ 
+    LOG.info("DistRaid: " + RaidNode.JOBUSER + " " + jobconf.getUser()); 
+    /* Added by RH for test Oct 7th, 2014, ends */
     opPerMap = conf.getLong(OP_PER_MAP_KEY, DEFAULT_OP_PER_MAP);
     maxMapsPerNode = conf.getInt(MAX_MAPS_PER_NODE_KEY,
         DEFAULT_MAX_MAPS_PER_NODE);
@@ -452,7 +458,7 @@ public class DistRaid {
     jobName = NAME + " " + dateForm.format(new Date(RaidNode.now()));
     jobconf.setUser(RaidNode.JOBUSER);
     /* Added by RH for test Oct 7th, 2014, begins */ 
-    LOG.info("createJobConf" + RaidNode.JOBUSER + " " + jobconf.getUser()); 
+    LOG.info("createJobConf: " + RaidNode.JOBUSER + " " + jobconf.getUser()); 
     /* Added by RH for test Oct 7th, 2014, ends */
     jobconf.setJobName(jobName);
     jobconf.setMapSpeculativeExecution(false);
