@@ -316,6 +316,7 @@ public class DistRaid {
             String[] keySplit = key.toString().split(" ",7);
             String[] hosts = new String[1];
             hosts[0] = keySplit[6];
+            LOG.info("key value is " + key.toString());
             LOG.info("prefered host of map task is " + hosts[0]);
             splits.add(new FileSplit(srcs, prev, delta, hosts));
             /* added by RH on Oct 7th, ends */
