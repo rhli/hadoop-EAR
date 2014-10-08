@@ -613,7 +613,6 @@ public class JobInProgress extends JobInProgressTraits {
                                               int maxLevel) {
     Map<Node, List<TaskInProgress>> cache =
       new IdentityHashMap<Node, List<TaskInProgress>>(maxLevel);
-    LOG.debug("jobName: " + this.getJobConf().getJobName());
 
     for (int i = 0; i < splits.length; i++) {
       String[] splitLocations = splits[i].getLocations();
@@ -627,7 +626,6 @@ public class JobInProgress extends JobInProgressTraits {
         if (node == null) {
           node = jobtracker.resolveAndAddToTopology(host);
         }
-        LOG.debug("tip:" + maps[i].getTIPId() + " has split on node:" + node);
         LOG.debug("tip:" + maps[i].getTIPId() + " has split on node:" + node);
         for (int j = 0; j < maxLevel; j++) {
           List<TaskInProgress> hostMaps = cache.get(node);
@@ -1515,6 +1513,13 @@ public class JobInProgress extends JobInProgressTraits {
                                                     int clusterSize,
                                                     int numUniqueHosts)
   throws IOException {
+
+    /* Added by RH Oct 8th, 2014 begins 
+     * We forbid assigning a remote task in an encoding job */
+    if (getJobConf().getEncoding()) {
+        return null;
+    }
+    /* Added by RH Oct 8th, 2014 ends */
     if (!tasksInited.get()) {
       LOG.info("Cannot create task split for " + profile.getJobID());
       return null;

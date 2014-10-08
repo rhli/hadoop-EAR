@@ -91,9 +91,9 @@ public class DistRaid {
 
   public DistRaid(Configuration conf) {
     setConf(createJobConf(conf));
-    /* Added by RH for test Oct 7th, 2014, begins */ 
-    LOG.info("DistRaid: " + RaidNode.JOBUSER + " " + jobconf.getUser()); 
-    /* Added by RH for test Oct 7th, 2014, ends */
+    /* Added by RH Oct 8th, 2014, begins */ 
+    jobconf.setEncoding(true);
+    /* Added by RH Oct 8th, 2014, ends */
     opPerMap = conf.getLong(OP_PER_MAP_KEY, DEFAULT_OP_PER_MAP);
     maxMapsPerNode = conf.getInt(MAX_MAPS_PER_NODE_KEY,
         DEFAULT_MAX_MAPS_PER_NODE);
@@ -490,6 +490,13 @@ public class DistRaid {
     if (setup()) {
       this.jobClient = new JobClient(jobconf);
       this.runningJob = this.jobClient.submitJob(jobconf);
+      /* added by RH for test Oct 8th, 2014 begins */
+      if (jobconf.getEncoding()){
+          LOG.info("startDistRaid(): config successed");
+      } else {
+          LOG.info("startDistRaid(): config failed");
+      }
+      /* added by RH for test Oct 8th, 2014 ends */
       LOG.info("Job Started " + runningJob.getID());
       this.startTime = System.currentTimeMillis();
       return true;
