@@ -528,6 +528,11 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       }
     }
 
+    /*added by RH begins*/
+    LOG.info("chooseTargetOnNewFailureDomain: minCount: " + minCount);
+    LOG.info("chooseTargetOnNewFailureDomain: exclNodes: " + exclNodes);
+    /*added by RH ends*/
+
     if (exclNodes != null) {
       for (Node node:exclNodes) {
         excludedNodes.put(node, node);
@@ -550,6 +555,9 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
               candidateNodesByRacks.put(entry.getKey(), candidateNodes);
             }
             candidateNodes.add(n);
+            /* Added by RH for debug begins */
+            LOG.info("candidateNodes:" + candidateNodes);
+            /* Added by RH for debug ends */
           }
         }
       }
