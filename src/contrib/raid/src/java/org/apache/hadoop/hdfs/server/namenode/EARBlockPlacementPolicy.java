@@ -536,6 +536,9 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
 
     HashMap<String, HashSet<Node>> candidateNodesByRacks =
       new HashMap<String, HashSet<Node>>();
+    /* Added by RH for debug begins */
+    LOG.info("rackToHosts size:" + rackToHosts.size());
+    /* Added by RH for debug ends */
     for (Map.Entry<String, HashSet<Node>> entry : rackToHosts.entrySet()) {
       if (entry.getValue().size() == minCount) {
         for (Node n : this.clusterMap.getDatanodesInRack(entry.getKey())) {
