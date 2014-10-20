@@ -34,9 +34,6 @@ import org.apache.hadoop.hdfs.server.namenode.BlockPlacementPolicyDefault;
 
 import java.io.IOException;
 import java.util.*;
-/* Added by RH on Oct 20th, 2014 begins */
-import java.lang.Thread;
-/* Added by RH on Oct 20th, 2014 ends */
 import org.apache.commons.lang.ArrayUtils;
 
 /**
@@ -63,7 +60,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
   private static Set<String> badHosts = new HashSet<String>();
 
   /* Added by RH on Oct 20th, begins */
-  private List<Block> _unsettledBlocks;
+  private static List<Block> _unsettledBlocks = new ArrayList<String>();
   /* Added by RH on Oct 20th, ends */
 
   EARBlockPlacementPolicy(Configuration conf,
@@ -324,7 +321,15 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       List<DatanodeDescriptor> chosenNodes,
       List<Node> exclNodes,
       long blocksize) {
-    LOG.info("StackInfo: \n" + Thread.currentThread.getStackTrace());
+    // TODO: we can only track block index and filename. Can we get blockID?
+    LocatedBlocks blocks = this.namesystem.getBlockLocations(fileName, 0, Long.MAX_VALUE);
+    int blockIndex = blocks.getLocatedBlocks().size();
+    String blkInfo = fileName + ":" +blockIndex;
+    _unsettledBlocks.add(blkInfo);
+    if (_unsettledBlocks.size()==10) {
+      LOG.info("_unsettledBlocks:\n" + _unsettledBlocks);
+      _unsettledBlocks.clear();
+    }
     return super.chooseTarget(
       numOfReplicas, writer, chosenNodes, exclNodes, blocksize);
   }
