@@ -370,13 +370,22 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
               + " " + stripeLength + " " + parityLength + " " + stripeIndex);
           /*added by RH ends*/
         case SOURCE:
+          /*added by RH begins*/
+          LOG.info("chooseTargetF4: pre-rackToHosts1.1: SOURCE");
+          /*added by RH ends*/
           srcFileName = fileName;
           parityFileName = null;
           stripeLength = this.stripeLen;
           stripeIndex = blockIndex / stripeLength;
           break;
         case TEMP_PARITY:
+          /*added by RH begins*/
+          LOG.info("chooseTargetF4: pre-rackToHosts1.2: TEMP_PARITY");
+          /*added by RH ends*/
         case PARITY:
+          /*added by RH begins*/
+          LOG.info("chooseTargetF4: pre-rackToHosts1.3: PARITY");
+          /*added by RH ends*/
           srcFileName = getSourceFileFromParity(fileName, info);
           parityFileName = fileName;
           if (srcFileName == null ||
