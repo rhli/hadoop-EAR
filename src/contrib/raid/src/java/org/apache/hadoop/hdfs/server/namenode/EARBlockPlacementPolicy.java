@@ -387,6 +387,10 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
             numOfReplicas, writer, chosenNodes, exclNodes, blocksize);
       }
 
+      /*added by RH begins*/
+      LOG.info("chooseTargetF4: pre-rackToHosts: " + srcFileName + " " + parityFileName
+          + " " + stripeLength + " " + parityLength + " " + stripeIndex);
+      /*added by RH ends*/
       rackToHosts = getRackToHostsMapForStripe(srcFileName,
                                                parityFileName,
                                                stripeLength,
