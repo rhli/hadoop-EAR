@@ -361,7 +361,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       int parityLength = 0;
       int stripeLength = 0;
       /*added by RH begins*/
-      LOG.info("chooseTargetF4: pre-rackToHosts: " + info.type);
+      LOG.info("chooseTargetF4: pre-rackToHosts0: " + info.type);
       /*added by RH ends*/
       switch (info.type) {
         case NOT_RAID:
