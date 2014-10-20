@@ -314,7 +314,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
    *
    * Added by RH on Oct 20th, begins
    */
-  private DatanodeDescriptor[] chooseTargetEAR throws IOException(
+  private DatanodeDescriptor[] chooseTargetEAR(
       String fileName,
       int numOfReplicas,
       DatanodeDescriptor writer,
@@ -322,9 +322,17 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       List<Node> exclNodes,
       long blocksize) {
     // TODO: we can only track block index and filename. Can we get blockID?
-    LocatedBlocks blocks = this.namesystem.getBlockLocations(fileName, 0, Long.MAX_VALUE);
-    int blockIndex = blocks.getLocatedBlocks().size();
-    String blkInfo = fileName + ":" +blockIndex;
+    try {
+      LocatedBlocks blocks = this.namesystem.getBlockLocations(fileName, 
+          0, Long.MAX_VALUE);
+      int blockIndex = blocks.getLocatedBlocks().size();
+      String blkInfo = fileName + ":" +blockIndex;
+    } catch (IOException e) {
+      FSNamesystem.LOG.error(
+        "F4: Error happened when calling getFileInfo/getBlockLocations");
+      return super.chooseTarget(
+        fileName, numOfReplicas, writer, chosenNodes, exclNodes, blocksize);
+    }
     _unsettledBlocks.add(blkInfo);
     if (_unsettledBlocks.size()==10) {
       LOG.info("_unsettledBlocks:\n" + _unsettledBlocks);
