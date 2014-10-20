@@ -322,11 +322,12 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       List<Node> exclNodes,
       long blocksize) {
     // TODO: we can only track block index and filename. Can we get blockID?
+    String blkInfo = fileName;
     try {
       LocatedBlocks blocks = this.namesystem.getBlockLocations(fileName, 
           0, Long.MAX_VALUE);
       int blockIndex = blocks.getLocatedBlocks().size();
-      String blkInfo = fileName + ":" +blockIndex;
+      blkInfo = fileName + ":" +blockIndex;
     } catch (IOException e) {
       FSNamesystem.LOG.error(
         "F4: Error happened when calling getFileInfo/getBlockLocations");
