@@ -34,6 +34,9 @@ import org.apache.hadoop.hdfs.server.namenode.BlockPlacementPolicyDefault;
 
 import java.io.IOException;
 import java.util.*;
+/* Added by RH on Oct 20th, 2014 begins */
+import java.lang.Thread;
+/* Added by RH on Oct 20th, 2014 ends */
 import org.apache.commons.lang.ArrayUtils;
 
 /**
@@ -346,7 +349,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
     // If replica>1 then just default back to RAID
     if (numOfReplicas > 1) {
       /* Added by RH, Oct 20th, 2014 begins */
-      return chooseTragetEAR(
+      return chooseTargetEAR(
           fileName,numOfReplicas,writer,chosenNodes,exclNodes,blocksize);
       /* Added by RH, Oct 20th, 2014 ends */
       /* Commented by RH, Oct 20th, 2014 begins*/
