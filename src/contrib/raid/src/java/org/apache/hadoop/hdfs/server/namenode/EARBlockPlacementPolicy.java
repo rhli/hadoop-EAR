@@ -365,6 +365,10 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       /*added by RH ends*/
       switch (info.type) {
         case NOT_RAID:
+          /*added by RH begins*/
+          LOG.info("chooseTargetF4: pre-rackToHosts1: " + srcFileName + " " + parityFileName
+              + " " + stripeLength + " " + parityLength + " " + stripeIndex);
+          /*added by RH ends*/
         case SOURCE:
           srcFileName = fileName;
           parityFileName = null;
