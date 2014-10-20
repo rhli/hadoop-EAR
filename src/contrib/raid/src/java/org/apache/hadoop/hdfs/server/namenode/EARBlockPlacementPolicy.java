@@ -58,6 +58,11 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
 
   private static Set<String> badRacks = new HashSet<String>();
   private static Set<String> badHosts = new HashSet<String>();
+
+  /* Added by RH on Oct 20th, begins */
+  private List<Block> _unsettledBlocks;
+  /* Added by RH on Oct 20th, ends */
+
   EARBlockPlacementPolicy(Configuration conf,
                          FSClusterStats stats,
                                NetworkTopology clusterMap) {
@@ -304,6 +309,24 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
     }
   }
 
+  /**
+   * This is the key funtion for EAR placement.
+   *
+   * Added by RH on Oct 20th, begins
+   */
+  private DatanodeDescriptor[] chooseTargetEAR(
+      String fileName,
+      int numOfReplicas,
+      DatanodeDescriptor writer,
+      List<DatanodeDescriptor> chosenNodes,
+      List<Node> exclNodes,
+      long blocksize) {
+    LOG.info("StackInfo: \n" + Thread.currentThread.getStackTrace());
+    return super.chooseTarget(
+      numOfReplicas, writer, chosenNodes, exclNodes, blocksize);
+  }
+  /* Added by RH on Oct 20th, ends */
+
 
   /**
    * This is the main driver function that dictates block placement.
@@ -322,8 +345,14 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       ", with replica count: " + numOfReplicas);
     // If replica>1 then just default back to RAID
     if (numOfReplicas > 1) {
-      return super.chooseTarget(
-        numOfReplicas, writer, chosenNodes, exclNodes, blocksize);
+      /* Added by RH, Oct 20th, 2014 begins */
+      return chooseTragetEAR(
+          fileName,numOfReplicas,writer,chosenNodes,exclNodes,blocksize);
+      /* Added by RH, Oct 20th, 2014 ends */
+      /* Commented by RH, Oct 20th, 2014 begins*/
+      //return super.chooseTarget(
+      //  numOfReplicas, writer, chosenNodes, exclNodes, blocksize);
+      /* Commented by RH, Oct 20th, 2014 ends*/
     }
     FileInfo info;
     LocatedBlocks blocks;
@@ -360,32 +389,16 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       String parityFileName = null;
       int parityLength = 0;
       int stripeLength = 0;
-      /*added by RH begins*/
-      LOG.info("chooseTargetF4: pre-rackToHosts0: " + info.type);
-      /*added by RH ends*/
       switch (info.type) {
         case NOT_RAID:
-          /*added by RH begins*/
-          LOG.info("chooseTargetF4: pre-rackToHosts1: " + srcFileName + " " + parityFileName
-              + " " + stripeLength + " " + parityLength + " " + stripeIndex);
-          /*added by RH ends*/
         case SOURCE:
-          /*added by RH begins*/
-          LOG.info("chooseTargetF4: pre-rackToHosts1.1: SOURCE");
-          /*added by RH ends*/
           srcFileName = fileName;
           parityFileName = null;
           stripeLength = this.stripeLen;
           stripeIndex = blockIndex / stripeLength;
           break;
         case TEMP_PARITY:
-          /*added by RH begins*/
-          LOG.info("chooseTargetF4: pre-rackToHosts1.2: TEMP_PARITY");
-          /*added by RH ends*/
         case PARITY:
-          /*added by RH begins*/
-          LOG.info("chooseTargetF4: pre-rackToHosts1.3: PARITY");
-          /*added by RH ends*/
           srcFileName = getSourceFileFromParity(fileName, info);
           parityFileName = fileName;
           if (srcFileName == null ||
