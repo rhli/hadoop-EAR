@@ -360,6 +360,9 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       String parityFileName = null;
       int parityLength = 0;
       int stripeLength = 0;
+      /*added by RH begins*/
+      LOG.info("chooseTargetF4: pre-rackToHosts: " + info.type);
+      /*added by RH ends*/
       switch (info.type) {
         case NOT_RAID:
         case SOURCE:
