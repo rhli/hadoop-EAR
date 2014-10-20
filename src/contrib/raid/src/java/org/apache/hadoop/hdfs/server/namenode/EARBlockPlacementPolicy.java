@@ -314,7 +314,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
    *
    * Added by RH on Oct 20th, begins
    */
-  private DatanodeDescriptor[] chooseTargetEAR(
+  private DatanodeDescriptor[] chooseTargetEAR throws IOException(
       String fileName,
       int numOfReplicas,
       DatanodeDescriptor writer,
