@@ -392,6 +392,9 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
                                                stripeLength,
                                                parityLength,
                                                stripeIndex);
+      /*added by RH begins*/
+      LOG.info("chooseTargetF4: rackToHosts: " + rackToHosts);
+      /*added by RH ends*/
     } catch (IOException e) {
       FSNamesystem.LOG.error("F4: Error happened when calling "
         + "getParityFile/getSourceFileFromParity");
