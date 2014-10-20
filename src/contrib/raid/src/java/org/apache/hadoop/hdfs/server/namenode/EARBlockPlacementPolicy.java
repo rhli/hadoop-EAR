@@ -335,6 +335,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
         fileName, numOfReplicas, writer, chosenNodes, exclNodes, blocksize);
     }
     _unsettledBlocks.add(blkInfo);
+    LOG.info("_unsettledBlocks size: " + _unsettledBlocks.size());
     if (_unsettledBlocks.size()==10) {
       LOG.info("_unsettledBlocks:\n" + _unsettledBlocks);
       _unsettledBlocks.clear();
