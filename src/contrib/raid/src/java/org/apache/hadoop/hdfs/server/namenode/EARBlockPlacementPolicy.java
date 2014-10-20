@@ -337,7 +337,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
     _unsettledBlocks.add(blkInfo);
     LOG.info("_unsettledBlocks size: " + _unsettledBlocks.size());
     if (_unsettledBlocks.size()==10) {
-      LOG.info("_unsettledBlocks:\n" + _unsettledBlocks);
+      LOG.info("_unsettledBlocks:\n" + _unsettledBlocks.toArray());
       _unsettledBlocks.clear();
     }
     return super.chooseTarget(
