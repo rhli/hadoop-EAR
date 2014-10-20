@@ -510,6 +510,10 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       HashMap<String, HashSet<Node>> rackToHosts,
       long blockSize) {
 
+    /*added by RH begins*/
+    LOG.info("chooseTargetOnNewFailureDomain: rackToHosts: " + rackToHosts);
+    /*added by RH ends*/
+
     HashMap<Node, Node> excludedNodes = new HashMap<Node, Node>();
     for (String rack : this.clusterMap.getAllRacks()) {
       if (rackToHosts.get(rack) == null) {
