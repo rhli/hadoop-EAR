@@ -60,7 +60,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
   private static Set<String> badHosts = new HashSet<String>();
 
   /* Added by RH on Oct 20th, begins */
-  private static List<Block> _unsettledBlocks = new ArrayList<String>();
+  private static List<String> _unsettledBlocks = new ArrayList<String>();
   /* Added by RH on Oct 20th, ends */
 
   EARBlockPlacementPolicy(Configuration conf,
