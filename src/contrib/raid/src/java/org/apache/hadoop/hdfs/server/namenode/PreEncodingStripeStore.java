@@ -75,7 +75,7 @@ public class PreEncodingStripeStore {
     if (!stripeStore.exists()) {
       stripeStore.mkdirs();
     }
-    File stripeStoreFile = new File(stripeStore, stripeID.toString);
+    File stripeStoreFile = new File(stripeStore, stripeID.toString());
     PrintWriter out = new PrintWriter(new BufferedWriter(
           new FileWriter(stripeStoreFile)));
     for (String blk : blks) {
