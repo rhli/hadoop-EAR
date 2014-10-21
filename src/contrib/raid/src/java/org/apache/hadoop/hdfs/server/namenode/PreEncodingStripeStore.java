@@ -1,5 +1,6 @@
 package org.apache.hadoop.hdfs.server.namenode;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,10 +41,10 @@ import org.apache.hadoop.util.StringUtils;
 
 public class PreEncodingStripeStore {
   public static final Log LOG = LogFactory.getLog(PreEncodingStripeStore.class);
-  public ConcurrentHashMap<String, LocalStripeInfo> blockToStripeStore =
-      new ConcurrentHashMap<String, LocalStripeInfo>();
-  public ConcurrentHashMap<List<Block>, Long> stripeSet = 
-      new ConcurrentHashMap<List<Block>, Long>();
+  //public ConcurrentHashMap<String, LocalStripeInfo> blockToStripeStore =
+  //    new ConcurrentHashMap<String, LocalStripeInfo>();
+  //public ConcurrentHashMap<List<Block>, Long> stripeSet = 
+  //    new ConcurrentHashMap<List<Block>, Long>();
   public static final String PRE_ENC_STRIPE_STORE_DIR_KEY =
       "hdfs.preencoding.stripe.dir";
   private String storeDirName = "/home/rhli/hadoop-20/preEncStripeStore";
@@ -55,8 +56,8 @@ public class PreEncodingStripeStore {
       */
   //public static final String DELIMITER = ":"; 
   //private File storeDir;
-  private String storeDirName;
-  Random rand = new Random();
+  //private String storeDirName;
+  //Random rand = new Random();
 
   PreEncodingStripeStore() {
     //TODO: de-hardcode!!
