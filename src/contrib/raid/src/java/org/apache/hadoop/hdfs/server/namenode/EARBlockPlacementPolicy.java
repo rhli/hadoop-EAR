@@ -31,6 +31,9 @@ import org.apache.hadoop.net.NodeBase;
 import org.apache.hadoop.util.HostsFileReader;
 import org.apache.hadoop.raid.Codec;
 import org.apache.hadoop.hdfs.server.namenode.BlockPlacementPolicyDefault;
+/* Added by RH Oct 21st, 2014 begins */
+import org.apache.hadoop.hdfs.server.namenode.PreEncodingStripeStore;
+/* Added by RH Oct 21st, 2014 ends */
 
 import java.io.IOException;
 import java.util.*;
@@ -61,6 +64,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
 
   /* Added by RH on Oct 20th, begins */
   private static List<String> _unsettledBlocks = new ArrayList<String>();
+  private static PreEncodingStripeStore _preEncStripeStore = new PreEncodingStripeStore();
   /* Added by RH on Oct 20th, ends */
 
   EARBlockPlacementPolicy(Configuration conf,
