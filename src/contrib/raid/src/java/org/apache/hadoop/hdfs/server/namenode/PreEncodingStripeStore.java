@@ -1,6 +1,8 @@
 package org.apache.hadoop.hdfs.server.namenode;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,12 +70,12 @@ public class PreEncodingStripeStore {
   }
 
   public void putStripe(int stripeID,List<String> blks,String dirLoc) throws IOException {
-    File stripeStore = new File(storeDir,dirLoc);
+    File stripeStore = new File(storeDirName,dirLoc);
     if (!stripeStore.exists()) {
       stripeStore.mkdirs();
     }
-    File stripeStoreFile = new File(stripeStore, stripID);
-    PrintWriter out = new PrintWriter(new BufferWriter(
+    File stripeStoreFile = new File(stripeStore, stripeID);
+    PrintWriter out = new PrintWriter(new BufferedWriter(
           new FileWriter(stripeStoreFile)));
     for (String blk : blks) {
       out.println(blk);
@@ -82,7 +84,7 @@ public class PreEncodingStripeStore {
   }
 
   public boolean verifyStore(String dirLoc) {
-    File stripeStore = new File(storeDir,dirLoc);
+    File stripeStore = new File(storeDirName,dirLoc);
     return stripeStore.exists();
   }
 
