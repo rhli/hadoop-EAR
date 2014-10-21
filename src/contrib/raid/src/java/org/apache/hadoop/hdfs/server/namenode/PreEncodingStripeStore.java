@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -74,7 +75,7 @@ public class PreEncodingStripeStore {
     if (!stripeStore.exists()) {
       stripeStore.mkdirs();
     }
-    File stripeStoreFile = new File(stripeStore, stripeID);
+    File stripeStoreFile = new File(stripeStore, stripeID.toString);
     PrintWriter out = new PrintWriter(new BufferedWriter(
           new FileWriter(stripeStoreFile)));
     for (String blk : blks) {
