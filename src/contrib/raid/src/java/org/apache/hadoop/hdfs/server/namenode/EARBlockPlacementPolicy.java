@@ -332,17 +332,16 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
           0, Long.MAX_VALUE);
       int blockIndex = blocks.getLocatedBlocks().size();
       blkInfo = fileName + ":" +blockIndex;
+      _unsettledBlocks.add(blkInfo);
+      if (_unsettledBlocks.size()==10) {
+        _preEncStripeStore.putStripe(0,_unsettledBlocks,"test");
+        _unsettledBlocks.clear();
+      }
     } catch (IOException e) {
       FSNamesystem.LOG.error(
         "F4: Error happened when calling getFileInfo/getBlockLocations");
       return super.chooseTarget(
         fileName, numOfReplicas, writer, chosenNodes, exclNodes, blocksize);
-    }
-    _unsettledBlocks.add(blkInfo);
-    LOG.info("_unsettledBlocks size: " + _unsettledBlocks.size());
-    if (_unsettledBlocks.size()==10) {
-      _preEncStripeStore.putStripe(0,_unsettledBlocks,"test");
-      _unsettledBlocks.clear();
     }
     return super.chooseTarget(
       numOfReplicas, writer, chosenNodes, exclNodes, blocksize);
