@@ -320,7 +320,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
    */
   private class RaidTail {
     public String dirLoc;
-    public static int stripeLen;
+    public int stripeLen;
     public Map<String,Set<String>> rackToChosenRackMap;
     public Map<String,Integer> stripeLoadMap;
     public Map<String,Integer> rackIndexMap;
@@ -367,7 +367,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       if (rackToChosenRackMap.get(pRack).size()==stripeLoadMap.get(pRack)) {
         return null;
       } else {
-        return rackToChosenRackMap.get(pRack).toArray();
+        return (String[])rackToChosenRackMap.get(pRack).toArray();
       }
     }
 
@@ -385,7 +385,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
    */
 
   private String getDirLoc(String fileName) {
-    return fileName.subString(fileName.indexOf("/user/rhli/")+11,fileName.lastIndexOf("/"));
+    return fileName.substring(fileName.indexOf("/user/rhli/")+11,fileName.lastIndexOf("/"));
   }
 
   private DatanodeDescriptor[] chooseTargetEAR(
@@ -424,7 +424,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       String blkInfo = fileName + ":" + blocks.getLocatedBlocks().size();
       LOG.info("EAR: dirLoc: " + dirLoc);
       if (!_dirRaidTailMap.containsKey(dirLoc)) {
-        _dirRaidTailMap.put(dirLoc,stripeLen);
+        _dirRaidTailMap.put(dirLoc,new RaidTail(dirLoc,stripeLen));
       }
       _dirRaidTailMap.get(dirLoc).addBlock(blkInfo,pRack,sRack);
       return retVal;
