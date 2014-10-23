@@ -101,6 +101,9 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
     initParityConfigs();
     this.stagingDir = conf.get("dfs.f4.staging", "/staging");
     this.localDir = conf.get("dfs.f4.local", "/local");
+    /* Added by RH Oct 23rd, 2014 begins */
+    preEncStripeStore = new PreEncodingStripeStore();
+    /* Added by RH Oct 23rd, 2014 ends */
   }
 
   /**
