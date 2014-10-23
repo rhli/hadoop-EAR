@@ -345,7 +345,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
         rackToBlkListMap.put(pRack,new ArrayList<String>());
         stripeLoadMap.put(pRack,1);
         rackIndexMap.put(pRack,currentIdx++);
-        rackToChosenRackMap.put(pRack,new HashSet<String>);
+        rackToChosenRackMap.put(pRack,new HashSet<String>());
       } else {
         stripeLoadMap.put(pRack,stripeLoadMap.get(pRack)+1);
       }
