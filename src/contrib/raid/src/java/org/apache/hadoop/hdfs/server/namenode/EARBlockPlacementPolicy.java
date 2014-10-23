@@ -320,7 +320,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
    */
   private class RaidTail {
     public String dirLoc;
-    public static int stripeLen
+    public static int stripeLen;
     public Map<String,Set<String>> rackToChosenRackMap;
     public Map<String,Integer> stripeLoadMap;
     public Map<String,Integer> rackIndexMap;
