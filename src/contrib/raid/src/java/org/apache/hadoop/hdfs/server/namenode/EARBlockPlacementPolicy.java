@@ -102,7 +102,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
     this.stagingDir = conf.get("dfs.f4.staging", "/staging");
     this.localDir = conf.get("dfs.f4.local", "/local");
     /* Added by RH Oct 23rd, 2014 begins */
-    preEncStripeStore = new PreEncodingStripeStore();
+    _preEncStripeStore = new PreEncodingStripeStore();
     /* Added by RH Oct 23rd, 2014 ends */
   }
 
@@ -356,7 +356,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       if (stripeLoadMap.get(pRack)==stripeLen) {
         // write to preEncStripeStore
         try {
-          preEncStripeStore.putStripe(rackIndexMap.get(pRack),
+          _preEncStripeStore.putStripe(rackIndexMap.get(pRack),
               rackToBlkListMap.get(pRack),dirLoc);
         } catch(IOException e) {
           LOG.error("write preEncStripeStore failed");
