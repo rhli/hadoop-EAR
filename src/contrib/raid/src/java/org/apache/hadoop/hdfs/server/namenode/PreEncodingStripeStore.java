@@ -84,6 +84,18 @@ public class PreEncodingStripeStore {
     out.close();
   }
 
+  public void putStripe(int stripeID,String blk,String dirLoc) throws IOException {
+    File stripeStore = new File(storeDirName,dirLoc);
+    if (!stripeStore.exists()) {
+      stripeStore.mkdirs();
+    }
+    File stripeStoreFile = new File(stripeStore, "stripe" + stripeID);
+    PrintWriter out = new PrintWriter(new BufferedWriter(
+          new FileWriter(stripeStoreFile)));
+    out.println(blk);
+    out.close();
+  }
+
   public boolean verifyStore(String dirLoc) {
     File stripeStore = new File(storeDirName,dirLoc);
     return stripeStore.exists();

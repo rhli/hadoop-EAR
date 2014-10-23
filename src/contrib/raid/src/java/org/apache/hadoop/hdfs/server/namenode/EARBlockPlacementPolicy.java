@@ -353,15 +353,15 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       } else {
         stripeLoadMap.put(pRack,stripeLoadMap.get(pRack)+1);
       }
-      rackToBlkListMap.get(pRack).add(blkMeta);
+      //rackToBlkListMap.get(pRack).add(blkMeta);
+      // write to preEncStripeStore
+      try {
+        _preEncStripeStore.putStripe(rackIndexMap.get(pRack),
+            blkMeta,dirLoc);
+      } catch(IOException e) {
+        LOG.error("write preEncStripeStore failed");
+      }
       if (stripeLoadMap.get(pRack)==stripeLen) {
-        // write to preEncStripeStore
-        try {
-          _preEncStripeStore.putStripe(rackIndexMap.get(pRack),
-              rackToBlkListMap.get(pRack),dirLoc);
-        } catch(IOException e) {
-          LOG.error("write preEncStripeStore failed");
-        }
         // reset the maps and lists
         rackToBlkListMap.get(pRack).clear();
         rackToChosenRackMap.get(pRack).clear();
