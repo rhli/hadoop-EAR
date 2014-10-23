@@ -91,7 +91,7 @@ public class PreEncodingStripeStore {
     }
     File stripeStoreFile = new File(stripeStore, "stripe" + stripeID);
     PrintWriter out = new PrintWriter(new BufferedWriter(
-          new FileWriter(stripeStoreFile)));
+          new FileWriter(stripeStoreFile,true)));
     out.println(blk);
     out.close();
   }
