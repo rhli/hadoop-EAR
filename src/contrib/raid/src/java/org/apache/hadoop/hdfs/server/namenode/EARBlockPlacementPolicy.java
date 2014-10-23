@@ -351,7 +351,12 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       rackToBlkListMap.get(pRack).add(blkMeta);
       if (stripeLoadMap.get(pRack)==stripeLen) {
         // write to preEncStripeStore
-        preEncStripeStore.putStripe(rackIndexMap.get(pRack),rackToBlkListMap.get(pRack),dirLoc);
+        try {
+          preEncStripeStore.putStripe(rackIndexMap.get(pRack),
+              rackToBlkListMap.get(pRack),dirLoc);
+        } catch(IOException e) {
+          LOG.error("write preEncStripeStore failed");
+        }
         // reset the maps and lists
         rackToBlkListMap.get(pRack).clear();
         rackToChosenRackMap.get(pRack).clear();
