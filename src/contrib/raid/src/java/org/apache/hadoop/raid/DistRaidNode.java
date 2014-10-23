@@ -91,6 +91,12 @@ public class DistRaidNode extends RaidNode {
 
   final static DistRaid raidFiles(Configuration conf, JobMonitor jobMonitor,
       List<FileStatus> paths, PolicyInfo info) throws IOException {
+    /* Added by RH Oct 23rd, begins */
+    LOG.info("DistRaidNode raidFiles() paths: ");
+    for (FileStatus fs: paths) {
+      LOG.info("\t" + fs);
+    }
+    /* Added by RH Oct 23rd, ends */
     List<EncodingCandidate> lec = splitPaths(conf,
         Codec.getCodec(info.getCodecId()), paths);
     

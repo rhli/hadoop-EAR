@@ -1318,6 +1318,64 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
     return splitPaths(conf, codec, lfs);
   }
   
+  /**
+   * Split paths according to the pre-encoding stripe store.
+   *
+   * Added by RH Oct 23rd, 2014 begins
+   */
+  static public List<EncodingCandidate> splitPathsFromPreEncStripeStore(Configuration conf,
+      Codec codec, List<FileStatus> paths) throws IOException {
+    List<EncodingCandidate> lec = new ArrayList<EncodingCandidate>();
+    long encodingUnit = conf.getLong(RAID_ENCODING_STRIPES_KEY, 
+        DEFAULT_RAID_ENCODING_STRIPES);
+    FileSystem srcFs = FileSystem.get(conf);
+    for (FileStatus s : paths) {
+      if (codec.isDirRaid != s.isDir()) {
+        continue;
+      }
+      long numBlocks = 0L;
+      if (codec.isDirRaid) {
+        List<FileStatus> lfs = RaidNode.listDirectoryRaidFileStatus(
+            conf, srcFs, s.getPath());
+        if (lfs == null) {
+          continue;
+        }
+        for (FileStatus stat : lfs) {
+          numBlocks += RaidNode.numBlocks(stat);
+        }
+      } else {
+        numBlocks = RaidNode.numBlocks(s);
+      }
+      long numStripes = RaidNode.numStripes(numBlocks, codec.stripeLength);
+      String encodingId = System.currentTimeMillis() + "." + rand.nextLong();
+      /* Added by RH, Oct 3rd, 2014 begins 
+       * TODO: add support for intra-file encoding also */
+      List<FileStatus> lfs = RaidNode.listDirectoryRaidFileStatus(
+          conf,s.getPath().getFileSystem(conf), s.getPath());
+      LOG.info("splitFile():" + s.getPath() + " " + numStripes + lfs.size());
+      DirectoryStripeReader dsr = new DirectoryStripeReader(conf,codec,srcFs,(long)0,
+              encodingUnit,s.getPath(),lfs);
+      for(FileStatus fs: lfs){
+          LOG.info(fs);
+      }
+      /* Added by RH, Oct 3rd, 2014 ends */
+      for (long startStripe = 0; startStripe < numStripes;
+           startStripe += encodingUnit) {
+        /* Added by RH, Oct 3rd, 2014 begins */
+        BlockLocation[] bLoc = dsr.getNextStripeBlockLocations();
+        String[] keys = getPreHost(bLoc).split(" ",2);
+        LOG.info("prefered rack: " + keys[0] + " prefered host: " + keys[1]);
+        /* Added by RH, Oct 3rd, 2014 ends */
+        /* Commented by RH, Oct 7th, 2014 begins */
+        lec.add(new EncodingCandidate(s, startStripe, encodingId, encodingUnit,
+            s.getModificationTime(),keys[0],keys[1]));
+        /* Commented by RH, Oct 7th, 2014 ends */
+      }
+    }
+    return lec;
+  }
+  /* Added by RH Oct 23rd, 2014 ends */
+  
   static public List<EncodingCandidate> splitPaths(Configuration conf,
       Codec codec, List<FileStatus> paths) throws IOException {
     List<EncodingCandidate> lec = new ArrayList<EncodingCandidate>();

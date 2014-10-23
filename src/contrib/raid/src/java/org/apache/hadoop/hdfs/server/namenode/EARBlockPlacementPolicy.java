@@ -322,6 +322,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
    * Added by RH Oct 21st, 2014 begins
    */
   private class RaidTail {
+    //TODO: write every block or write every stripe?
     public String dirLoc;
     public int stripeLen;
     public Map<String,Set<String>> rackToChosenRackMap;

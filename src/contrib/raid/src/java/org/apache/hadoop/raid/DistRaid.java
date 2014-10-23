@@ -79,9 +79,6 @@ public class DistRaid {
     if (jobconf != conf) {
       jobconf = conf instanceof JobConf ? (JobConf) conf : new JobConf(conf);
     }
-    /* Added by RH for test Oct 7th, 2014, begins */ 
-    LOG.info("setConf: " + RaidNode.JOBUSER + " " + jobconf.getUser()); 
-    /* Added by RH for test Oct 7th, 2014, ends */
   }
 
   /** {@inheritDoc} */
