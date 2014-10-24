@@ -169,7 +169,7 @@ public class DirectoryStripeReader extends StripeReader {
     for (int fid = 0; fid < lfs.size(); fid++) {
       FileStatus fsStat = lfs.get(fid);
       /* Added by RH Oct 24th, 2014 begins */
-      fileIndexMap.put(removePrefix(fsStat.getPath()),fid);
+      fileIndexMap.put(removePrefix(fsStat.getPath().toString()),fid);
       LOG.info("initializing directoryStripeReader " + 
           removePrefix(fsStat.getPath().toString()) + " " +fid);
       /* Added by RH Oct 24th, 2014 ends */
