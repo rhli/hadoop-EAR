@@ -22,6 +22,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+/* Added by RH Oct 24th, 2014 begins */
+import java.util.*;
+/* Added by RH Oct 24th, 2014 ends */
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.BlockLocation;
@@ -49,6 +52,8 @@ public class DirectoryStripeReader extends StripeReader {
   List<FileStatus> lfs;
   /* the block size of parity file */
   long parityBlockSize;
+
+  Map<String,Integer> fileIndexMap;
   
   public static class BlockInfo {
     public int fileIdx;
@@ -133,6 +138,16 @@ public class DirectoryStripeReader extends StripeReader {
     }
     return maxRepl;
   }
+
+  /** 
+   * remove prefix of path.
+   * TODO: de-hardcode.
+   * Added by RH Oct 24th, begins 
+   */
+  private String removePrefix(String str){
+    return str.substring(str.indexOf("/user/rhli/raidTest"),str.length());
+  }
+  /* Added by RH Oct 24th, ends */
   
   public DirectoryStripeReader(Configuration conf, Codec codec,
       FileSystem fs, long stripeStartIdx, long encodingUnit,
@@ -142,6 +157,10 @@ public class DirectoryStripeReader extends StripeReader {
     if (lfs == null) {
       throw new IOException("Couldn't get files under directory " + srcDir);
     }
+    /* Added by RH Oct 24th, 2014 begins */
+    LOG.info("Dir path: " + srcDir);
+    fileIndexMap = new HashMap<String,Integer>();
+    /* Added by RH Oct 24th, 2014 ends */
     this.parityBlockSize = getParityBlockSize(conf, lfs);
     this.srcDir = srcDir;
     this.lfs = lfs;
@@ -149,6 +168,11 @@ public class DirectoryStripeReader extends StripeReader {
     long blockNum = 0L;
     for (int fid = 0; fid < lfs.size(); fid++) {
       FileStatus fsStat = lfs.get(fid);
+      /* Added by RH Oct 24th, 2014 begins */
+      HashMap.put(removePrefix(fsStat.getPath()),fid);
+      LOG.info("initializing directoryStripeReader " + 
+          removePrefix(fsStat.getPath()) + " " +fid);
+      /* Added by RH Oct 24th, 2014 ends */
       long numBlock = RaidNode.getNumBlocks(fsStat);
       blockNum += numBlock;
       for (int bid = 0; bid < numBlock; bid++) {

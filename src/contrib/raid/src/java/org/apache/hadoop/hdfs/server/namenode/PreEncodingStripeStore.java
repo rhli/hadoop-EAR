@@ -96,6 +96,34 @@ public class PreEncodingStripeStore {
     out.close();
   }
 
+  public List<List<String>> getPreEncStripes(String dirLoc) {
+    File stripeStore = new File(storeDirName,dirLoc);
+    if (!stripeStore.exists()) {
+      return null;
+    }
+    int stripeID=0;
+    List<List<String>> retVal = new ArrayList<List<String>>();
+    while (true) {
+      File stripeStoreFile = new File(stripeStore, "stripe" + stripeID);
+      if (!stripeStoreFile.exists()) {
+        break;
+      }
+      BufferedReader br = new BufferedReader(new FileReader(stripeStoreFile));
+      try {
+        List<String> tmp = new ArrayList<String>();
+        String line = br.readLine();
+        while (line!=null) {
+          tmp.add(line);
+        }
+      } finally {
+        retVal.add(tmp);
+        br.close();
+      }
+      stripeID++;
+    }
+    return retVal;
+  }
+
   public boolean verifyStore(String dirLoc) {
     File stripeStore = new File(storeDirName,dirLoc);
     return stripeStore.exists();
