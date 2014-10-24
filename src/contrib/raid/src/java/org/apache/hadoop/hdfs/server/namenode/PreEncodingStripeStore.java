@@ -110,16 +110,17 @@ public class PreEncodingStripeStore {
       if (!stripeStoreFile.exists()) {
         break;
       }
-      BufferedReader br = new BufferedReader(new FileReader(stripeStoreFile));
-      List<String> tmp = new ArrayList<String>();
       try {
+        BufferedReader br = new BufferedReader(new FileReader(stripeStoreFile));
+        List<String> tmp = new ArrayList<String>();
         String line = br.readLine();
         while (line!=null) {
           tmp.add(line);
         }
-      } finally {
         retVal.add(tmp);
         br.close();
+      } catch (IOException e) {
+        LOG.error("read failed");
       }
       stripeID++;
     }
