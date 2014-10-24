@@ -169,9 +169,9 @@ public class DirectoryStripeReader extends StripeReader {
     for (int fid = 0; fid < lfs.size(); fid++) {
       FileStatus fsStat = lfs.get(fid);
       /* Added by RH Oct 24th, 2014 begins */
-      HashMap.put(removePrefix(fsStat.getPath()),fid);
+      fileIndexMap.put(removePrefix(fsStat.getPath()),fid);
       LOG.info("initializing directoryStripeReader " + 
-          removePrefix(fsStat.getPath()) + " " +fid);
+          removePrefix(fsStat.getPath().toString()) + " " +fid);
       /* Added by RH Oct 24th, 2014 ends */
       long numBlock = RaidNode.getNumBlocks(fsStat);
       blockNum += numBlock;
