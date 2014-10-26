@@ -192,7 +192,8 @@ public class DirectoryStripeReader extends StripeReader {
     /* Initialize using preEncStripeStore.
      * Added by RH Oct 26th, 2014 begins. */
     PreEncodingStripeStore preEncStripeStore = new PreEncodingStripeStore();
-    List<List<String>> preEncStripes = PreEncodingStripeStore.getPreEncStripes();
+    List<List<String>> preEncStripes = PreEncodingStripeStore.getPreEncStripes(
+        removePrefix(srcDir.toString()));
     for (int i=0;i<preEncStripes.size();i++) {
       ArrayList<BlockInfo> temp = new ArrayList<BlockInfo>();
       for (String item:preEncStripes.get(i)){
@@ -204,7 +205,7 @@ public class DirectoryStripeReader extends StripeReader {
     /* Added by RH Oct 26th, 2014 ends */
     this.numBlocks = blockNum; 
     //long totalStripe = RaidNode.numStripes(blockNum, codec.stripeLength);
-    long stripeSize = preEncStripes.size();
+    long totalStripe = preEncStripes.size();
     if (stripeStartIdx >= totalStripe) {
       throw new IOException("stripe start idx " + stripeStartIdx + 
           " is equal or larger than total stripe number " + totalStripe);
@@ -268,8 +269,7 @@ public class DirectoryStripeReader extends StripeReader {
         FileStatus curFile = lfs.get(bi.fileIdx);
         BlockLocation[] curBlocks = 
             fs.getFileBlockLocations(curFile, 0, curFile.getLen());
-        curFileIdx = bi.fileIdx;
-        curFile = lfs.get(curFileIdx);
+        curFile = lfs.get(bi.fileIdx);
         curBlocks = fs.getFileBlockLocations(curFile, 0, curFile.getLen());
         blocks[i] = curBlocks[bi.blockId];
       } else {
