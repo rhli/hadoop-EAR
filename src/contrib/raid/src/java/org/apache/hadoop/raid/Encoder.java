@@ -393,13 +393,13 @@ public class Encoder {
         throws IOException, InterruptedException {
     DistributedFileSystem dfs = DFSUtil.convertToDFS(parityFs);
     Path srcFile = ec.srcStat.getPath();
-      /* Added by RH for test begins */
-      if (ec.srcStripes == null) {
-        LOG.info("Checkpoint 1: ec.srcStripes is null!!");
-      } else {
-        LOG.info("Checkpoint 1: ec.srcStripes is not null!!");
-      }
-      /* Added by RH for test ends */
+    /* Added by RH for test begins */
+    if (ec.srcStripes == null) {
+      LOG.info("Checkpoint 1: ec.srcStripes is null!!");
+    } else {
+      LOG.info("Checkpoint 1: ec.srcStripes is not null!!");
+    }
+    /* Added by RH for test ends */
     long expectedParityFileSize = numStripes * blockSize * codec.parityLength;
     long expectedPartialParityBlocks =
         (sReader.stripeEndIdx - sReader.stripeStartIdx) * codec.parityLength;
@@ -438,6 +438,13 @@ public class Encoder {
      * 3. isConcated: Set to true when partial parities are concatenated into
      *                a final parity. 
      */
+    /* Added by RH for test begins */
+    if (ec.srcStripes == null) {
+      LOG.info("Checkpoint 2: ec.srcStripes is null!!");
+    } else {
+      LOG.info("Checkpoint 2: ec.srcStripes is not null!!");
+    }
+    /* Added by RH for test ends */
     if (!ec.isConcated) {
       if (!ec.isEncoded) {
         if (!parityFs.mkdirs(tmpPartialParityDir)) {
@@ -517,6 +524,13 @@ public class Encoder {
           expectedParityFileSize + " does not match actual " +
           tmpStat.getLen() + " in path " + finalTmpParity);
     }
+    /* Added by RH for test begins */
+    if (ec.srcStripes == null) {
+      LOG.info("Checkpoint 3: ec.srcStripes is null!!");
+    } else {
+      LOG.info("Checkpoint 3: ec.srcStripes is not null!!");
+    }
+    /* Added by RH for test ends */
     if (ec.srcStripes == null && stripeStore != null) {
       InjectionHandler.processEventIO(
         InjectionEvent.RAID_ENCODING_FAILURE_GET_SRC_STRIPES);
