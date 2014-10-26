@@ -395,9 +395,9 @@ public class Encoder {
     Path srcFile = ec.srcStat.getPath();
       /* Added by RH for test begins */
       if (ec.srcStripes == null) {
-        LOG.info("Chechpoint 1: ec.srcStripes is null!!");
+        LOG.info("Checkpoint 1: ec.srcStripes is null!!");
       } else {
-        LOG.info("Chechpoint 1: ec.srcStripes is not null!!");
+        LOG.info("Checkpoint 1: ec.srcStripes is not null!!");
       }
       /* Added by RH for test ends */
     long expectedParityFileSize = numStripes * blockSize * codec.parityLength;
