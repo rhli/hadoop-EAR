@@ -192,7 +192,7 @@ public class DirectoryStripeReader extends StripeReader {
     /* Initialize using preEncStripeStore.
      * Added by RH Oct 26th, 2014 begins. */
     PreEncodingStripeStore preEncStripeStore = new PreEncodingStripeStore();
-    List<List<String>> preEncStripes = preEncodingStripeStore.getPreEncStripes(
+    List<List<String>> preEncStripes = preEncStripeStore.getPreEncStripes(
         removePrefix(srcDir.toString()));
     for (int i=0;i<preEncStripes.size();i++) {
       ArrayList<BlockInfo> temp = new ArrayList<BlockInfo>();
