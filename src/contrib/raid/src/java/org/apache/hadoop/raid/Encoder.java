@@ -511,6 +511,9 @@ public class Encoder {
           tmpStat.getLen() + " in path " + finalTmpParity);
     }
     if (ec.srcStripes == null && stripeStore != null) {
+      /* Added by RH for test begins */
+      LOG.info("ec.srcStripes is null!!");
+      /* Added by RH for test ends */
       InjectionHandler.processEventIO(
         InjectionEvent.RAID_ENCODING_FAILURE_GET_SRC_STRIPES);
       ec.srcStripes = getSrcStripes(jobConf, dfs, srcFile, codec, numStripes,
