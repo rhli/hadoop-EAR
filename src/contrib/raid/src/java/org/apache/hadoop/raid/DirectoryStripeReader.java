@@ -157,7 +157,7 @@ public class DirectoryStripeReader extends StripeReader {
   }
 
   private String removePrefix2(String str){
-    return str.substring(str.indexOf("/user/rhli/raidTest")+11,str.lastIndexOf("/"));
+    return str.substring(str.indexOf("/user/rhli/raidTest")+11,str.length());
   }
   /* Added by RH Oct 24th, ends */
   
