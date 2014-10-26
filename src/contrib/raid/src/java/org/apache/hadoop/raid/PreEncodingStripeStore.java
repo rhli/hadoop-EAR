@@ -98,7 +98,7 @@ public class PreEncodingStripeStore {
     out.close();
   }
 
-  public List<List<String>> getPreEncStripes(String dirLoc) {
+  public static List<List<String>> getPreEncStripes(String dirLoc) {
     File stripeStore = new File(storeDirName,dirLoc);
     if (!stripeStore.exists()) {
       return null;
