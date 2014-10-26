@@ -108,6 +108,7 @@ public class PreEncodingStripeStore {
     List<List<String>> retVal = new ArrayList<List<String>>();
     while (true) {
       File stripeStoreFile = new File(stripeStore, "stripe" + stripeID);
+      LOG.info("getPreEncStripes: stripeID " + stripeID);
       if (!stripeStoreFile.exists()) {
         break;
       }
@@ -117,6 +118,7 @@ public class PreEncodingStripeStore {
         String line = br.readLine();
         while (line!=null) {
           tmp.add(line);
+          line = br.readLine();
         }
         retVal.add(tmp);
         br.close();
