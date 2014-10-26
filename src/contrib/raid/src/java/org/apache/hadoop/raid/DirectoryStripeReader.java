@@ -155,6 +155,10 @@ public class DirectoryStripeReader extends StripeReader {
   private String removePrefix(String str){
     return str.substring(str.indexOf("/user/rhli/raidTest"),str.length());
   }
+
+  private String removePrefix2(String str){
+    return str.substring(str.indexOf("/user/rhli/raidTest")+11,str.lastIndexOf("/"));
+  }
   /* Added by RH Oct 24th, ends */
   
   public DirectoryStripeReader(Configuration conf, Codec codec,
@@ -193,7 +197,7 @@ public class DirectoryStripeReader extends StripeReader {
      * Added by RH Oct 26th, 2014 begins. */
     PreEncodingStripeStore preEncStripeStore = new PreEncodingStripeStore();
     List<List<String>> preEncStripes = preEncStripeStore.getPreEncStripes(
-        removePrefix(srcDir.toString()));
+        removePrefix2(srcDir.toString()));
     for (int i=0;i<preEncStripes.size();i++) {
       ArrayList<BlockInfo> temp = new ArrayList<BlockInfo>();
       for (String item:preEncStripes.get(i)){
