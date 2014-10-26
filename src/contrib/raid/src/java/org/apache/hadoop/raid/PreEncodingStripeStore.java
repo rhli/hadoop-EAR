@@ -107,8 +107,8 @@ public class PreEncodingStripeStore {
     int stripeID=0;
     List<List<String>> retVal = new ArrayList<List<String>>();
     while (true) {
-      File stripeStoreFile = new File(stripeStore, "stripe" + stripeID);
       LOG.info("getPreEncStripes: stripeID " + stripeID);
+      File stripeStoreFile = new File(stripeStore, "stripe" + stripeID);
       if (!stripeStoreFile.exists()) {
         break;
       }
