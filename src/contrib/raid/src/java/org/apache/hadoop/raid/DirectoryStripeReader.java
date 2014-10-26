@@ -33,7 +33,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.Path;
 /* Added by RH Oct 24th, 2014 begins */
-import org.apache.hadoop.hdfs.server.namenode.PreEncodingStripeStore;
+import org.apache.hadoop.hdfs.raid.PreEncodingStripeStore;
 /* Added by RH Oct 24th, 2014 ends */
 
 /*
