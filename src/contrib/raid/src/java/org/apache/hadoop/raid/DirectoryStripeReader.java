@@ -264,7 +264,7 @@ public class DirectoryStripeReader extends StripeReader {
   public BlockLocation[] getNextStripeBlockLocations() throws IOException {
     BlockLocation[] blocks = new BlockLocation[codec.stripeLength];
     for (int i = 0; i < codec.stripeLength; i++) {
-      if (i < this.srcStripeList.get(currentStripeIdx).size()) {
+      if (i < this.srcStripeList.get((int)currentStripeIdx).size()) {
         BlockInfo bi = this.srcStripeList.get((int)currentStripeIdx).get(i);
         FileStatus curFile = lfs.get(bi.fileIdx);
         BlockLocation[] curBlocks = 

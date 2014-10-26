@@ -52,7 +52,7 @@ public class PreEncodingStripeStore {
   //    new ConcurrentHashMap<List<Block>, Long>();
   //public static final String PRE_ENC_STRIPE_STORE_DIR_KEY =
   //    "hdfs.preencoding.stripe.dir";
-  private String storeDirName = "/home/rhli/hadoop-20/preEncStripeStore";
+  private static String storeDirName = "/home/rhli/hadoop-20/preEncStripeStore";
   /*
   public static final String[] STRIPESTORE_SPECIFIC_KEYS = 
       new String[] {
