@@ -393,6 +393,11 @@ public class Encoder {
         throws IOException, InterruptedException {
     DistributedFileSystem dfs = DFSUtil.convertToDFS(parityFs);
     Path srcFile = ec.srcStat.getPath();
+      /* Added by RH for test begins */
+      if (ec.srcStripes == null) {
+        LOG.info("Chechpoint 1: ec.srcStripes is null!!");
+      }
+      /* Added by RH for test ends */
     long expectedParityFileSize = numStripes * blockSize * codec.parityLength;
     long expectedPartialParityBlocks =
         (sReader.stripeEndIdx - sReader.stripeStartIdx) * codec.parityLength;
@@ -511,9 +516,6 @@ public class Encoder {
           tmpStat.getLen() + " in path " + finalTmpParity);
     }
     if (ec.srcStripes == null && stripeStore != null) {
-      /* Added by RH for test begins */
-      LOG.info("ec.srcStripes is null!!");
-      /* Added by RH for test ends */
       InjectionHandler.processEventIO(
         InjectionEvent.RAID_ENCODING_FAILURE_GET_SRC_STRIPES);
       ec.srcStripes = getSrcStripes(jobConf, dfs, srcFile, codec, numStripes,
