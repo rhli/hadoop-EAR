@@ -78,7 +78,7 @@ public class DirectoryStripeReader extends StripeReader {
   /**
    * Helper function of Encoder.
    */
-  public List<List<Block>> getSrcStripeList() {
+  public List<List<Block>> getSrcStripes() {
     List<List<Block>> srcStripes = new ArrayList<List<Block>>();
     for (int i=0;i<srcStripeList.size();i++) {
       List<BlockInfo> biList=srcStripeList.get(i);
@@ -88,7 +88,7 @@ public class DirectoryStripeReader extends StripeReader {
         int blockId = biList.get(j).blockId;
         FileStatus curFs = lfs.get(fileIdx);
 
-        curSrcStripe.add(fs.getLocatedBlocks(curFs.getPath(),
+        curSrcStripe.add(((DistributedFileSystem)fs).getLocatedBlocks(curFs.getPath(),
             0L, curFs.getLen()).get(blockId).getBlock());
       }
       srcStripes.add(curSrcStripe);
