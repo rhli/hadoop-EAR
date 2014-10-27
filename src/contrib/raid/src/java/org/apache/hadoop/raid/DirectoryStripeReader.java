@@ -92,7 +92,8 @@ public class DirectoryStripeReader extends StripeReader {
 
         try {
           if (fs instanceof DistributedRaidFileSystem) {
-            curSrcStripe.add(fs.toDistributedFileSystem().getLocatedBlocks(curFs.getPath(),
+            curSrcStripe.add(
+                (DistributedRaidFileSystem)fs.toDistributedFileSystem().getLocatedBlocks(curFs.getPath(),
                 0L, curFs.getLen()).get(blockId).getBlock());
           }
         } catch (IOException e) {
