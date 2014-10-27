@@ -34,6 +34,7 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.Path;
 /* Added by RH Oct 24th, 2014 begins */
 import org.apache.hadoop.hdfs.DistributedFileSystem;
+import org.apache.hadoop.hdfs.DistributedRaidFileSystem;
 import org.apache.hadoop.hdfs.protocol.Block;
 import org.apache.hadoop.hdfs.protocol.LocatedBlock;
 import org.apache.hadoop.hdfs.protocol.LocatedBlocks;
@@ -90,8 +91,10 @@ public class DirectoryStripeReader extends StripeReader {
         FileStatus curFs = lfs.get(fileIdx);
 
         try {
-          curSrcStripe.add(((DistributedFileSystem)fs).getLocatedBlocks(curFs.getPath(),
-              0L, curFs.getLen()).get(blockId).getBlock());
+          if (fs instanceof DistributedRaidFileSystem) {
+            curSrcStripe.add(fs.toDistributedFileSystem().getLocatedBlocks(curFs.getPath(),
+                0L, curFs.getLen()).get(blockId).getBlock());
+          }
         } catch (IOException e) {
           ;
         }
