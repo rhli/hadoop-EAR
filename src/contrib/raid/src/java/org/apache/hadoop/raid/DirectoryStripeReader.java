@@ -33,6 +33,9 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.Path;
 /* Added by RH Oct 24th, 2014 begins */
+import org.apache.hadoop.hdfs.protocol.Block;
+import org.apache.hadoop.hdfs.protocol.LocatedBlock;
+import org.apache.hadoop.hdfs.protocol.LocatedBlocks;
 import org.apache.hadoop.raid.PreEncodingStripeStore;
 /* Added by RH Oct 24th, 2014 ends */
 
@@ -71,6 +74,27 @@ public class DirectoryStripeReader extends StripeReader {
    * Added by RH Oct 26th, 2014 begins */
   List<List<BlockInfo>> srcStripeList = new ArrayList<List<BlockInfo>>();
   Map<String,Integer> fileIndexMap;
+
+  /**
+   * Helper function of Encoder.
+   */
+  public List<List<Block>> getSrcStripeList() {
+    List<List<Block>> srcStripes = new ArrayList<List<Block>>();
+    for (int i=0;i<srcStripeList.size();i++) {
+      List<BlockInfo> biList=srcStripeList.get(i);
+      List curSrcStripe = new ArrayList<Block>();
+      for (int j=0;j<biList.size();j++) {
+        int fileIdx = biList.get(j).fileIdx;
+        int blockId = biList.get(j).blockId;
+        FileStatus curFs = lfs.get(fileIdx);
+
+        curSrcStripe.add(fs.getLocatedBlocks(curFs.getPath(),
+            0L, curFs.getLen()).get(blockId).getBlock());
+      }
+      srcStripes.add(curSrcStripe);
+    }
+    return srcStripes;
+  }
   /* Added by RH Oct 26th, 2014 ends */
   
   long numBlocks = 0L;
