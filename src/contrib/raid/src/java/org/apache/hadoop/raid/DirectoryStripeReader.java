@@ -89,8 +89,12 @@ public class DirectoryStripeReader extends StripeReader {
         int blockId = biList.get(j).blockId;
         FileStatus curFs = lfs.get(fileIdx);
 
-        curSrcStripe.add(((DistributedFileSystem)fs).getLocatedBlocks(curFs.getPath(),
-            0L, curFs.getLen()).get(blockId).getBlock());
+        try {
+          curSrcStripe.add(((DistributedFileSystem)fs).getLocatedBlocks(curFs.getPath(),
+              0L, curFs.getLen()).get(blockId).getBlock());
+        } catch (IOException e) {
+          ;
+        }
       }
       srcStripes.add(curSrcStripe);
     }
