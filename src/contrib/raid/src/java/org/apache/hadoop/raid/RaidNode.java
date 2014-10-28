@@ -1926,14 +1926,17 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
     StripeReader sReader = null;
     boolean parityGenerated = false;
     if (codec.isDirRaid) {
-      long numStripes = (blockNum % codec.stripeLength == 0) ?
-          (blockNum / codec.stripeLength) :
-          ((blockNum / codec.stripeLength) + 1);
+      /* Commented by RH Oct 28th, 2014 begins */
+      //long numStripes = (blockNum % codec.stripeLength == 0) ?
+      //    (blockNum / codec.stripeLength) :
+      //    ((blockNum / codec.stripeLength) + 1);
+      /* Commented by RH Oct 28th, 2014 ends */
       
       sReader = new DirectoryStripeReader(conf, codec, inFs,
           ec.startStripe, ec.encodingUnit, inpath, lfs);
       parityGenerated = encoder.encodeFile(conf, inFs, outFs, outpath, 
           (short)metaRepl, numStripes, blockSize, reporter, sReader, ec);
+      long numStripes = sReader.getNumStripes();
     } else {
       FileStatus srcStat = inFs.getFileStatus(inpath);
       long srcSize = srcStat.getLen();
