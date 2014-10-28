@@ -172,9 +172,14 @@ public class FsShell extends Configured implements Tool {
     if (srcs.length == 1 && srcs[0].toString().equals("-"))
       copyFromStdin(dstPath, dstFs, throttler);
     else {
+      /* Replaced by RH Oct 28th, 2014 begins */ 
       FileUtil.copy(
-          FileSystem.getLocal(getConf()), srcs, dstFs, dstPath,
+          FileSystem.get(getConf()), srcs, dstFs, dstPath,
           false, false, validate, getConf(), throttler);
+      //FileUtil.copy(
+      //    FileSystem.getLocal(getConf()), srcs, dstFs, dstPath,
+      //    false, false, validate, getConf(), throttler);
+      /* Replaced by RH Oct 28th, 2014 ends */ 
     }
   }
 
