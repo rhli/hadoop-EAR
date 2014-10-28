@@ -244,7 +244,7 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
   private ObjectName raidnodeMXBeanName;
 
   /* Added by RH Oct 27th, 2014 begins*/
-  Map<String,Integer> dirStripeNumMap=new HashMap<String,Integer>();
+  private static Map<String,Integer> dirStripeNumMap=new HashMap<String,Integer>();
   /* Added by RH Oct 27th, 2014 ends*/
 
   // statistics about RAW hdfs blocks. This counts all replicas of a block.
