@@ -243,6 +243,10 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
   private ObjectName beanName;
   private ObjectName raidnodeMXBeanName;
 
+  /* Added by RH Oct 27th, 2014 begins*/
+  Map<String,Integer> dirStripeNumMap=new HashMap<String,Integer>();
+  /* Added by RH Oct 27th, 2014 ends*/
+
   // statistics about RAW hdfs blocks. This counts all replicas of a block.
   public static class Statistics {
     long numProcessedBlocks; // total blocks encountered in namespace
@@ -1346,30 +1350,22 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
       } else {
         numBlocks = RaidNode.numBlocks(s);
       }
-      long numStripes = RaidNode.numStripes(numBlocks, codec.stripeLength);
       String encodingId = System.currentTimeMillis() + "." + rand.nextLong();
-      /* Added by RH, Oct 3rd, 2014 begins 
-       * TODO: add support for intra-file encoding also */
+      /* TODO: add support for intra-file encoding also */
       List<FileStatus> lfs = RaidNode.listDirectoryRaidFileStatus(
           conf,s.getPath().getFileSystem(conf), s.getPath());
-      LOG.info("splitFile():" + s.getPath() + " " + numStripes + lfs.size());
       DirectoryStripeReader dsr = new DirectoryStripeReader(conf,codec,srcFs,(long)0,
               encodingUnit,s.getPath(),lfs);
-      for(FileStatus fs: lfs){
-          LOG.info(fs);
-      }
-      /* Added by RH, Oct 3rd, 2014 ends */
+      dirStripeNumMap.put(s.getPath().toString(),dsr.getNumStripes());
+      //long numStripes = RaidNode.numStripes(numBlocks, codec.stripeLength);
+      long numStripes = (long)dsr.getNumStripes();
+      LOG.info("splitPathsFromPreEncStripeStore() numStripes: " += numStripes);
       for (long startStripe = 0; startStripe < numStripes;
            startStripe += encodingUnit) {
-        /* Added by RH, Oct 3rd, 2014 begins */
         BlockLocation[] bLoc = dsr.getNextStripeBlockLocations();
         String[] keys = getPreHost(bLoc).split(" ",2);
-        LOG.info("prefered rack: " + keys[0] + " prefered host: " + keys[1]);
-        /* Added by RH, Oct 3rd, 2014 ends */
-        /* Commented by RH, Oct 7th, 2014 begins */
         lec.add(new EncodingCandidate(s, startStripe, encodingId, encodingUnit,
             s.getModificationTime(),keys[0],keys[1]));
-        /* Commented by RH, Oct 7th, 2014 ends */
       }
     }
     return lec;

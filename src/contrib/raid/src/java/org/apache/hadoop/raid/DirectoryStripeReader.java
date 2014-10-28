@@ -104,6 +104,10 @@ public class DirectoryStripeReader extends StripeReader {
     }
     return srcStripes;
   }
+
+  int getNumStripes(){
+    return srcStripeList.size();
+  }
   /* Added by RH Oct 26th, 2014 ends */
   
   long numBlocks = 0L;
