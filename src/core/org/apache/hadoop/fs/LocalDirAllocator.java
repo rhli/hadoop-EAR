@@ -248,7 +248,10 @@ public class LocalDirAllocator {
         } else {
           localDirs = newConf.getStrings(contextCfgItemName);
         }
-        localFS = FileSystem.getLocal(newConf);
+        /* test */
+        //localFS = FileSystem.getLocal(newConf);
+        localFS = FileSystem.get(newConf);
+        /* test */
         int numDirs = localDirs.length;
         ArrayList<String> dirs = new ArrayList<String>(numDirs);
         ArrayList<DF> dfList = new ArrayList<DF>(numDirs);
