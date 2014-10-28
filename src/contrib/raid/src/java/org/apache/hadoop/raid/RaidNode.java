@@ -1936,7 +1936,9 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
           ec.startStripe, ec.encodingUnit, inpath, lfs);
       parityGenerated = encoder.encodeFile(conf, inFs, outFs, outpath, 
           (short)metaRepl, numStripes, blockSize, reporter, sReader, ec);
+      /* Added by RH Oct 28th, 2014 begins */
       long numStripes = sReader.getNumStripes();
+      /* Added by RH Oct 28th, 2014 ends */
     } else {
       FileStatus srcStat = inFs.getFileStatus(inpath);
       long srcSize = srcStat.getLen();
