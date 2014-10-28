@@ -1359,7 +1359,7 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
       dirStripeNumMap.put(s.getPath().toString(),dsr.getNumStripes());
       //long numStripes = RaidNode.numStripes(numBlocks, codec.stripeLength);
       long numStripes = (long)dsr.getNumStripes();
-      LOG.info("splitPathsFromPreEncStripeStore() numStripes: " += numStripes);
+      LOG.info("splitPathsFromPreEncStripeStore() numStripes: " + numStripes);
       for (long startStripe = 0; startStripe < numStripes;
            startStripe += encodingUnit) {
         BlockLocation[] bLoc = dsr.getNextStripeBlockLocations();
