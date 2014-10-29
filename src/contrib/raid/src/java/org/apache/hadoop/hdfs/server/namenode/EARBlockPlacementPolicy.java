@@ -434,6 +434,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
         localNode = (DatanodeDescriptor)nodesInPRack.
           get(_random.nextInt(nodesInPRack.size())%nodesInPRack.size());
       }
+      LOG.info("EAR primary rack: " + pRack);
       retVal.add(localNode);
       candidateRack.remove(pRack);
       if (_dirRaidTailMap.containsKey(dirLoc)) {
@@ -449,7 +450,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
             get(_random.nextInt(nodesInSRack.size())%nodesInSRack.size()));
       }
 
-      LOG.info("EAR primary rack: " + pRack + "secondary rack: " + sRack);
+      LOG.info("EAR secondary rack: " + sRack);
       // TODO: de-hardcode, judge according to the policy infos
       // Currently, we only deal with file with fixed prefix.
       String blkInfo = fileName + ":" + blocks.getLocatedBlocks().size();
