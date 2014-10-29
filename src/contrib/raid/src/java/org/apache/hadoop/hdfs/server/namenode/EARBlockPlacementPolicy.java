@@ -419,7 +419,8 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       //DatanodeDescriptor[] retVal = super.chooseTarget(
       //  numOfReplicas, writer, chosenNodes, exclNodes, blocksize);
       List<DatanodeDescriptor> retVal = new ArrayList<DatanodeDescriptor>();
-      DatanodeDescriptor localNode = chooseLocalNode(writer,exclNodes,blocksize,
+      /* TODO: change the value 10 ...*/
+      DatanodeDescriptor localNode = chooseLocalNode(writer,exclNodes,blocksize,10,
           retVal);
       String pRack = localNode.getNetworkLocation();
       List<String> candidateRack = clusterMap.getRacks();
@@ -430,7 +431,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       String sRack = candidateRack.get(_random.nextInt()%candidateRack.size());
       List<Node> nodesInSRack = clusterMap.getDatanodesInRack(sRack);
       for (int i=1;i<numOfReplicas;i++) {
-        retVal.add(nodesInSRack.get(_random.nextInt()%nodesInSRack.size()));
+        retVal.add((DatanodeDescriptor)nodesInSRack.get(_random.nextInt()%nodesInSRack.size()));
       }
 
       LOG.info("EAR primary rack: " + pRack + "secondary rack: " + sRack);
@@ -442,7 +443,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
         _dirRaidTailMap.put(dirLoc,new RaidTail(dirLoc,stripeLen));
       }
       _dirRaidTailMap.get(dirLoc).addBlock(blkInfo,pRack,sRack);
-      return finalizeTargets(writer,retVal);
+      return finalizeTargets(retVal,chosenNodes,writer,localNode);
     } catch (IOException e) {
       FSNamesystem.LOG.error(
         "EAR: Error happened when calling getFileInfo/getBlockLocations");
