@@ -64,7 +64,7 @@ public class PreEncodingStripeStore {
   //private String storeDirName;
   //Random rand = new Random();
 
-  PreEncodingStripeStore() {
+  public PreEncodingStripeStore() {
     //TODO: de-hardcode!!
     File storeDir = new File(storeDirName);
     if (!storeDir.exists()) {
