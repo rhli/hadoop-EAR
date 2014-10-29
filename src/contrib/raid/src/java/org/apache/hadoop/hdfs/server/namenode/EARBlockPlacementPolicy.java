@@ -428,17 +428,20 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       } else {
         pRack = candidateRack.get(_random.nextInt(candidateRack.size())%candidateRack.size());
         List<Node> nodesInPRack = clusterMap.getDatanodesInRack(pRack);
-        localNode = (DatanodeDescriptor)nodesInPRack.get(_random.nextInt()%nodesInPRack.size());
+        localNode = (DatanodeDescriptor)nodesInPRack.
+          get(_random.nextInt(nodesInPRack.size())%nodesInPRack.size());
       }
       retVal.add(localNode);
       candidateRack.remove(pRack);
       for (String blackListedRack : _dirRaidTailMap.get(dirLoc).getBlackList(pRack)) {
         candidateRack.remove(blackListedRack);
       }
-      String sRack = candidateRack.get(_random.nextInt()%candidateRack.size());
+      String sRack = candidateRack.
+        get(_random.nextInt(candidateRack.size())%candidateRack.size());
       List<Node> nodesInSRack = clusterMap.getDatanodesInRack(sRack);
       for (int i=1;i<numOfReplicas;i++) {
-        retVal.add((DatanodeDescriptor)nodesInSRack.get(_random.nextInt()%nodesInSRack.size()));
+        retVal.add((DatanodeDescriptor)nodesInSRack.
+            get(_random.nextInt(nodesInSRack.size())%nodesInSRack.size()));
       }
 
       LOG.info("EAR primary rack: " + pRack + "secondary rack: " + sRack);
