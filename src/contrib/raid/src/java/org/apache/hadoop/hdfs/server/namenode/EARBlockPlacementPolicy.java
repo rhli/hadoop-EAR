@@ -424,13 +424,13 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       String pRack = localNode.getNetworkLocation();
       List<String> candidateRack = clusterMap.getRacks();
       candidateRack.remove(pRack);
-      for (String blackListedRack : _dirRaidTailMap.get(dirLoc).getBlackList()) {
+      for (String blackListedRack : _dirRaidTailMap.get(dirLoc).getBlackList(pRack)) {
         candidateRack.remove(blackListedRack);
       }
       String sRack = candidateRack.get(_random.nextInt()%candidateRack.size());
       List<Node> nodesInSRack = clusterMap.getDatanodesInRack(sRack);
       for (int i=1;i<numOfReplicas;i++) {
-        DatanodeDescriptor.add(nodesInSRack.get(_random.nextInt()%nodesInSRack.size()));
+        retVal.add(nodesInSRack.get(_random.nextInt()%nodesInSRack.size()));
       }
 
       LOG.info("EAR primary rack: " + pRack + "secondary rack: " + sRack);
@@ -442,7 +442,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
         _dirRaidTailMap.put(dirLoc,new RaidTail(dirLoc,stripeLen));
       }
       _dirRaidTailMap.get(dirLoc).addBlock(blkInfo,pRack,sRack);
-      return finalizeTarget(writer,retVal);
+      return finalizeTargets(writer,retVal);
     } catch (IOException e) {
       FSNamesystem.LOG.error(
         "EAR: Error happened when calling getFileInfo/getBlockLocations");
