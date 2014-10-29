@@ -65,6 +65,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
   /* Added by RH on Oct 20th, begins */
   private static PreEncodingStripeStore _preEncStripeStore = new PreEncodingStripeStore();
   private Map<String,RaidTail> _dirRaidTailMap = new HashMap<String,RaidTail>();
+  private static _random = new Random();
   /* Added by RH on Oct 20th, ends */
 
   EARBlockPlacementPolicy(Configuration conf,
@@ -415,19 +416,23 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
           0, Long.MAX_VALUE);
       String dirLoc = getDirLoc(fileName);
       // TODO: chooseTarget according to the black list provided by the RaidTail.
-      DatanodeDescriptor[] retVal = super.chooseTarget(
-        numOfReplicas, writer, chosenNodes, exclNodes, blocksize);
-      String pRack = null;
-      String sRack = null;
-      for (Node n:retVal) {
-        if (pRack == null) {
-          pRack = n.getNetworkLocation();
-        } else if (sRack==null) {
-          sRack = n.getNetworkLocation();
-        } else {
-          break;
-        }
+      //DatanodeDescriptor[] retVal = super.chooseTarget(
+      //  numOfReplicas, writer, chosenNodes, exclNodes, blocksize);
+      List<DatanodeDescriptor> retVal = new ArrayList<DatanodeDescriptor>();
+      DatanodeDescriptor localNode = chooseLocalNode(writer,exclNodes,blocksize,
+          retVal);
+      String pRack = localNode.getNetworkLocation();
+      List<String> candidateRack = clusterMap.getRacks();
+      candidateRack.remove(pRack);
+      for (String blackListedRack : _dirRaidTailMap.get(dirLoc).getBlackList()) {
+        candidateRack.remove(blackListedRack);
       }
+      String sRack = candidateRack.get(_random.nextInt()%candidateRack.size());
+      List<Node> nodesInSRack = clusterMap.getDatanodesInRack(sRack);
+      for (int i=1;i<numOfReplicas) {
+        DatanodeDescriptor.add(nodesInSRack.get(_random.nextInt()%nodesInSRack.size()));
+      }
+
       LOG.info("EAR primary rack: " + pRack + "secondary rack: " + sRack);
       // TODO: de-hardcode, judge according to the policy infos
       // Currently, we only deal with file with fixed prefix.
@@ -437,7 +442,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
         _dirRaidTailMap.put(dirLoc,new RaidTail(dirLoc,stripeLen));
       }
       _dirRaidTailMap.get(dirLoc).addBlock(blkInfo,pRack,sRack);
-      return retVal;
+      return finalizeTarget(writer,retVal);
     } catch (IOException e) {
       FSNamesystem.LOG.error(
         "EAR: Error happened when calling getFileInfo/getBlockLocations");
