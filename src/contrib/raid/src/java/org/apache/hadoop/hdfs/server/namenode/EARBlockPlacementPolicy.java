@@ -375,6 +375,9 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
 
     // we currently consider n-k rack failure tolerance.
     public String[] getBlackList(String pRack) {
+      if (!rackToChosenRackMap.containsKey(pRack)) {
+        return null;
+      }
       if (rackToChosenRackMap.get(pRack).size()==stripeLoadMap.get(pRack)) {
         return null;
       } else {
