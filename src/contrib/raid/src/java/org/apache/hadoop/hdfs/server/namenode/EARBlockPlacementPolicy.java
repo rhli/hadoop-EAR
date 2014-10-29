@@ -419,11 +419,18 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       //DatanodeDescriptor[] retVal = super.chooseTarget(
       //  numOfReplicas, writer, chosenNodes, exclNodes, blocksize);
       List<DatanodeDescriptor> retVal = new ArrayList<DatanodeDescriptor>();
-      /* TODO: change the value 10 ...*/
-      DatanodeDescriptor localNode = chooseLocalNode(writer,exclNodes,blocksize,10,
-          retVal);
-      String pRack = localNode.getNetworkLocation();
+      DatanodeDescriptor localNode;
+      String pRack;
       List<String> candidateRack = clusterMap.getRacks();
+      if (!clusterMap.contains(writer)) {
+        localNode = writer;
+        pRack = localNode.getNetworkLocation();
+      } else {
+        String pRack = candidateRack.get(_random.nextInt()%candidateRack.size());
+        List<Node> nodesInPRack = clusterMap.getDatanodesInRack(pRack);
+        localNode = (DatanodeDescriptor)nodesInPRack.get(_random.nextInt()%nodesInPRack.size());
+      }
+      retVal.add(localNode);
       candidateRack.remove(pRack);
       for (String blackListedRack : _dirRaidTailMap.get(dirLoc).getBlackList(pRack)) {
         candidateRack.remove(blackListedRack);
