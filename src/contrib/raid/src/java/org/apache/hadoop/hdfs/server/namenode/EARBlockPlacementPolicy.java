@@ -426,7 +426,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
         localNode = writer;
         pRack = localNode.getNetworkLocation();
       } else {
-        String pRack = candidateRack.get(_random.nextInt()%candidateRack.size());
+        pRack = candidateRack.get(_random.nextInt()%candidateRack.size());
         List<Node> nodesInPRack = clusterMap.getDatanodesInRack(pRack);
         localNode = (DatanodeDescriptor)nodesInPRack.get(_random.nextInt()%nodesInPRack.size());
       }
