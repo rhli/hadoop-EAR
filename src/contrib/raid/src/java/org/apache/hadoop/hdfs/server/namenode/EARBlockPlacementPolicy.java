@@ -433,7 +433,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       }
       retVal.add(localNode);
       candidateRack.remove(pRack);
-      if (_dirRaidTailMap.contains(dirLoc)) {
+      if (_dirRaidTailMap.containsKey(dirLoc)) {
         for (String blackListedRack : _dirRaidTailMap.get(dirLoc).getBlackList(pRack)) {
           candidateRack.remove(blackListedRack);
         }
