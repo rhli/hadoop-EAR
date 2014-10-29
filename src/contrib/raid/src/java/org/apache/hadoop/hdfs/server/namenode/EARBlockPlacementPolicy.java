@@ -65,7 +65,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
   /* Added by RH on Oct 20th, begins */
   private static PreEncodingStripeStore _preEncStripeStore = new PreEncodingStripeStore();
   private Map<String,RaidTail> _dirRaidTailMap = new HashMap<String,RaidTail>();
-  private static _random = new Random();
+  private static Random _random = new Random();
   /* Added by RH on Oct 20th, ends */
 
   EARBlockPlacementPolicy(Configuration conf,
@@ -429,7 +429,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       }
       String sRack = candidateRack.get(_random.nextInt()%candidateRack.size());
       List<Node> nodesInSRack = clusterMap.getDatanodesInRack(sRack);
-      for (int i=1;i<numOfReplicas) {
+      for (int i=1;i<numOfReplicas;i++) {
         DatanodeDescriptor.add(nodesInSRack.get(_random.nextInt()%nodesInSRack.size()));
       }
 
