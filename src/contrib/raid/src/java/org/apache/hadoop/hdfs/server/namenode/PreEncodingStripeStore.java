@@ -50,9 +50,9 @@ public class PreEncodingStripeStore {
   //    new ConcurrentHashMap<String, LocalStripeInfo>();
   //public ConcurrentHashMap<List<Block>, Long> stripeSet = 
   //    new ConcurrentHashMap<List<Block>, Long>();
-  public static final String PRE_ENC_STRIPE_STORE_DIR_KEY =
-      "hdfs.preencoding.stripe.dir";
-  private String storeDirName = "/home/rhli/hadoop-20/preEncStripeStore";
+  //public static final String PRE_ENC_STRIPE_STORE_DIR_KEY =
+  //    "hdfs.preencoding.stripe.dir";
+  private static String storeDirName = "/home/ncsgroup/hadoop-20/preEncStripeStore";
   /*
   public static final String[] STRIPESTORE_SPECIFIC_KEYS = 
       new String[] {
@@ -98,7 +98,8 @@ public class PreEncodingStripeStore {
     out.close();
   }
 
-  public List<List<String>> getPreEncStripes(String dirLoc) {
+  public static List<List<String>> getPreEncStripes(String dirLoc) {
+    LOG.info("preEncodingStripeStore getPreEncStripes() " + dirLoc);
     File stripeStore = new File(storeDirName,dirLoc);
     if (!stripeStore.exists()) {
       return null;
@@ -106,6 +107,7 @@ public class PreEncodingStripeStore {
     int stripeID=0;
     List<List<String>> retVal = new ArrayList<List<String>>();
     while (true) {
+      LOG.info("getPreEncStripes: stripeID " + stripeID);
       File stripeStoreFile = new File(stripeStore, "stripe" + stripeID);
       if (!stripeStoreFile.exists()) {
         break;
@@ -116,6 +118,7 @@ public class PreEncodingStripeStore {
         String line = br.readLine();
         while (line!=null) {
           tmp.add(line);
+          line = br.readLine();
         }
         retVal.add(tmp);
         br.close();

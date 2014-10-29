@@ -38,7 +38,7 @@ import org.apache.hadoop.hdfs.DistributedRaidFileSystem;
 import org.apache.hadoop.hdfs.protocol.Block;
 import org.apache.hadoop.hdfs.protocol.LocatedBlock;
 import org.apache.hadoop.hdfs.protocol.LocatedBlocks;
-import org.apache.hadoop.raid.PreEncodingStripeStore;
+import org.apache.hadoop.hdfs.server.namenode.PreEncodingStripeStore;
 /* Added by RH Oct 24th, 2014 ends */
 
 /*
@@ -190,11 +190,11 @@ public class DirectoryStripeReader extends StripeReader {
    * Added by RH Oct 24th, begins 
    */
   private String removePrefix(String str){
-    return str.substring(str.indexOf("/user/rhli/raidTest"),str.length());
+    return str.substring(str.indexOf("/user/ncsgroup/raidTest"),str.length());
   }
 
   private String removePrefix2(String str){
-    return str.substring(str.indexOf("/user/rhli/raidTest")+11,str.length());
+    return str.substring(str.indexOf("/user/ncsgroup/raidTest")+15,str.length());
   }
   /* Added by RH Oct 24th, ends */
   

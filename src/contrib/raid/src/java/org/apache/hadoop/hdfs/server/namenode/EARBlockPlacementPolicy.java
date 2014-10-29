@@ -395,7 +395,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
    */
 
   private String getDirLoc(String fileName) {
-    return fileName.substring(fileName.indexOf("/user/rhli/")+11,fileName.lastIndexOf("/"));
+    return fileName.substring(fileName.indexOf("/user/ncsgroup/")+15,fileName.lastIndexOf("/"));
   }
 
   private DatanodeDescriptor[] chooseTargetEAR(
@@ -406,7 +406,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       List<Node> exclNodes,
       long blocksize) {
     // TODO: we can only track block index and filename. Can we get blockID?
-    if (!fileName.contains("/user/rhli/raidTest")) {
+    if (!fileName.contains("/user/ncsgroup/raidTest")) {
       return super.chooseTarget(
         fileName, numOfReplicas, writer, chosenNodes, exclNodes, blocksize);
     }
