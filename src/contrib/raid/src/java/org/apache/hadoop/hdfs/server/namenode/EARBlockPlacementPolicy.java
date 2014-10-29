@@ -422,7 +422,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       DatanodeDescriptor localNode;
       String pRack;
       List<String> candidateRack = clusterMap.getRacks();
-      if (!clusterMap.contains(writer)) {
+      if (clusterMap.contains(writer)) {
         localNode = writer;
         pRack = localNode.getNetworkLocation();
       } else {
