@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Collections;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -333,7 +335,7 @@ public class DistRaid {
             rackHostMap.put(keySplit[5],new Integer[2]);
             currentRack = keySplit[5];
           }
-          stripeOffset = currOffset;
+          stripeOffset = (int)currOffset;
           index++;
         }
       } finally {
