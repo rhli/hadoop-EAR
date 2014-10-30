@@ -381,7 +381,8 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       if (rackToChosenRackMap.get(pRack).size()==stripeLoadMap.get(pRack)) {
         return new String[0];
       } else {
-        return (String[])(rackToChosenRackMap.get(pRack).toArray());
+        return rackToChosenRackMap.get(pRack).toArray(
+            new String[rackToChosenRackMap.get(pRack).size()]);
       }
     }
 
