@@ -679,7 +679,7 @@ public class DistRaid {
         java.util.Collections.shuffle(p.srcPaths);
 
         /* Added by RH Oct 30th 2014 begins */
-        Colletions.sort(p.srcPaths);
+        Collections.sort(p.srcPaths);
         /* Added by RH Oct 30th 2014 ends */
 
         for (EncodingCandidate ec : p.srcPaths) {
