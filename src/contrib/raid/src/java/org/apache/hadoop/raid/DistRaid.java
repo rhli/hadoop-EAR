@@ -330,12 +330,12 @@ public class DistRaid {
           LOG.info("prefered rack of stripe" + index + " is " + keySplit[5]);
           if (currentRack == null || !currentRack.equals(keySplit[5])) {
             if (currentRack!=null) {
-              rackHostMap.get(currentRack)[1]=index-1;
+              rackIdxRange.get(currentRack)[1]=index-1;
             }
-            rackHostMap.put(keySplit[5],new Integer[2]);
+            rackIdxRange.put(keySplit[5],new Integer[2]);
             currentRack = keySplit[5];
           }
-          stripeOffset = (int)currOffset;
+          stripeOffset.add((int)currOffset);
           index++;
         }
       } finally {
