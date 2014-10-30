@@ -118,7 +118,7 @@ public class DistRaid {
    * it's used for checking if candidate changes after the job submit.  
    */
   
-  public static class EncodingCandidate {
+  public static class EncodingCandidate implements Comparable<EncodingCandidate> {
     public final static int DEFAULT_GET_SRC_STAT_RETRY = 5;
     public FileStatus srcStat;
     public long startStripe = 0;
@@ -170,6 +170,12 @@ public class DistRaid {
     public void setPreHost(String preHost,String preRack){
       this.preferedHosts = preHost;
       this.preferedRack = preRack;
+    }
+
+    /* Make Encoding candidate comparable so that we can stripes with same core
+     * rack together */
+    public int compareTo(EncodingCandidate ec) {
+      return this.preferedRack.compareTo(ec.preferedRack);
     }
     /* Added by RH Oct 2nd, 2014, ends */
     
@@ -306,6 +312,34 @@ public class DistRaid {
       SequenceFile.Reader in = null;
       long prev = 0L;
       int count = 0; // count src
+
+      /* Added by RH Oct 30th, 2014 begins */
+      Map<String,Integer[]> rackIdxRange=new HashMap<String,Integer[]>();
+      Map<String,String> rackHostMap=new HashMap<String,String>();
+      List<Integer> stripeOffset = new ArrayList<Integer>();
+      try {
+        String currentRack = null;
+        int index = 0;
+        long currOffset = 0;
+        for (in = new SequenceFile.Reader(fs, srcs, job); in.next(key, value);) {
+          currOffset = in.getPosition();
+          String[] keySplit = key.toString().split(" ",7);
+          LOG.info("prefered rack of stripe" + index + " is " + keySplit[5]);
+          if (currentRack == null || !currentRack.equals(keySplit[5])) {
+            if (currentRack!=null) {
+              rackHostMap.get(currentRack)[1]=index-1;
+            }
+            rackHostMap.put(keySplit[5],new Integer[2]);
+            currentRack = keySplit[5];
+          }
+          stripeOffset = currOffset;
+          index++;
+        }
+      } finally {
+        in.close();
+      }
+      /* Added by RH Oct 30th, 2014 ends */
+
       try {
         for (in = new SequenceFile.Reader(fs, srcs, job); in.next(key, value);) {
           long curr = in.getPosition();
@@ -640,6 +674,11 @@ public class DistRaid {
         // with the same map. This shuffle mixes things up, allowing a better
         // mix of files.
         java.util.Collections.shuffle(p.srcPaths);
+
+        /* Added by RH Oct 30th 2014 begins */
+        Colletions.sort(p.srcPaths);
+        /* Added by RH Oct 30th 2014 ends */
+
         for (EncodingCandidate ec : p.srcPaths) {
           opWriter.append(new Text(ec.toString()), p.policy);
           opCount++;
