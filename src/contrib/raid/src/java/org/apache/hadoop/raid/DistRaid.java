@@ -333,8 +333,8 @@ public class DistRaid {
               rackIdxRange.get(currentRack)[1]=index-1;
             }
             currentRack = keySplit[5];
-            rackIdxRange.put(currentRack,new Integer[2]{index});
-            //rackIdxRange.get(currentRack)[1]=index;
+            rackIdxRange.put(currentRack,new Integer[2]);
+            rackIdxRange.get(currentRack)[0]=index;
             rackHostMap.put(keySplit[5],keySplit[6]);
           }
           stripeOffset.add((int)currOffset);
