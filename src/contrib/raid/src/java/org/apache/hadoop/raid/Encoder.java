@@ -415,6 +415,9 @@ public class Encoder {
         stats = parityFs.listStatus(tmpPartialParityDir);
         len = stats != null ? stats.length : 0;
         if (len == expectedNum) {
+          /* Added by RH Oct 31th, begins */
+          LOG.info ("allPartialEncodingAccomplished");
+          /* Added by RH Oct 31th, ends */
           return true;
         }
         if (i + 1 == this.retryCountPartialEncoding) {
