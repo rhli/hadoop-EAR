@@ -320,10 +320,10 @@ public class DistRaid {
       Map<String,Integer[]> rackIdxRange=new HashMap<String,Integer[]>();
       Map<String,String> rackHostMap=new HashMap<String,String>();
       List<Integer> stripeOffset = new ArrayList<Integer>();
+      long currOffset = 0;
+      String currentRack = null;
+      int index = 0;
       try {
-        String currentRack = null;
-        int index = 0;
-        long currOffset = 0;
         for (in = new SequenceFile.Reader(fs, srcs, job); in.next(key, value);) {
           currOffset = in.getPosition();
           String[] keySplit = key.toString().split(" ",7);
@@ -332,40 +332,51 @@ public class DistRaid {
             if (currentRack!=null) {
               rackIdxRange.get(currentRack)[1]=index-1;
             }
-            rackIdxRange.put(keySplit[5],new Integer[2]);
             currentRack = keySplit[5];
+            rackIdxRange.put(currentRack,new Integer[2]{index});
+            //rackIdxRange.get(currentRack)[1]=index;
+            rackHostMap.put(keySplit[5],keySplit[6]);
           }
           stripeOffset.add((int)currOffset);
           index++;
         }
       } finally {
+        prev = currOffset;
+        rackIdxRange.get(currentRack)[1]=index-1;
         in.close();
+      }
+      for(Map.Entry<String,Integer[]> entry : rackIdxRange.entrySet()) {
+        String[] hosts = new String[1];
+        hosts[0] = rackHostMap.get(entry.getKey());
+        long startPos = entry.getValue()[0]==0? 0:stripeOffset.get(entry.getValue()[0]);
+        long endPos = stripeOffset.get(entry.getValue()[1]);
+        splits.add(new FileSplit(srcs, startPos, endPos-startPos, hosts));
       }
       /* Added by RH Oct 30th, 2014 ends */
 
-      try {
-        for (in = new SequenceFile.Reader(fs, srcs, job); in.next(key, value);) {
-          long curr = in.getPosition();
-          long delta = curr - prev;
-          if (++count > targetcount) {
-            count = 0;
-            //splits.add(new FileSplit(srcs, prev, delta, (String[]) null));
-            /* added by RH on Oct 7th, begins 
-             * TODO: currently, we suppose one stripe per map task, but we need to 
-             * generalize our split method */
-            String[] keySplit = key.toString().split(" ",7);
-            String[] hosts = new String[1];
-            hosts[0] = keySplit[6];
-            LOG.info("key value is " + key.toString());
-            LOG.info("prefered host of map task is " + hosts[0]);
-            splits.add(new FileSplit(srcs, prev, delta, hosts));
-            /* added by RH on Oct 7th, ends */
-            prev = curr;
-          }
-        }
-      } finally {
-        in.close();
-      }
+      //try {
+      //  for (in = new SequenceFile.Reader(fs, srcs, job); in.next(key, value);) {
+      //    long curr = in.getPosition();
+      //    long delta = curr - prev;
+      //    if (++count > targetcount) {
+      //      count = 0;
+      //      //splits.add(new FileSplit(srcs, prev, delta, (String[]) null));
+      //      /* added by RH on Oct 7th, begins 
+      //       * TODO: currently, we suppose one stripe per map task, but we need to 
+      //       * generalize our split method */
+      //      String[] keySplit = key.toString().split(" ",7);
+      //      String[] hosts = new String[1];
+      //      hosts[0] = keySplit[6];
+      //      LOG.info("key value is " + key.toString());
+      //      LOG.info("prefered host of map task is " + hosts[0]);
+      //      splits.add(new FileSplit(srcs, prev, delta, hosts));
+      //      /* added by RH on Oct 7th, ends */
+      //      prev = curr;
+      //    }
+      //  }
+      //} finally {
+      //  in.close();
+      //}
       long remaining = fs.getFileStatus(srcs).getLen() - prev;
       if (remaining != 0) {
         splits.add(new FileSplit(srcs, prev, remaining, (String[]) null));
