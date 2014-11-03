@@ -1352,16 +1352,13 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
           conf,s.getPath().getFileSystem(conf), s.getPath());
       DirectoryStripeReader dsr = new DirectoryStripeReader(conf,codec,srcFs,(long)0,
               encodingUnit,s.getPath(),lfs);
-      dirStripeNumMap.put(s.getPath().toString(),dsr.getNumStripes());
-      //long numStripes = RaidNode.numStripes(numBlocks, codec.stripeLength);
       long numStripes = (long)dsr.getNumStripes();
       LOG.info("splitPathsFromPreEncStripeStore() numStripes: " + numStripes);
       for (long startStripe = 0; startStripe < numStripes;
            startStripe += encodingUnit) {
         BlockLocation[] bLoc = dsr.getNextStripeBlockLocations();
-        String[] keys = getPreHost(bLoc).split(" ",2);
         lec.add(new EncodingCandidate(s, startStripe, encodingId, encodingUnit,
-            s.getModificationTime(),keys[0],keys[1]));
+            s.getModificationTime()));
       }
     }
     return lec;

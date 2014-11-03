@@ -118,7 +118,7 @@ public class DistRaid {
    * it's used for checking if candidate changes after the job submit.  
    */
   
-  public static class EncodingCandidate implements Comparable<EncodingCandidate> {
+  public static class EncodingCandidate {
     public final static int DEFAULT_GET_SRC_STAT_RETRY = 5;
     public FileStatus srcStat;
     public long startStripe = 0;
