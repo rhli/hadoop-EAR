@@ -228,7 +228,8 @@ public class DistRaid {
     public InputSplit[] getSplits(JobConf job, int numSplits)
         throws IOException {
       final int srcCount = job.getInt(OP_COUNT_LABEL, -1);
-      final int targetcount = srcCount / numSplits;
+      //final int targetcount = srcCount / numSplits;
+      final int targetcount = srcCount / 10;
       String srclist = job.get(OP_LIST_LABEL, "");
       if (srcCount < 0 || "".equals(srclist)) {
         throw new RuntimeException("Invalid metadata: #files(" + srcCount
