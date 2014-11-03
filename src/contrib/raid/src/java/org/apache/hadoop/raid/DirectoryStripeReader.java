@@ -22,9 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-/* Added by RH Oct 24th, 2014 begins */
-import java.util.*;
-/* Added by RH Oct 24th, 2014 ends */
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.BlockLocation;
@@ -32,14 +29,6 @@ import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.Path;
-/* Added by RH Oct 24th, 2014 begins */
-import org.apache.hadoop.hdfs.DistributedFileSystem;
-import org.apache.hadoop.hdfs.DistributedRaidFileSystem;
-import org.apache.hadoop.hdfs.protocol.Block;
-import org.apache.hadoop.hdfs.protocol.LocatedBlock;
-import org.apache.hadoop.hdfs.protocol.LocatedBlocks;
-import org.apache.hadoop.hdfs.server.namenode.PreEncodingStripeStore;
-/* Added by RH Oct 24th, 2014 ends */
 
 /*
  * DirectoryStripeReader is used in directory-raid encoder and
@@ -72,44 +61,6 @@ public class DirectoryStripeReader extends StripeReader {
   }
   List<BlockInfo> stripeBlocks = null;
 
-  /* list of srcStripes under source, this is a alternate of stripeBlocks
-   * Added by RH Oct 26th, 2014 begins */
-  List<List<BlockInfo>> srcStripeList = new ArrayList<List<BlockInfo>>();
-  Map<String,Integer> fileIndexMap;
-
-  /**
-   * Helper function of Encoder.
-   */
-  public List<List<Block>> getSrcStripes() {
-    List<List<Block>> srcStripes = new ArrayList<List<Block>>();
-    for (int i=0;i<srcStripeList.size();i++) {
-      List<BlockInfo> biList=srcStripeList.get(i);
-      List curSrcStripe = new ArrayList<Block>();
-      for (int j=0;j<biList.size();j++) {
-        int fileIdx = biList.get(j).fileIdx;
-        int blockId = biList.get(j).blockId;
-        FileStatus curFs = lfs.get(fileIdx);
-
-        try {
-          if (fs instanceof DistributedRaidFileSystem) {
-            curSrcStripe.add(
-                ((DistributedRaidFileSystem)fs).toDistributedFileSystem().getLocatedBlocks(curFs.getPath(),
-                0L, curFs.getLen()).get(blockId).getBlock());
-          }
-        } catch (IOException e) {
-          ;
-        }
-      }
-      srcStripes.add(curSrcStripe);
-    }
-    return srcStripes;
-  }
-
-  public int getNumStripes(){
-    return srcStripeList.size();
-  }
-  /* Added by RH Oct 26th, 2014 ends */
-  
   long numBlocks = 0L;
   
   public static long getParityBlockSize(Configuration conf,
@@ -184,20 +135,6 @@ public class DirectoryStripeReader extends StripeReader {
     return maxRepl;
   }
 
-  /** 
-   * remove prefix of path.
-   * TODO: de-hardcode.
-   * Added by RH Oct 24th, begins 
-   */
-  private String removePrefix(String str){
-    return str.substring(str.indexOf("/user/ncsgroup/raidTest"),str.length());
-  }
-
-  private String removePrefix2(String str){
-    return str.substring(str.indexOf("/user/ncsgroup/raidTest")+15,str.length());
-  }
-  /* Added by RH Oct 24th, ends */
-  
   public DirectoryStripeReader(Configuration conf, Codec codec,
       FileSystem fs, long stripeStartIdx, long encodingUnit,
       Path srcDir, List<FileStatus> lfs) 
@@ -206,46 +143,21 @@ public class DirectoryStripeReader extends StripeReader {
     if (lfs == null) {
       throw new IOException("Couldn't get files under directory " + srcDir);
     }
-    /* Added by RH Oct 24th, 2014 begins */
-    LOG.info("Dir path: " + srcDir);
-    fileIndexMap = new HashMap<String,Integer>();
-    /* Added by RH Oct 24th, 2014 ends */
     this.parityBlockSize = getParityBlockSize(conf, lfs);
     this.srcDir = srcDir;
     this.lfs = lfs;
-    /* Commented by RH Oct 24th, 2014 begins */
-    //this.stripeBlocks = new ArrayList<BlockInfo>();
-    /* Commented by RH Oct 24th, 2014 ends */
+    this.stripeBlocks = new ArrayList<BlockInfo>();
     long blockNum = 0L;
     for (int fid = 0; fid < lfs.size(); fid++) {
       FileStatus fsStat = lfs.get(fid);
-      /* Added by RH Oct 24th, 2014 begins */
-      fileIndexMap.put(removePrefix(fsStat.getPath().toString()),fid);
-      /* Added by RH Oct 24th, 2014 ends */
-      /* Commented by RH Oct 24th, 2014 begins */
       long numBlock = RaidNode.getNumBlocks(fsStat);
       blockNum += numBlock;
-      //for (int bid = 0; bid < numBlock; bid++) {
-      //  stripeBlocks.add(new BlockInfo(fid, bid));
-      //}
-      /* Commented by RH Oct 24th, 2014 ends */
-    }
-    /* Initialize using preEncStripeStore.
-     * Added by RH Oct 26th, 2014 begins. */
-    PreEncodingStripeStore preEncStripeStore = new PreEncodingStripeStore();
-    List<List<String>> preEncStripes = preEncStripeStore.getPreEncStripes(
-        removePrefix2(srcDir.toString()));
-    for (int i=0;i<preEncStripes.size();i++) {
-      ArrayList<BlockInfo> temp = new ArrayList<BlockInfo>();
-      for (String item:preEncStripes.get(i)){
-        String[] keys = item.split(":",2);
-        temp.add(new BlockInfo(fileIndexMap.get(keys[0]),Integer.parseInt(keys[1])));
+      for (int bid = 0; bid < numBlock; bid++) {
+        stripeBlocks.add(new BlockInfo(fid, bid));
       }
-      srcStripeList.add(temp);
     }
-    /* Added by RH Oct 26th, 2014 ends */
     this.numBlocks = blockNum; 
-    //long totalStripe = RaidNode.numStripes(blockNum, codec.stripeLength);
+    long totalStripe = RaidNode.numStripes(blockNum, codec.stripeLength);
     long totalStripe = preEncStripes.size();
     if (stripeStartIdx >= totalStripe) {
       throw new IOException("stripe start idx " + stripeStartIdx + 
@@ -264,17 +176,10 @@ public class DirectoryStripeReader extends StripeReader {
     Path[] srcPaths = new Path[codec.stripeLength];
     long[] offsets = new long[codec.stripeLength];
     try {
-      /* Commented by RH Oct 26th, 2014 begins */
-      //int startOffset = (int)stripeIdx * codec.stripeLength;
-      //for (int i = 0; i < codec.stripeLength; i++) {
-      //  if (startOffset + i < this.stripeBlocks.size()) {
-      //    BlockInfo bi = this.stripeBlocks.get(startOffset + i);
-      /* Commented by RH Oct 26th, 2014 ends */
-      /* Added by RH Oct 26th, 2014 begins */
+      int startOffset = (int)stripeIdx * codec.stripeLength;
       for (int i = 0; i < codec.stripeLength; i++) {
-        if (i < this.srcStripeList.get((int)stripeIdx).size()) {
-          BlockInfo bi = this.srcStripeList.get((int)stripeIdx).get(i);
-      /* Added by RH Oct 26th, 2014 ends */
+        if (startOffset + i < this.stripeBlocks.size()) {
+          BlockInfo bi = this.stripeBlocks.get(startOffset + i);
           FileStatus curFile = lfs.get(bi.fileIdx);
           long seekOffset = bi.blockId * curFile.getBlockSize();
           Path srcFile = curFile.getPath();
@@ -301,17 +206,22 @@ public class DirectoryStripeReader extends StripeReader {
     }
   }
 
-  /* Added by RH Oct 26th, 2014, begins*/
   public BlockLocation[] getNextStripeBlockLocations() throws IOException {
     BlockLocation[] blocks = new BlockLocation[codec.stripeLength];
+    int startOffset = (int)currentStripeIdx * codec.stripeLength;
+    int curFileIdx = this.stripeBlocks.get(startOffset).fileIdx;
+    FileStatus curFile = lfs.get(curFileIdx);
+    BlockLocation[] curBlocks = 
+        fs.getFileBlockLocations(curFile, 0, curFile.getLen());
     for (int i = 0; i < codec.stripeLength; i++) {
-      if (i < this.srcStripeList.get((int)currentStripeIdx).size()) {
-        BlockInfo bi = this.srcStripeList.get((int)currentStripeIdx).get(i);
-        FileStatus curFile = lfs.get(bi.fileIdx);
-        BlockLocation[] curBlocks = 
-            fs.getFileBlockLocations(curFile, 0, curFile.getLen());
-        curFile = lfs.get(bi.fileIdx);
-        curBlocks = fs.getFileBlockLocations(curFile, 0, curFile.getLen());
+      if (startOffset + i < this.stripeBlocks.size()) {
+        BlockInfo bi = this.stripeBlocks.get(startOffset + i);
+        if (bi.fileIdx != curFileIdx) {
+          curFileIdx = bi.fileIdx;
+          curFile = lfs.get(curFileIdx);
+          curBlocks = 
+              fs.getFileBlockLocations(curFile, 0, curFile.getLen());
+        }
         blocks[i] = curBlocks[bi.blockId];
       } else {
         // We have no src data at this offset.
@@ -321,35 +231,6 @@ public class DirectoryStripeReader extends StripeReader {
     currentStripeIdx++;
     return blocks;
   }
-  /* Added by RH Oct 26th, 2014, ends*/
-  
-  /* Commented by RH, Oct 26th, 2014 begins */
-  //public BlockLocation[] getNextStripeBlockLocations() throws IOException {
-  //  BlockLocation[] blocks = new BlockLocation[codec.stripeLength];
-  //  int startOffset = (int)currentStripeIdx * codec.stripeLength;
-  //  int curFileIdx = this.stripeBlocks.get(startOffset).fileIdx;
-  //  FileStatus curFile = lfs.get(curFileIdx);
-  //  BlockLocation[] curBlocks = 
-  //      fs.getFileBlockLocations(curFile, 0, curFile.getLen());
-  //  for (int i = 0; i < codec.stripeLength; i++) {
-  //    if (startOffset + i < this.stripeBlocks.size()) {
-  //      BlockInfo bi = this.stripeBlocks.get(startOffset + i);
-  //      if (bi.fileIdx != curFileIdx) {
-  //        curFileIdx = bi.fileIdx;
-  //        curFile = lfs.get(curFileIdx);
-  //        curBlocks = 
-  //            fs.getFileBlockLocations(curFile, 0, curFile.getLen());
-  //      }
-  //      blocks[i] = curBlocks[bi.blockId];
-  //    } else {
-  //      // We have no src data at this offset.
-  //      blocks[i] = null; 
-  //    }
-  //  }
-  //  currentStripeIdx++;
-  //  return blocks;
-  //}
-  /* Commented by RH, Oct 26th, 2014 ends */
   
   @Override
   public InputStream buildOneInput(
