@@ -158,7 +158,6 @@ public class DirectoryStripeReader extends StripeReader {
     }
     this.numBlocks = blockNum; 
     long totalStripe = RaidNode.numStripes(blockNum, codec.stripeLength);
-    long totalStripe = preEncStripes.size();
     if (stripeStartIdx >= totalStripe) {
       throw new IOException("stripe start idx " + stripeStartIdx + 
           " is equal or larger than total stripe number " + totalStripe);
