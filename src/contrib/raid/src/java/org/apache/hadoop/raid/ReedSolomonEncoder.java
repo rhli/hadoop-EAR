@@ -111,7 +111,7 @@ public class ReedSolomonEncoder extends Encoder {
     for (int i = 0; i < stripeSize; i++) {
       data[i] = readBufs[i][idx] & 0x000000FF;
     }
-    reedSolomonCode.encode(data, code);
+    //reedSolomonCode.encode(data, code);
     for (int i = 0; i < paritySize; i++) {
       writeBufs[i][idx] = (byte)code[i];
     }
