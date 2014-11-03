@@ -416,7 +416,7 @@ public class Encoder {
         len = stats != null ? stats.length : 0;
         if (len == expectedNum) {
           /* Added by RH Oct 31th, begins */
-          LOG.info ("allPartialEncodingAccomplished");
+          //LOG.info ("allPartialEncodingAccomplished");
           /* Added by RH Oct 31th, ends */
           return true;
         }
@@ -497,13 +497,6 @@ public class Encoder {
      * 3. isConcated: Set to true when partial parities are concatenated into
      *                a final parity. 
      */
-    /* Added by RH for test begins */
-    if (ec.srcStripes == null) {
-      LOG.info("Checkpoint 2: ec.srcStripes is null!!");
-    } else {
-      LOG.info("Checkpoint 2: ec.srcStripes is not null!!");
-    }
-    /* Added by RH for test ends */
     if (!ec.isConcated) {
       if (!ec.isEncoded) {
         if (!parityFs.mkdirs(tmpPartialParityDir)) {
@@ -583,13 +576,6 @@ public class Encoder {
           expectedParityFileSize + " does not match actual " +
           tmpStat.getLen() + " in path " + finalTmpParity);
     }
-    /* Added by RH for test begins */
-    if (ec.srcStripes == null) {
-      LOG.info("Checkpoint 3: ec.srcStripes is null!!");
-    } else {
-      LOG.info("Checkpoint 3: ec.srcStripes is not null!!");
-    }
-    /* Added by RH for test ends */
     if (ec.srcStripes == null && stripeStore != null) {
       InjectionHandler.processEventIO(
         InjectionEvent.RAID_ENCODING_FAILURE_GET_SRC_STRIPES);

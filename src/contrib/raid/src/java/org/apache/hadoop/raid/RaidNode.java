@@ -243,10 +243,6 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
   private ObjectName beanName;
   private ObjectName raidnodeMXBeanName;
 
-  /* Added by RH Oct 27th, 2014 begins*/
-  private static Map<String,Integer> dirStripeNumMap=new HashMap<String,Integer>();
-  /* Added by RH Oct 27th, 2014 ends*/
-
   // statistics about RAW hdfs blocks. This counts all replicas of a block.
   public static class Statistics {
     long numProcessedBlocks; // total blocks encountered in namespace
@@ -1397,96 +1393,14 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
       }
       long numStripes = RaidNode.numStripes(numBlocks, codec.stripeLength);
       String encodingId = System.currentTimeMillis() + "." + rand.nextLong();
-      /* Added by RH, Oct 3rd, 2014 begins 
-       * TODO: add support for intra-file encoding also */
-      List<FileStatus> lfs = RaidNode.listDirectoryRaidFileStatus(
-          conf,s.getPath().getFileSystem(conf), s.getPath());
-      LOG.info("splitFile():" + s.getPath() + " " + numStripes + lfs.size());
-      DirectoryStripeReader dsr = new DirectoryStripeReader(conf,codec,srcFs,(long)0,
-              encodingUnit,s.getPath(),lfs);
-      for(FileStatus fs: lfs){
-          LOG.info(fs);
-      }
-      /* Added by RH, Oct 3rd, 2014 ends */
       for (long startStripe = 0; startStripe < numStripes;
            startStripe += encodingUnit) {
-        /* Added by RH, Oct 3rd, 2014 begins */
-        BlockLocation[] bLoc = dsr.getNextStripeBlockLocations();
-        String[] keys = getPreHost(bLoc).split(" ",2);
-        LOG.info("prefered rack: " + keys[0] + " prefered host: " + keys[1]);
-        /* Added by RH, Oct 3rd, 2014 ends */
-        /* Commented by RH, Oct 7th, 2014 begins */
         lec.add(new EncodingCandidate(s, startStripe, encodingId, encodingUnit,
             s.getModificationTime(),keys[0],keys[1]));
-        /* Commented by RH, Oct 7th, 2014 ends */
       }
     }
     return lec;
   }
-
-  /* Added by RH, Oct 3rd, 2014 begins */
-  public static String getPreHost(BlockLocation[] bls) throws IOException{
-    Map<String,Integer> rackBCount = new HashMap<String,Integer>();
-    /* Stores a host of this rack */
-    Map<String,String> rackRep = new HashMap<String,String>();
-    //LOG.info("getPreHost start " + bls.length);
-    if(bls == null){
-        return null;
-    }
-    for (BlockLocation bl : bls){
-      if (bl!=null){
-        //LOG.info("getPreHost" + " " + getRack(bl.getTopologyPaths()[0]));
-        Set<String> racks = new HashSet<String>();
-        for (String host : bl.getTopologyPaths()){
-          if (!racks.contains(getRack(host))){
-            racks.add(getRack(host));
-            if (!rackRep.containsKey(getRack(host))){
-              rackRep.put(getRack(host),getHost(host));
-            }
-          }
-        }
-        String[] strRacks = racks.toArray(new String[0]);
-        for (String str : strRacks){
-          if (rackBCount.containsKey(str)){
-            rackBCount.put(str,rackBCount.get(str)+1);
-          } else {
-            rackBCount.put(str,1);
-          }
-        }
-      }
-    }
-
-    Entry<String,Integer> curMax = null;
-    int curMaxVal = 0;
-    for (Entry<String,Integer> curEnt : rackBCount.entrySet()){
-      if (curMax == null) {
-        curMax = curEnt;
-        curMaxVal = curEnt.getValue();
-      } else if (curEnt.getValue()>curMaxVal) {
-        curMax = curEnt;
-        curMaxVal = curEnt.getValue();
-      }
-    }
-    
-    if (curMax == null) {
-        return null;
-    } else {
-        return curMax.getKey() + " " + rackRep.get(curMax.getKey());
-    }
-    //LOG.info("getPreHost end");
-  }
-  
-  private static String getRack(String topoPath){
-      // remove the host info
-      return topoPath.substring(0,topoPath.lastIndexOf("/"));
-  }
-
-  private static String getHost(String topoPath){
-      // remove the host info
-      String hostName = topoPath.substring(topoPath.lastIndexOf("/")+1);
-      return hostName.substring(0,hostName.lastIndexOf(":"));
-  }
-  /* Added by RH, Oct 3rd, 2014 ends */
 
   /**
    * RAID a list of files / directories
@@ -1926,17 +1840,12 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
     StripeReader sReader = null;
     boolean parityGenerated = false;
     if (codec.isDirRaid) {
-      /* Commented by RH Oct 28th, 2014 begins */
-      //long numStripes = (blockNum % codec.stripeLength == 0) ?
-      //    (blockNum / codec.stripeLength) :
-      //    ((blockNum / codec.stripeLength) + 1);
-      /* Commented by RH Oct 28th, 2014 ends */
+      long numStripes = (blockNum % codec.stripeLength == 0) ?
+          (blockNum / codec.stripeLength) :
+          ((blockNum / codec.stripeLength) + 1);
       
       sReader = new DirectoryStripeReader(conf, codec, inFs,
           ec.startStripe, ec.encodingUnit, inpath, lfs);
-      /* Added by RH Oct 28th, 2014 begins */
-      long numStripes = ((DirectoryStripeReader)sReader).getNumStripes();
-      /* Added by RH Oct 28th, 2014 ends */
       parityGenerated = encoder.encodeFile(conf, inFs, outFs, outpath, 
           (short)metaRepl, numStripes, blockSize, reporter, sReader, ec);
     } else {

@@ -91,9 +91,6 @@ public class DistRaid {
 
   public DistRaid(Configuration conf) {
     setConf(createJobConf(conf));
-    /* Added by RH Oct 8th, 2014, begins */ 
-    jobconf.setEncoding(true);
-    /* Added by RH Oct 8th, 2014, ends */
     opPerMap = conf.getLong(OP_PER_MAP_KEY, DEFAULT_OP_PER_MAP);
     maxMapsPerNode = conf.getInt(MAX_MAPS_PER_NODE_KEY,
         DEFAULT_MAX_MAPS_PER_NODE);
@@ -134,11 +131,6 @@ public class DistRaid {
     public boolean isConcated = false;
     public List<List<Block>> srcStripes = null;
 
-    /* Added by RH Sep 30th, 2014 starts
-     * We add a prefered host which locates in the core rack of the stripe.  */
-    public String preferedHosts;
-    public String preferedRack;
-    /* Added by RH Sep 30th, 2014 ends */
     
     EncodingCandidate(FileStatus newStat, long newStartStripe,
         String newEncodingId, long newEncodingUnit, long newModificationTime) {
@@ -147,88 +139,25 @@ public class DistRaid {
       this.encodingId = newEncodingId;
       this.encodingUnit = newEncodingUnit;
       this.modificationTime = newModificationTime;
-      /* Added by RH Oct 1st, 2014, starts */
-      this.preferedHosts = null;
-      this.preferedRack = null;
-      /* Added by RH Oct 1st, 2014, ends */
     }
     
-    /* Added by RH Oct 2nd, 2014, begins */
-    EncodingCandidate(FileStatus newStat, long newStartStripe,
-        String newEncodingId, long newEncodingUnit, long newModificationTime,
-        String preRack, String preHost) {
-      this.srcStat = newStat;
-      this.startStripe = newStartStripe;
-      this.encodingId = newEncodingId;
-      this.encodingUnit = newEncodingUnit;
-      this.modificationTime = newModificationTime;
-      this.preferedRack = preRack;
-      this.preferedHosts = preHost;
-    }
-
-    public String getPreHost(){
-        return preferedHosts;
-    }
-
-    public void setPreHost(String preHost,String preRack){
-      this.preferedHosts = preHost;
-      this.preferedRack = preRack;
-    }
-
-    /* Make Encoding candidate comparable so that we can stripes with same core
-     * rack together */
-    public int compareTo(EncodingCandidate ec) {
-      return this.preferedRack.compareTo(ec.preferedRack);
-    }
-    /* Added by RH Oct 2nd, 2014, ends */
     
     public String toString() {
-      /* Added by RH Oct 1st, 2014, starts */
       return startStripe + delim + encodingId + delim + encodingUnit 
-            + delim + modificationTime + delim + this.srcStat.getPath().toString() +
-            delim + preferedRack + delim + preferedHosts;
-      /* Added by RH Oct 1st, 2014, ends */
-      /* Commented by RH Oct 1st, 2014, starts */
-      //return startStripe + delim + encodingId + delim + encodingUnit 
-      //    + delim + modificationTime + delim + this.srcStat.getPath().toString();
-      /* Commented by RH Oct 1st, 2014, ends */
+          + delim + modificationTime + delim + this.srcStat.getPath().toString();
     }
     
     public static EncodingCandidate getEncodingCandidate(String key,
         Configuration jobconf) throws IOException {
-      String[] keys = key.split(delim, 7);
+      String[] keys = key.split(delim, 5);
       Path p = new Path(keys[4]);
       long startStripe = Long.parseLong(keys[0]);
       long modificationTime = Long.parseLong(keys[3]);
       FileStatus srcStat = getSrcStatus(jobconf, p);
       long encodingUnit = Long.parseLong(keys[2]);
-        /* Added by RH Oct 3rd, 2014 begins */
-      String host = null;
-      String rack = null;
-      if (!keys[5].equals("null")){
-          host = keys[5];
-      }
-      if (!keys[6].equals("null")){
-          rack = keys[6];
-      }
       return new EncodingCandidate(srcStat, startStripe, keys[1],
-          encodingUnit, modificationTime,host,rack);
-        /* Added by RH Oct 3rd, 2014 ends */
+          encodingUnit, modificationTime);
     }
-
-    /* Added by RH Oct 2nd, 2014, starts */
-    //public static EncodingCandidate getEncodingCandidate(String key,
-    //    Configuration jobconf) throws IOException {
-    //  String[] keys = key.split(delim, 5);
-    //  Path p = new Path(keys[4]);
-    //  long startStripe = Long.parseLong(keys[0]);
-    //  long modificationTime = Long.parseLong(keys[3]);
-    //  FileStatus srcStat = getSrcStatus(jobconf, p);
-    //  long encodingUnit = Long.parseLong(keys[2]);
-    //  return new EncodingCandidate(srcStat, startStripe, keys[1],
-    //      encodingUnit, modificationTime);
-    //}
-    /* Added by RH Oct 2nd, 2014, ends */
     
     public static FileStatus getSrcStatus(Configuration jobconf, Path p)
         throws IOException {
@@ -316,67 +245,19 @@ public class DistRaid {
       long prev = 0L;
       int count = 0; // count src
 
-      /* Added by RH Oct 30th, 2014 begins */
-      Map<String,Integer[]> rackIdxRange=new HashMap<String,Integer[]>();
-      Map<String,String> rackHostMap=new HashMap<String,String>();
-      List<Integer> stripeOffset = new ArrayList<Integer>();
-      long currOffset = 0;
-      String currentRack = null;
-      int index = 0;
       try {
         for (in = new SequenceFile.Reader(fs, srcs, job); in.next(key, value);) {
-          currOffset = in.getPosition();
-          String[] keySplit = key.toString().split(" ",7);
-          LOG.info("prefered rack of stripe" + index + " is " + keySplit[5]);
-          if (currentRack == null || !currentRack.equals(keySplit[5])) {
-            if (currentRack!=null) {
-              rackIdxRange.get(currentRack)[1]=index-1;
-            }
-            currentRack = keySplit[5];
-            rackIdxRange.put(currentRack,new Integer[2]);
-            rackIdxRange.get(currentRack)[0]=index;
-            rackHostMap.put(keySplit[5],keySplit[6]);
+          long curr = in.getPosition();
+          long delta = curr - prev;
+          if (++count > targetcount) {
+            count = 0;
+            splits.add(new FileSplit(srcs, prev, delta, (String[]) null));
+            prev = curr;
           }
-          stripeOffset.add((int)currOffset);
-          index++;
         }
       } finally {
-        prev = currOffset;
-        rackIdxRange.get(currentRack)[1]=index-1;
         in.close();
       }
-      for(Map.Entry<String,Integer[]> entry : rackIdxRange.entrySet()) {
-        String[] hosts = new String[1];
-        hosts[0] = rackHostMap.get(entry.getKey());
-        long startPos = entry.getValue()[0]==0? 0:stripeOffset.get(entry.getValue()[0]);
-        long endPos = stripeOffset.get(entry.getValue()[1]);
-        splits.add(new FileSplit(srcs, startPos, endPos-startPos, hosts));
-      }
-      /* Added by RH Oct 30th, 2014 ends */
-
-      //try {
-      //  for (in = new SequenceFile.Reader(fs, srcs, job); in.next(key, value);) {
-      //    long curr = in.getPosition();
-      //    long delta = curr - prev;
-      //    if (++count > targetcount) {
-      //      count = 0;
-      //      //splits.add(new FileSplit(srcs, prev, delta, (String[]) null));
-      //      /* added by RH on Oct 7th, begins 
-      //       * TODO: currently, we suppose one stripe per map task, but we need to 
-      //       * generalize our split method */
-      //      String[] keySplit = key.toString().split(" ",7);
-      //      String[] hosts = new String[1];
-      //      hosts[0] = keySplit[6];
-      //      LOG.info("key value is " + key.toString());
-      //      LOG.info("prefered host of map task is " + hosts[0]);
-      //      splits.add(new FileSplit(srcs, prev, delta, hosts));
-      //      /* added by RH on Oct 7th, ends */
-      //      prev = curr;
-      //    }
-      //  }
-      //} finally {
-      //  in.close();
-      //}
       long remaining = fs.getFileStatus(srcs).getLen() - prev;
       if (remaining != 0) {
         splits.add(new FileSplit(srcs, prev, remaining, (String[]) null));
@@ -535,13 +416,6 @@ public class DistRaid {
     if (setup()) {
       this.jobClient = new JobClient(jobconf);
       this.runningJob = this.jobClient.submitJob(jobconf);
-      /* added by RH for test Oct 8th, 2014 begins */
-      if (jobconf.getEncoding()){
-          LOG.info("startDistRaid(): config successed");
-      } else {
-          LOG.info("startDistRaid(): config failed");
-      }
-      /* added by RH for test Oct 8th, 2014 ends */
       LOG.info("Job Started " + runningJob.getID());
       this.startTime = System.currentTimeMillis();
       return true;
@@ -688,10 +562,6 @@ public class DistRaid {
         // with the same map. This shuffle mixes things up, allowing a better
         // mix of files.
         java.util.Collections.shuffle(p.srcPaths);
-
-        /* Added by RH Oct 30th 2014 begins */
-        Collections.sort(p.srcPaths);
-        /* Added by RH Oct 30th 2014 ends */
 
         for (EncodingCandidate ec : p.srcPaths) {
           opWriter.append(new Text(ec.toString()), p.policy);

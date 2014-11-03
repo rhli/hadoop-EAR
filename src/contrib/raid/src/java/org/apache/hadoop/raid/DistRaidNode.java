@@ -91,11 +91,7 @@ public class DistRaidNode extends RaidNode {
 
   final static DistRaid raidFiles(Configuration conf, JobMonitor jobMonitor,
       List<FileStatus> paths, PolicyInfo info) throws IOException {
-    /* Commented by RH Oct 27th, 2014 begins */
-    //List<EncodingCandidate> lec = splitPaths(conf,
-    //    Codec.getCodec(info.getCodecId()), paths);
-    /* Commented by RH Oct 27th, 2014 ends */
-    List<EncodingCandidate> lec = splitPathsFromPreEncStripeStore(conf,
+    List<EncodingCandidate> lec = splitPaths(conf,
         Codec.getCodec(info.getCodecId()), paths);
     
     // We already checked that no job for this policy is running
