@@ -1318,53 +1318,6 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
     return splitPaths(conf, codec, lfs);
   }
   
-  /**
-   * Split paths according to the pre-encoding stripe store.
-   *
-   * Added by RH Oct 23rd, 2014 begins
-   */
-  static public List<EncodingCandidate> splitPathsFromPreEncStripeStore(Configuration conf,
-      Codec codec, List<FileStatus> paths) throws IOException {
-    List<EncodingCandidate> lec = new ArrayList<EncodingCandidate>();
-    long encodingUnit = conf.getLong(RAID_ENCODING_STRIPES_KEY, 
-        DEFAULT_RAID_ENCODING_STRIPES);
-    FileSystem srcFs = FileSystem.get(conf);
-    for (FileStatus s : paths) {
-      if (codec.isDirRaid != s.isDir()) {
-        continue;
-      }
-      long numBlocks = 0L;
-      if (codec.isDirRaid) {
-        List<FileStatus> lfs = RaidNode.listDirectoryRaidFileStatus(
-            conf, srcFs, s.getPath());
-        if (lfs == null) {
-          continue;
-        }
-        for (FileStatus stat : lfs) {
-          numBlocks += RaidNode.numBlocks(stat);
-        }
-      } else {
-        numBlocks = RaidNode.numBlocks(s);
-      }
-      String encodingId = System.currentTimeMillis() + "." + rand.nextLong();
-      /* TODO: add support for intra-file encoding also */
-      List<FileStatus> lfs = RaidNode.listDirectoryRaidFileStatus(
-          conf,s.getPath().getFileSystem(conf), s.getPath());
-      DirectoryStripeReader dsr = new DirectoryStripeReader(conf,codec,srcFs,(long)0,
-              encodingUnit,s.getPath(),lfs);
-      long numStripes = (long)dsr.getNumStripes();
-      LOG.info("splitPathsFromPreEncStripeStore() numStripes: " + numStripes);
-      for (long startStripe = 0; startStripe < numStripes;
-           startStripe += encodingUnit) {
-        BlockLocation[] bLoc = dsr.getNextStripeBlockLocations();
-        lec.add(new EncodingCandidate(s, startStripe, encodingId, encodingUnit,
-            s.getModificationTime()));
-      }
-    }
-    return lec;
-  }
-  /* Added by RH Oct 23rd, 2014 ends */
-  
   static public List<EncodingCandidate> splitPaths(Configuration conf,
       Codec codec, List<FileStatus> paths) throws IOException {
     List<EncodingCandidate> lec = new ArrayList<EncodingCandidate>();
@@ -1393,7 +1346,7 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
       for (long startStripe = 0; startStripe < numStripes;
            startStripe += encodingUnit) {
         lec.add(new EncodingCandidate(s, startStripe, encodingId, encodingUnit,
-            s.getModificationTime(),keys[0],keys[1]));
+            s.getModificationTime()));
       }
     }
     return lec;
