@@ -452,13 +452,6 @@ public class Encoder {
         throws IOException, InterruptedException {
     DistributedFileSystem dfs = DFSUtil.convertToDFS(parityFs);
     Path srcFile = ec.srcStat.getPath();
-    /* Added by RH for test begins */
-    if (ec.srcStripes == null) {
-      LOG.info("Checkpoint 1: ec.srcStripes is null!!");
-    } else {
-      LOG.info("Checkpoint 1: ec.srcStripes is not null!!");
-    }
-    /* Added by RH for test ends */
     long expectedParityFileSize = numStripes * blockSize * codec.parityLength;
     long expectedPartialParityBlocks =
         (sReader.stripeEndIdx - sReader.stripeStartIdx) * codec.parityLength;
