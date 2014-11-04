@@ -1435,7 +1435,7 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
     }
     for (BlockLocation bl : bls){
       if (bl!=null){
-        //LOG.info("getPreHost" + " " + getRack(bl.getTopologyPaths()[0]));
+        LOG.info("getPreHost" + " " + bl.getTopologyPaths()[0] + " " + bl.getTopologyPaths()[1]);
         Set<String> racks = new HashSet<String>();
         for (String host : bl.getTopologyPaths()){
           if (!racks.contains(getRack(host))){
@@ -1467,13 +1467,13 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
         curMaxVal = curEnt.getValue();
       }
     }
+    LOG.info("getPreHost end " + curMax.getKey() + " " + rackRep.get(curMax.getKey()));
     
     if (curMax == null) {
         return null;
     } else {
         return curMax.getKey() + " " + rackRep.get(curMax.getKey());
     }
-    //LOG.info("getPreHost end");
   }
   
   private static String getRack(String topoPath){
