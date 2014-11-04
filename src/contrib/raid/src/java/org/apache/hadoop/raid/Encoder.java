@@ -236,112 +236,56 @@ public class Encoder {
     return partialPaths;
   }
   
-  /* Added by RH Oct 27th, 2014 begins */
   private List<List<Block>> getSrcStripes(Configuration jobConf, 
       DistributedFileSystem dfs, Path srcFile, Codec codec, long numStripes,
       StripeReader sReader, Progressable reporter)
           throws IOException, InterruptedException {
-    return ((DirectoryStripeReader)sReader).getSrcStripes();
-    //List<List<Block>> srcStripes = new ArrayList<List<Block>>();
-    //List<FileStatus> lfs =
-    //    RaidNode.listDirectoryRaidFileStatus(jobConf, dfs, srcFile);
-    //if (lfs == null) {
-    //  return null;
-    //}
-    //ArrayList<Block> currentBlocks = new ArrayList<Block>();
-    //long totalBlocks = 0L;
-    //int index = 0;
-    //for (FileStatus stat : lfs) {
-    //  LocatedBlocks lbs = dfs.getLocatedBlocks(stat.getPath(),
-    //      0L, stat.getLen());
-    //  for (LocatedBlock lb : lbs.getLocatedBlocks()) {
-    //    currentBlocks.add(lb.getBlock());
-    //    if (currentBlocks.size() == codec.stripeLength) {
-    //      srcStripes.add(currentBlocks);
-    //      totalBlocks += currentBlocks.size();
-    //      currentBlocks = new ArrayList<Block>();
-    //    }
-    //  }
-    //  index++;
-    //  if (index % 10 == 0) {
-    //    Thread.sleep(1000);
-    //  }
-    //  reporter.progress();
-    //}
-    //if (currentBlocks.size() > 0) {
-    //  srcStripes.add(currentBlocks);
-    //  totalBlocks += currentBlocks.size();
-    //}
-    //if (srcStripes.size() != numStripes || 
-    //    totalBlocks != ((DirectoryStripeReader)sReader).numBlocks) {
-    //  StringBuilder sb = new StringBuilder();
-    //  for (List<Block> lb : srcStripes) {
-    //    for (Block blk : lb) {
-    //      sb.append(blk.toString());
-    //      sb.append(" ");
-    //    }
-    //    sb.append(";");
-    //  }
-    //  throw new IOException("srcStripes has " + srcStripes.size() + 
-    //      " stripes and " + totalBlocks + " blocks : " + sb + 
-    //      " Doesn't match " + srcFile);
-    //}
-    //return srcStripes;
+    List<List<Block>> srcStripes = new ArrayList<List<Block>>();
+    List<FileStatus> lfs =
+        RaidNode.listDirectoryRaidFileStatus(jobConf, dfs, srcFile);
+    if (lfs == null) {
+      return null;
+    }
+    ArrayList<Block> currentBlocks = new ArrayList<Block>();
+    long totalBlocks = 0L;
+    int index = 0;
+    for (FileStatus stat : lfs) {
+      LocatedBlocks lbs = dfs.getLocatedBlocks(stat.getPath(),
+          0L, stat.getLen());
+      for (LocatedBlock lb : lbs.getLocatedBlocks()) {
+        currentBlocks.add(lb.getBlock());
+        if (currentBlocks.size() == codec.stripeLength) {
+          srcStripes.add(currentBlocks);
+          totalBlocks += currentBlocks.size();
+          currentBlocks = new ArrayList<Block>();
+        }
+      }
+      index++;
+      if (index % 10 == 0) {
+        Thread.sleep(1000);
+      }
+      reporter.progress();
+    }
+    if (currentBlocks.size() > 0) {
+      srcStripes.add(currentBlocks);
+      totalBlocks += currentBlocks.size();
+    }
+    if (srcStripes.size() != numStripes || 
+        totalBlocks != ((DirectoryStripeReader)sReader).numBlocks) {
+      StringBuilder sb = new StringBuilder();
+      for (List<Block> lb : srcStripes) {
+        for (Block blk : lb) {
+          sb.append(blk.toString());
+          sb.append(" ");
+        }
+        sb.append(";");
+      }
+      throw new IOException("srcStripes has " + srcStripes.size() + 
+          " stripes and " + totalBlocks + " blocks : " + sb + 
+          " Doesn't match " + srcFile);
+    }
+    return srcStripes;
   }
-  /* Added by RH Oct 27th, 2014 ends */
-  
-  /* Commented by RH Oct 27th, 2014 begins */
-  //private List<List<Block>> getSrcStripes(Configuration jobConf, 
-  //    DistributedFileSystem dfs, Path srcFile, Codec codec, long numStripes,
-  //    StripeReader sReader, Progressable reporter)
-  //        throws IOException, InterruptedException {
-  //  List<List<Block>> srcStripes = new ArrayList<List<Block>>();
-  //  List<FileStatus> lfs =
-  //      RaidNode.listDirectoryRaidFileStatus(jobConf, dfs, srcFile);
-  //  if (lfs == null) {
-  //    return null;
-  //  }
-  //  ArrayList<Block> currentBlocks = new ArrayList<Block>();
-  //  long totalBlocks = 0L;
-  //  int index = 0;
-  //  for (FileStatus stat : lfs) {
-  //    LocatedBlocks lbs = dfs.getLocatedBlocks(stat.getPath(),
-  //        0L, stat.getLen());
-  //    for (LocatedBlock lb : lbs.getLocatedBlocks()) {
-  //      currentBlocks.add(lb.getBlock());
-  //      if (currentBlocks.size() == codec.stripeLength) {
-  //        srcStripes.add(currentBlocks);
-  //        totalBlocks += currentBlocks.size();
-  //        currentBlocks = new ArrayList<Block>();
-  //      }
-  //    }
-  //    index++;
-  //    if (index % 10 == 0) {
-  //      Thread.sleep(1000);
-  //    }
-  //    reporter.progress();
-  //  }
-  //  if (currentBlocks.size() > 0) {
-  //    srcStripes.add(currentBlocks);
-  //    totalBlocks += currentBlocks.size();
-  //  }
-  //  if (srcStripes.size() != numStripes || 
-  //      totalBlocks != ((DirectoryStripeReader)sReader).numBlocks) {
-  //    StringBuilder sb = new StringBuilder();
-  //    for (List<Block> lb : srcStripes) {
-  //      for (Block blk : lb) {
-  //        sb.append(blk.toString());
-  //        sb.append(" ");
-  //      }
-  //      sb.append(";");
-  //    }
-  //    throw new IOException("srcStripes has " + srcStripes.size() + 
-  //        " stripes and " + totalBlocks + " blocks : " + sb + 
-  //        " Doesn't match " + srcFile);
-  //  }
-  //  return srcStripes;
-  //}
-  /* Commented by RH Oct 27th, 2014 ends */
   
   /*
    * Create the temp parity file and rename to the partial parity directory
@@ -415,9 +359,6 @@ public class Encoder {
         stats = parityFs.listStatus(tmpPartialParityDir);
         len = stats != null ? stats.length : 0;
         if (len == expectedNum) {
-          /* Added by RH Oct 31th, begins */
-          //LOG.info ("allPartialEncodingAccomplished");
-          /* Added by RH Oct 31th, ends */
           return true;
         }
         if (i + 1 == this.retryCountPartialEncoding) {
