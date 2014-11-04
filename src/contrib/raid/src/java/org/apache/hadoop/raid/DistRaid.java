@@ -231,7 +231,7 @@ public class DistRaid {
       /* TODO: change back!! 
        * hardcode for comparison begins */
       //final int targetcount = srcCount / numSplits;
-      final int targetcount = srcCount / 10;
+      final int targetcount = srcCount / 12;
       /* hardcode for comparison ends */ 
       String srclist = job.get(OP_LIST_LABEL, "");
       if (srcCount < 0 || "".equals(srclist)) {
