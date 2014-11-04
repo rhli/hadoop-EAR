@@ -348,8 +348,10 @@ public class DistRaid {
       for(Map.Entry<String,Integer[]> entry : rackIdxRange.entrySet()) {
         String[] hosts = new String[1];
         hosts[0] = rackHostMap.get(entry.getKey());
-        long startPos = entry.getValue()[0]==0? 0:stripeOffset.get(entry.getValue()[0]);
+        long startPos = entry.getValue()[0]==0? 0:stripeOffset.get(entry.getValue()[0]-1);
         long endPos = stripeOffset.get(entry.getValue()[1]);
+        LOG.info("hosts: " + hosts[0] + "start/end: " + entry.getValue()[0] + "/" +
+            entry.getValue()[1]);
         splits.add(new FileSplit(srcs, startPos, endPos-startPos, hosts));
       }
       /* Added by RH Oct 30th, 2014 ends */

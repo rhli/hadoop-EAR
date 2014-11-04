@@ -1517,7 +1517,10 @@ public class JobInProgress extends JobInProgressTraits {
     /* Added by RH Oct 8th, 2014 begins 
      * We forbid assigning a remote task in an encoding job */
     if (getJobConf().getEncoding()) {
-        return null;
+      LOG.info("Do not assign remote encoding map task");
+      return null;
+    } else {
+      LOG.info("Things went wrong!!!");
     }
     /* Added by RH Oct 8th, 2014 ends */
     if (!tasksInited.get()) {
