@@ -348,10 +348,10 @@ public class DistRaid {
       List<String> sortedKeyList = new ArrayList<String>();
       sortedKeyList.addAll(rackIdxRange.keySet());
       Collections.sort(sortedKeyList);
-      for(String key : sortedKeyList) {
+      for(String rackKey : sortedKeyList) {
         String[] hosts = new String[1];
-        Integer[] idxRange = rackIdxRange.get(key);
-        hosts[0] = rackHostMap.get(key);
+        Integer[] idxRange = rackIdxRange.get(rackKey);
+        hosts[0] = rackHostMap.get(rackKey);
         long startPos = idxRange[0]==0? 0:stripeOffset.get(idxRange[0]-1);
         long endPos = stripeOffset.get(idxRange[1]);
         LOG.info("hosts: " + hosts[0] + "start/end: " + idxRange[0] + "/" +
