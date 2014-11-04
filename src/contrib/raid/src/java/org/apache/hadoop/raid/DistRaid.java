@@ -345,13 +345,17 @@ public class DistRaid {
         rackIdxRange.get(currentRack)[1]=index-1;
         in.close();
       }
-      for(Map.Entry<String,Integer[]> entry : rackIdxRange.entrySet()) {
+      List<String> sortedKeyList = new ArrayList<String>();
+      sortedKeyList.addAll(rackIdxRange.keySet());
+      Collections.sort(sortedKeyList);
+      for(String key : sortedKeyList) {
         String[] hosts = new String[1];
-        hosts[0] = rackHostMap.get(entry.getKey());
-        long startPos = entry.getValue()[0]==0? 0:stripeOffset.get(entry.getValue()[0]-1);
-        long endPos = stripeOffset.get(entry.getValue()[1]);
-        LOG.info("hosts: " + hosts[0] + "start/end: " + entry.getValue()[0] + "/" +
-            entry.getValue()[1]);
+        Integer[] idxRange = rackIdxRange.get(key);
+        hosts[0] = rackHostMap.get(key);
+        long startPos = idxRange[0]==0? 0:stripeOffset.get(idxRange[0]-1);
+        long endPos = stripeOffset.get(idxRange[1]);
+        LOG.info("hosts: " + hosts[0] + "start/end: " + idxRange[0] + "/" +
+            idxRange[1]);
         splits.add(new FileSplit(srcs, startPos, endPos-startPos, hosts));
       }
       /* Added by RH Oct 30th, 2014 ends */
