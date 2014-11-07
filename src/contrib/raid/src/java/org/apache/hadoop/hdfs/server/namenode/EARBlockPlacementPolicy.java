@@ -512,7 +512,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
     FSNamesystem.LOG.info(
       "F4: The file: " + fileName + " has a type: " + info.type);
     // If replica>1 then just default back to RAID
-    if ((numOfReplicas > 1) || (info.type.equals(NOT_RAID))) {
+    if ((numOfReplicas > 1) || (info.type==FileType.NOT_RAID)) {
       /* Added by RH, Oct 20th, 2014 begins */
       return chooseTargetEAR(
           fileName,numOfReplicas,writer,chosenNodes,exclNodes,blocksize);
