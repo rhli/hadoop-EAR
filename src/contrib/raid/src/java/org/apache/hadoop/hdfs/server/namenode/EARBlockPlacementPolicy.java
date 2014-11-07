@@ -496,17 +496,6 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       long blocksize) {
     FSNamesystem.LOG.info("F4: F4 policy invoked for file: " + fileName +
       ", with replica count: " + numOfReplicas);
-    // If replica>1 then just default back to RAID
-    if (numOfReplicas > 1) {
-      /* Added by RH, Oct 20th, 2014 begins */
-      return chooseTargetEAR(
-          fileName,numOfReplicas,writer,chosenNodes,exclNodes,blocksize);
-      /* Added by RH, Oct 20th, 2014 ends */
-      /* Commented by RH, Oct 20th, 2014 begins*/
-      //return super.chooseTarget(
-      //  numOfReplicas, writer, chosenNodes, exclNodes, blocksize);
-      /* Commented by RH, Oct 20th, 2014 ends*/
-    }
     FileInfo info;
     LocatedBlocks blocks;
     int blockIndex = -1;
@@ -522,6 +511,17 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
     }
     FSNamesystem.LOG.info(
       "F4: The file: " + fileName + " has a type: " + info.type);
+    // If replica>1 then just default back to RAID
+    if ((numOfReplicas > 1) || (info.type==NOT_RAID)) {
+      /* Added by RH, Oct 20th, 2014 begins */
+      return chooseTargetEAR(
+          fileName,numOfReplicas,writer,chosenNodes,exclNodes,blocksize);
+      /* Added by RH, Oct 20th, 2014 ends */
+      /* Commented by RH, Oct 20th, 2014 begins*/
+      //return super.chooseTarget(
+      //  numOfReplicas, writer, chosenNodes, exclNodes, blocksize);
+      /* Commented by RH, Oct 20th, 2014 ends*/
+    }
     HashMap<String, HashSet<Node>> rackToHosts =
       new HashMap<String, HashSet<Node>>();
     try {
