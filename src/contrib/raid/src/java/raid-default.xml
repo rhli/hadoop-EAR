@@ -10,8 +10,8 @@
 {
 "id" : "rs",
 "parity_dir" : "/raidrs",
-"stripe_length" : 10,
-"parity_length" : 4,
+"stripe_length" : 4,
+"parity_length" : 2,
 "priority" : 200,
 "erasure_code" : "org.apache.hadoop.raid.ReedSolomonCode",
 "description" : "ReedSolomonCode code",
@@ -20,7 +20,7 @@
 {
 "id" : "xor",
 "parity_dir" : "/raid",
-"stripe_length" : 10,
+"stripe_length" : 4,
 "parity_length" : 1,
 "priority" : 100,
 "erasure_code" : "org.apache.hadoop.raid.XORCode",
@@ -30,8 +30,8 @@
 {
 "id" : "dir-rs",
 "parity_dir" : "/dir-raidrs",
-"stripe_length" : 10,
-"parity_length" : 4,
+"stripe_length" : 4,
+"parity_length" : 2,
 "priority" : 400,
 "erasure_code" : "org.apache.hadoop.raid.ReedSolomonCode",
 "description" : "Directory ReedSolomonCode code",
@@ -41,7 +41,7 @@
 {
 "id" : "dir-xor",
 "parity_dir" : "/dir-raid",
-"stripe_length" : 10,
+"stripe_length" : 4,
 "parity_length" : 1,
 "priority" : 300,
 "erasure_code" : "org.apache.hadoop.raid.XORCode",
@@ -52,8 +52,8 @@
 {
 "id" : "jerasure",
 "parity_dir" : "/jerasure",
-"stripe_length" : 10,
-"parity_length" : 4,
+"stripe_length" : 4,
+"parity_length" : 2,
 "priority" : 100,
 "erasure_code" : "org.apache.hadoop.raid.JerasureCode",
 "description" : "Jerasure code",

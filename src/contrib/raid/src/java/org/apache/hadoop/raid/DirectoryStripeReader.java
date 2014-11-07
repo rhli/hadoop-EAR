@@ -190,11 +190,11 @@ public class DirectoryStripeReader extends StripeReader {
    * Added by RH Oct 24th, begins 
    */
   private String removePrefix(String str){
-    return str.substring(str.indexOf("/user/ncsgroup/raidTest"),str.length());
+    return str.substring(str.indexOf("/user/rhli/raidTest"),str.length());
   }
 
   private String removePrefix2(String str){
-    return str.substring(str.indexOf("/user/ncsgroup/raidTest")+15,str.length());
+    return str.substring(str.indexOf("/user/rhli/raidTest")+11,str.length());
   }
   /* Added by RH Oct 24th, ends */
   
