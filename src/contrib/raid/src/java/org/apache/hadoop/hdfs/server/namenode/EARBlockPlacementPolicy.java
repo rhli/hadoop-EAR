@@ -443,12 +443,22 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
           candidateRack.remove(blackListedRack);
         }
       }
-      String sRack = candidateRack.
-        get(_random.nextInt(candidateRack.size())%candidateRack.size());
-      List<Node> nodesInSRack = clusterMap.getDatanodesInRack(sRack);
-      for (int i=1;i<numOfReplicas;i++) {
-        retVal.add((DatanodeDescriptor)nodesInSRack.
-            get(_random.nextInt(nodesInSRack.size())%nodesInSRack.size()));
+      String sRack;
+      if (candidateRack.size()!=0) {
+        sRack = candidateRack.
+          get(_random.nextInt(candidateRack.size())%candidateRack.size());
+        List<Node> nodesInSRack = clusterMap.getDatanodesInRack(sRack);
+        for (int i=1;i<numOfReplicas;i++) {
+          retVal.add((DatanodeDescriptor)nodesInSRack.
+              get(_random.nextInt(nodesInSRack.size())%nodesInSRack.size()));
+        }
+      } else {
+        sRack = pRack;
+        List<Node> nodesInSRack = clusterMap.getDatanodesInRack(sRack);
+        for (int i=1;i<numOfReplicas;i++) {
+          retVal.add((DatanodeDescriptor)nodesInSRack.
+              get(_random.nextInt(nodesInSRack.size())%nodesInSRack.size()));
+        }
       }
 
       LOG.info("EAR secondary rack: " + sRack);
