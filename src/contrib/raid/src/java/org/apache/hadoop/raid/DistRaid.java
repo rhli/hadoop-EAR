@@ -327,7 +327,8 @@ public class DistRaid {
         for (in = new SequenceFile.Reader(fs, srcs, job); in.next(key, value);) {
           currOffset = in.getPosition();
           String[] keySplit = key.toString().split(" ",7);
-          LOG.info("prefered rack of stripe" + index + " is " + keySplit[5]);
+          LOG.info("prefered rack of stripe" + index + " is " + keySplit[5] + " "
+              + currOffset);
           if (currentRack == null || !currentRack.equals(keySplit[5])) {
             if (currentRack!=null) {
               rackIdxRange.get(currentRack)[1]=index-1;
@@ -354,7 +355,7 @@ public class DistRaid {
         hosts[0] = rackHostMap.get(rackKey);
         long startPos = idxRange[0]==0? 0:stripeOffset.get(idxRange[0]-1);
         long endPos = stripeOffset.get(idxRange[1]);
-        LOG.info("hosts: " + hosts[0] + "start/end: " + idxRange[0] + "/" +
+        LOG.info("hosts: " + hosts[0] + " start/end: " + idxRange[0] + "/" +
             idxRange[1] + " " + startPos + "/" + Long.toString(endPos-startPos));
         splits.add(new FileSplit(srcs, startPos, endPos-startPos, hosts));
       }
