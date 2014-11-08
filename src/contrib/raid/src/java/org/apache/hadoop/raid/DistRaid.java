@@ -317,73 +317,75 @@ public class DistRaid {
       int count = 0; // count src
 
       /* Added by RH Oct 30th, 2014 begins */
-      //Map<String,Integer[]> rackIdxRange=new HashMap<String,Integer[]>();
-      //Map<String,String> rackHostMap=new HashMap<String,String>();
-      //List<Integer> stripeOffset = new ArrayList<Integer>();
-      //long currOffset = 0;
-      //String currentRack = null;
-      //int index = 0;
-      //try {
-      //  for (in = new SequenceFile.Reader(fs, srcs, job); in.next(key, value);) {
-      //    currOffset = in.getPosition();
-      //    String[] keySplit = key.toString().split(" ",7);
-      //    LOG.info("prefered rack of stripe" + index + " is " + keySplit[5] + " "
-      //        + currOffset);
-      //    if (currentRack == null || !currentRack.equals(keySplit[5])) {
-      //      if (currentRack!=null) {
-      //        rackIdxRange.get(currentRack)[1]=index-1;
-      //      }
-      //      currentRack = keySplit[5];
-      //      rackIdxRange.put(currentRack,new Integer[2]);
-      //      rackIdxRange.get(currentRack)[0]=index;
-      //      rackHostMap.put(keySplit[5],keySplit[6]);
-      //    }
-      //    stripeOffset.add((int)currOffset);
-      //    index++;
-      //  }
-      //} finally {
-      //  prev = currOffset;
-      //  rackIdxRange.get(currentRack)[1]=index-1;
-      //  in.close();
-      //}
-      //List<String> sortedKeyList = new ArrayList<String>();
-      //sortedKeyList.addAll(rackIdxRange.keySet());
-      //Collections.sort(sortedKeyList);
-      //for(String rackKey : sortedKeyList) {
-      //  String[] hosts = new String[1];
-      //  Integer[] idxRange = rackIdxRange.get(rackKey);
-      //  hosts[0] = rackHostMap.get(rackKey);
-      //  long startPos = idxRange[0]==0? 0:stripeOffset.get(idxRange[0]-1);
-      //  long endPos = stripeOffset.get(idxRange[1]);
-      //  LOG.info("hosts: " + hosts[0] + " start/end: " + idxRange[0] + "/" +
-      //      idxRange[1] + " " + startPos + "/" + Long.toString(endPos-startPos));
-      //  splits.add(new FileSplit(srcs, startPos, endPos-startPos, hosts));
-      //}
-      /* Added by RH Oct 30th, 2014 ends */
-
+      Map<String,Integer[]> rackIdxRange=new HashMap<String,Integer[]>();
+      Map<String,String> rackHostMap=new HashMap<String,String>();
+      List<Integer> stripeOffset = new ArrayList<Integer>();
+      long currOffset = 0;
+      String currentRack = null;
+      int index = 0;
       try {
         for (in = new SequenceFile.Reader(fs, srcs, job); in.next(key, value);) {
-          long curr = in.getPosition();
-          long delta = curr - prev;
-          if (++count > targetcount) {
-            count = 0;
-            //splits.add(new FileSplit(srcs, prev, delta, (String[]) null));
-            /* added by RH on Oct 7th, begins 
-             * TODO: currently, we suppose one stripe per map task, but we need to 
-             * generalize our split method */
-            String[] keySplit = key.toString().split(" ",7);
-            String[] hosts = new String[1];
-            hosts[0] = keySplit[6];
-            LOG.info("key value is " + key.toString());
-            LOG.info("prefered host of map task is " + hosts[0] + " " + prev + "/" + delta);
-            splits.add(new FileSplit(srcs, prev, delta, hosts));
-            /* added by RH on Oct 7th, ends */
-            prev = curr;
+          currOffset = in.getPosition();
+          String[] keySplit = key.toString().split(" ",7);
+          LOG.info("prefered rack of stripe" + index + " is " + keySplit[5] + " "
+              + currOffset);
+          if (currentRack == null || !currentRack.equals(keySplit[5])) {
+            if (currentRack!=null) {
+              rackIdxRange.get(currentRack)[1]=index-1;
+            }
+            currentRack = keySplit[5];
+            rackIdxRange.put(currentRack,new Integer[2]);
+            rackIdxRange.get(currentRack)[0]=index;
+            rackHostMap.put(keySplit[5],keySplit[6]);
           }
+          stripeOffset.add((int)currOffset);
+          index++;
         }
       } finally {
+        prev = currOffset;
+        rackIdxRange.get(currentRack)[1]=index-1;
         in.close();
       }
+      List<String> sortedKeyList = new ArrayList<String>();
+      sortedKeyList.addAll(rackIdxRange.keySet());
+      Collections.sort(sortedKeyList);
+      for(String rackKey : sortedKeyList) {
+        String[] hosts = new String[1];
+        Integer[] idxRange = rackIdxRange.get(rackKey);
+        hosts[0] = rackHostMap.get(rackKey);
+        long startPos = idxRange[0]==0? 0:stripeOffset.get(idxRange[0]-1);
+        long endPos = stripeOffset.get(idxRange[1]);
+        LOG.info("hosts: " + hosts[0] + " start/end: " + idxRange[0] + "/" +
+            idxRange[1] + " " + startPos + "/" + Long.toString(endPos-startPos));
+        splits.add(new FileSplit(srcs, startPos, endPos-startPos, hosts));
+      }
+      /* Added by RH Oct 30th, 2014 ends */
+
+      /* Commented by RH begins */
+      //try {
+      //  for (in = new SequenceFile.Reader(fs, srcs, job); in.next(key, value);) {
+      //    long curr = in.getPosition();
+      //    long delta = curr - prev;
+      //    if (++count > targetcount) {
+      //      count = 0;
+      //      //splits.add(new FileSplit(srcs, prev, delta, (String[]) null));
+      //      /* added by RH on Oct 7th, begins 
+      //       * TODO: currently, we suppose one stripe per map task, but we need to 
+      //       * generalize our split method */
+      //      String[] keySplit = key.toString().split(" ",7);
+      //      String[] hosts = new String[1];
+      //      hosts[0] = keySplit[6];
+      //      LOG.info("key value is " + key.toString());
+      //      LOG.info("prefered host of map task is " + hosts[0] + " " + prev + "/" + delta);
+      //      splits.add(new FileSplit(srcs, prev, delta, hosts));
+      //      /* added by RH on Oct 7th, ends */
+      //      prev = curr;
+      //    }
+      //  }
+      //} finally {
+      //  in.close();
+      //}
+      /* Commented by RH ends */
       long remaining = fs.getFileStatus(srcs).getLen() - prev;
       if (remaining != 0) {
         splits.add(new FileSplit(srcs, prev, remaining, (String[]) null));
