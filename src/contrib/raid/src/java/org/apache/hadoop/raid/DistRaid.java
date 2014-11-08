@@ -355,7 +355,7 @@ public class DistRaid {
         long startPos = idxRange[0]==0? 0:stripeOffset.get(idxRange[0]-1);
         long endPos = stripeOffset.get(idxRange[1]);
         LOG.info("hosts: " + hosts[0] + "start/end: " + idxRange[0] + "/" +
-            idxRange[1]);
+            idxRange[1] + " " + startPos + "/" + Long.toString(endPos-startPos));
         splits.add(new FileSplit(srcs, startPos, endPos-startPos, hosts));
       }
       /* Added by RH Oct 30th, 2014 ends */
