@@ -351,6 +351,10 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
         stripeLoadMap.put(pRack,1);
         rackIndexMap.put(pRack,currentIdx++);
         rackToChosenRackMap.put(pRack,new HashSet<String>());
+      } else if(stripeLoadMap.get(pRack)==0) {
+        stripeLoadMap.put(pRack,1);
+        rackIndexMap.put(pRack,currentIdx++);
+        stripeLoadMap.put(pRack,stripeLoadMap.get(pRack)+1);
       } else {
         stripeLoadMap.put(pRack,stripeLoadMap.get(pRack)+1);
       }
@@ -366,7 +370,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
         // reset the maps and lists
         rackToBlkListMap.get(pRack).clear();
         rackToChosenRackMap.get(pRack).clear();
-        rackIndexMap.put(pRack,currentIdx++);
+        //rackIndexMap.put(pRack,currentIdx++);
         stripeLoadMap.put(pRack,0);
       } else {
         rackToChosenRackMap.get(pRack).add(sRack);
