@@ -459,11 +459,11 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
           retVal.add((DatanodeDescriptor)nodesInSRack.
               get(_random.nextInt(nodesInSRack.size())%nodesInSRack.size()));
         }
-        _dirRaidTailMap.get(dirLoc).addBlock(blkInfo,pRack,sRack);
       }
 
       // TODO: de-hardcode, judge according to the policy infos
       // Currently, we only deal with file with fixed prefix.
+      _dirRaidTailMap.get(dirLoc).addBlock(blkInfo,pRack,sRack);
       return finalizeTargets(retVal,chosenNodes,writer,localNode);
     } catch (IOException e) {
       FSNamesystem.LOG.error(
