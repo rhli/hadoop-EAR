@@ -443,6 +443,11 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
           candidateRack.remove(blackListedRack);
         }
       }
+      String blkInfo = fileName + ":" + blocks.getLocatedBlocks().size();
+      LOG.info("EAR: dirLoc: " + dirLoc);
+      if (!_dirRaidTailMap.containsKey(dirLoc)) {
+        _dirRaidTailMap.put(dirLoc,new RaidTail(dirLoc,stripeLen));
+      }
       String sRack=null;
       List<Node> nodesInSRack;
       if (numOfReplicas>1) {
@@ -450,20 +455,15 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
           get(_random.nextInt(candidateRack.size())%candidateRack.size());
         nodesInSRack = clusterMap.getDatanodesInRack(sRack);
         LOG.info("EAR secondary rack: " + sRack);
-      }
-      for (int i=1;i<numOfReplicas;i++) {
-        retVal.add((DatanodeDescriptor)nodesInSRack.
-            get(_random.nextInt(nodesInSRack.size())%nodesInSRack.size()));
+        for (int i=1;i<numOfReplicas;i++) {
+          retVal.add((DatanodeDescriptor)nodesInSRack.
+              get(_random.nextInt(nodesInSRack.size())%nodesInSRack.size()));
+        }
+        _dirRaidTailMap.get(dirLoc).addBlock(blkInfo,pRack,sRack);
       }
 
       // TODO: de-hardcode, judge according to the policy infos
       // Currently, we only deal with file with fixed prefix.
-      String blkInfo = fileName + ":" + blocks.getLocatedBlocks().size();
-      LOG.info("EAR: dirLoc: " + dirLoc);
-      if (!_dirRaidTailMap.containsKey(dirLoc)) {
-        _dirRaidTailMap.put(dirLoc,new RaidTail(dirLoc,stripeLen));
-      }
-      _dirRaidTailMap.get(dirLoc).addBlock(blkInfo,pRack,sRack);
       return finalizeTargets(retVal,chosenNodes,writer,localNode);
     } catch (IOException e) {
       FSNamesystem.LOG.error(
