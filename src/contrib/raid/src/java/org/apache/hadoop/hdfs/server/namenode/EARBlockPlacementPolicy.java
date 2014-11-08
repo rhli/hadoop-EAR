@@ -354,7 +354,6 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       } else if(stripeLoadMap.get(pRack)==0) {
         stripeLoadMap.put(pRack,1);
         rackIndexMap.put(pRack,currentIdx++);
-        stripeLoadMap.put(pRack,stripeLoadMap.get(pRack)+1);
       } else {
         stripeLoadMap.put(pRack,stripeLoadMap.get(pRack)+1);
       }
