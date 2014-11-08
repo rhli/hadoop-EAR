@@ -1435,7 +1435,6 @@ public abstract class RaidNode implements RaidProtocol, RaidNodeStatusMBean {
     }
     for (BlockLocation bl : bls){
       if (bl!=null){
-        LOG.info("getPreHost" + " " + bl.getTopologyPaths()[0] + " " + bl.getTopologyPaths()[1]);
         Set<String> racks = new HashSet<String>();
         for (String host : bl.getTopologyPaths()){
           if (!racks.contains(getRack(host))){

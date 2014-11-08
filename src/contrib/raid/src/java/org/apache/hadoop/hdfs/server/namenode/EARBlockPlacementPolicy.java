@@ -443,15 +443,19 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
           candidateRack.remove(blackListedRack);
         }
       }
-      String sRack = candidateRack.
-        get(_random.nextInt(candidateRack.size())%candidateRack.size());
-      List<Node> nodesInSRack = clusterMap.getDatanodesInRack(sRack);
+      String sRack=null;
+      List<Node> nodesInSRack;
+      if (numOfReplicas>1) {
+        sRack = candidateRack.
+          get(_random.nextInt(candidateRack.size())%candidateRack.size());
+        nodesInSRack = clusterMap.getDatanodesInRack(sRack);
+        LOG.info("EAR secondary rack: " + sRack);
+      }
       for (int i=1;i<numOfReplicas;i++) {
         retVal.add((DatanodeDescriptor)nodesInSRack.
             get(_random.nextInt(nodesInSRack.size())%nodesInSRack.size()));
       }
 
-      LOG.info("EAR secondary rack: " + sRack);
       // TODO: de-hardcode, judge according to the policy infos
       // Currently, we only deal with file with fixed prefix.
       String blkInfo = fileName + ":" + blocks.getLocatedBlocks().size();
@@ -486,17 +490,6 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       long blocksize) {
     FSNamesystem.LOG.info("F4: F4 policy invoked for file: " + fileName +
       ", with replica count: " + numOfReplicas);
-    // If replica>1 then just default back to RAID
-    if (numOfReplicas > 1) {
-      /* Added by RH, Oct 20th, 2014 begins */
-      return chooseTargetEAR(
-          fileName,numOfReplicas,writer,chosenNodes,exclNodes,blocksize);
-      /* Added by RH, Oct 20th, 2014 ends */
-      /* Commented by RH, Oct 20th, 2014 begins*/
-      //return super.chooseTarget(
-      //  numOfReplicas, writer, chosenNodes, exclNodes, blocksize);
-      /* Commented by RH, Oct 20th, 2014 ends*/
-    }
     FileInfo info;
     LocatedBlocks blocks;
     int blockIndex = -1;
@@ -509,6 +502,17 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
         "F4: Error happened when calling getFileInfo/getBlockLocations");
       return super.chooseTarget(
         fileName, numOfReplicas, writer, chosenNodes, exclNodes, blocksize);
+    }
+    // If replica>1 then just default back to RAID
+    if (numOfReplicas > 1||info.type==FileType.NOT_RAID) {
+      /* Added by RH, Oct 20th, 2014 begins */
+      return chooseTargetEAR(
+          fileName,numOfReplicas,writer,chosenNodes,exclNodes,blocksize);
+      /* Added by RH, Oct 20th, 2014 ends */
+      /* Commented by RH, Oct 20th, 2014 begins*/
+      //return super.chooseTarget(
+      //  numOfReplicas, writer, chosenNodes, exclNodes, blocksize);
+      /* Commented by RH, Oct 20th, 2014 ends*/
     }
     FSNamesystem.LOG.info(
       "F4: The file: " + fileName + " has a type: " + info.type);
