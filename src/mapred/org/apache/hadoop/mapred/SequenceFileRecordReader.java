@@ -96,6 +96,12 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
     /* Added by RH ends */
     if (!more) return false;
     long pos = in.getPosition();
+    /* Added by RH begins */
+    if (pos>=this.end) {
+      more = false;
+      return more;
+    }
+    /* Added by RH ends */
     boolean remaining = false;
     if (tolerateCorruptions) {
       try {
