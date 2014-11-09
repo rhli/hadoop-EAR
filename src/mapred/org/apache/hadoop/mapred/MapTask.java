@@ -347,7 +347,7 @@ class MapTask extends Task {
         new SkippingRecordReader<INKEY,INVALUE>(rawIn, umbilical, reporter) :
         new TrackedRecordReader<INKEY,INVALUE>(rawIn, reporter);
     /* Added by RH for debug begins */
-    LOG.info(split.getLength() + " " + new String(bytes,"UTF-8"));
+    LOG.info(split.getLength() + " " + new String(split.getBytes(),"UTF-8"));
     /* Added by RH for debug ends */
     job.setBoolean("mapred.skip.on", isSkipping());
 
