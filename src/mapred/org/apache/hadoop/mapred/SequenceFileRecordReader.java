@@ -92,7 +92,7 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
     
   public synchronized boolean next(K key, V value) throws IOException {
     /* Added by RH begins */
-    LOG.info("seqRecReader: next(key,val) executed");
+    LOG.info("seqRecReader: next(key,val) begins " + in.getPosition());
     /* Added by RH ends */
     if (!more) return false;
     long pos = in.getPosition();
@@ -123,14 +123,14 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
     } else {
       more = remaining;
     }
+    /* Added by RH begins */
+    LOG.info("seqRecReader: next(key,val) begins " + in.getPosition());
+    /* Added by RH ends */
     return more;
   }
   
   protected synchronized boolean next(K key)
     throws IOException {
-    /* Added by RH begins */
-    LOG.info("seqRecReader: next(key) executed");
-    /* Added by RH ends */
     if (!more) return false;
     long pos = in.getPosition();
     boolean remaining = false;
