@@ -353,8 +353,9 @@ public class DistRaid {
         String[] hosts = new String[1];
         Integer[] idxRange = rackIdxRange.get(rackKey);
         hosts[0] = rackHostMap.get(rackKey);
-        long startPos = idxRange[0]==0? 0:stripeOffset.get(idxRange[0]-1);
-        long endPos = stripeOffset.get(idxRange[1])==prev?stripeOffset.get(idxRange[1]):(stripeOffset.get(idxRange[1])-1);
+        long startPos = idxRange[0]==0? 0:stripeOffset.get(idxRange[0]-1)-1;
+        long endPos = stripeOffset.get(idxRange[1])==prev?stripeOffset.get(idxRange[1]):
+          (stripeOffset.get(idxRange[1])-1);
         LOG.info("hosts: " + hosts[0] + " start/end: " + idxRange[0] + "/" +
             idxRange[1] + " " + startPos + "/" + Long.toString(endPos-startPos));
         splits.add(new FileSplit(srcs, startPos, endPos-startPos, hosts));
