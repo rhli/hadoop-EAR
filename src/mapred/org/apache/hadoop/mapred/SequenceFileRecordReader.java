@@ -124,7 +124,7 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
       more = remaining;
     }
     /* Added by RH begins */
-    LOG.info("seqRecReader: next(key,val) begins " + in.getPosition());
+    LOG.info("seqRecReader: next(key,val) ends " + in.getPosition());
     /* Added by RH ends */
     return more;
   }
