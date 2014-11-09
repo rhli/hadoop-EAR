@@ -27,6 +27,10 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.util.ReflectionUtils;
+/* Added by RH begins */
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+/* Added by RH ends */
 
 /** An {@link RecordReader} for {@link SequenceFile}s. */
 public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
