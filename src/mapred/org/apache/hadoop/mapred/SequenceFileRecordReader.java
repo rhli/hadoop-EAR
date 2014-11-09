@@ -64,8 +64,14 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
     //this.start = in.getPosition();
     /* Commented by RH ends */
     /* Added by RH begins */
+    /* TODO: de-hardcode.. */
     this.start = split.getStart();
-    seek(this.start);
+    if (split.getStart()==0) {
+      in.sync(this.start);
+      this.start = in.getPosition();
+    } else {
+      seek(this.start);
+    }
     LOG.info("seqRecReader start: " + this.start + " end: " + this.end);
     /* Added by RH ends */
     more = start < end;
