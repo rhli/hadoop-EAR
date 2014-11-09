@@ -94,7 +94,8 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
     /* Added by RH begins */
     LOG.info("seqRecReader: next(key,val) begins " + in.getPosition());
     /* Added by RH ends */
-    //if (!more) return false;
+    if (!more) return false;
+    LOG.info("seqRecReader: here");
     long pos = in.getPosition();
     /* Added by RH begins */
     if (pos>=this.end) {
