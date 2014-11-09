@@ -47,6 +47,9 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
     this.in = new SequenceFile.Reader(fs, path, conf);
     this.end = split.getStart() + split.getLength();
     this.conf = conf;
+    /* Added by RH begins */
+    LOG.info("seqRecReader start: " + split.getStart() + " end: " + this.end);
+    /* Added by RH ends */
     this.tolerateCorruptions = conf.getBoolean(
       SEQUENCE_FILE_TOLERATE_CORRUPTIONS_CONF, false);
 
