@@ -54,9 +54,6 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
     this.in = new SequenceFile.Reader(fs, path, conf);
     this.end = split.getStart() + split.getLength();
     this.conf = conf;
-    /* Added by RH begins */
-    LOG.info("seqRecReader start: " + split.getStart() + " end: " + this.end);
-    /* Added by RH ends */
     this.tolerateCorruptions = conf.getBoolean(
       SEQUENCE_FILE_TOLERATE_CORRUPTIONS_CONF, false);
 
@@ -64,6 +61,9 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
       in.sync(split.getStart());                  // sync to start
 
     this.start = in.getPosition();
+    /* Added by RH begins */
+    LOG.info("seqRecReader start: " + this.start + " end: " + this.end);
+    /* Added by RH ends */
     more = start < end;
   }
 
@@ -87,6 +87,9 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
   }
     
   public synchronized boolean next(K key, V value) throws IOException {
+    /* Added by RH begins */
+    LOG.info("seqRecReader: next(key,val) executed");
+    /* Added by RH ends */
     if (!more) return false;
     long pos = in.getPosition();
     boolean remaining = false;
@@ -121,6 +124,9 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
   
   protected synchronized boolean next(K key)
     throws IOException {
+    /* Added by RH begins */
+    LOG.info("seqRecReader: next(key) executed");
+    /* Added by RH ends */
     if (!more) return false;
     long pos = in.getPosition();
     boolean remaining = false;
