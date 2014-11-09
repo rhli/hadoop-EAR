@@ -57,11 +57,15 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
     this.tolerateCorruptions = conf.getBoolean(
       SEQUENCE_FILE_TOLERATE_CORRUPTIONS_CONF, false);
 
-    if (split.getStart() > in.getPosition())
-      in.sync(split.getStart());                  // sync to start
+    /* Commented by RH begins */
+    //if (split.getStart() > in.getPosition())
+    //  in.sync(split.getStart());                  // sync to start
 
-    this.start = in.getPosition();
+    //this.start = in.getPosition();
+    /* Commented by RH ends */
     /* Added by RH begins */
+    this.start = split.getStart();
+    seek(this.start);
     LOG.info("seqRecReader start: " + this.start + " end: " + this.end);
     /* Added by RH ends */
     more = start < end;
