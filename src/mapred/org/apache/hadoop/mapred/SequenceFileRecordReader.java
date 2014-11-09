@@ -36,6 +36,9 @@ import org.apache.commons.logging.LogFactory;
 public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
   public static final String SEQUENCE_FILE_TOLERATE_CORRUPTIONS_CONF =
     "mapred.seqfile.tolerate.corruptions";
+  /* Added by RH begins */
+  private static final Log LOG = LogFactory.getLog(SequenceFileRecordReader.class.getName());
+  /* Added by RH ends */
   
   private SequenceFile.Reader in;
   private long start;
