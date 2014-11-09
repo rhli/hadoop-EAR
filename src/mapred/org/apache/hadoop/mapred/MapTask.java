@@ -346,11 +346,7 @@ class MapTask extends Task {
     RecordReader<INKEY,INVALUE> in = isSkipping() ? 
         new SkippingRecordReader<INKEY,INVALUE>(rawIn, umbilical, reporter) :
         new TrackedRecordReader<INKEY,INVALUE>(rawIn, reporter);
-    /* Added by RH for debug begins */
-    LOG.info(split.getLength() + " " + new String(split.getBytes(),"UTF-8"));
-    /* Added by RH for debug ends */
     job.setBoolean("mapred.skip.on", isSkipping());
-
 
     int numReduceTasks = conf.getNumReduceTasks();
     LOG.info("numReduceTasks: " + numReduceTasks);
@@ -389,6 +385,11 @@ class MapTask extends Task {
       job.set("map.input.file", fileSplit.getPath().toString());
       job.setLong("map.input.start", fileSplit.getStart());
       job.setLong("map.input.length", fileSplit.getLength());
+      /* Added by RH for debug begins */
+      LOG.info("map.input.file" + fileSplit.getPath().toString());
+      LOG.info("map.input.start" + fileSplit.getStart());
+      LOG.info("map.input.length" + fileSplit.getLength());
+      /* Added by RH for debug ends */
     }
     LOG.info("split: " + inputSplit.toString());
   }
