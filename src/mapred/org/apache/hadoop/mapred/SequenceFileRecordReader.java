@@ -125,10 +125,21 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
         }
       }
     } else {
-      remaining = (in.next(key) != null);
-      if (remaining) {
-        getCurrentValue(value);
+      /* Added by RH begins */
+      while (in.getPosition() < end) {
+        remaining = (in.next(key) != null);
+        if (remaining) {
+          getCurrentValue(value);
+          break;
+        }
       }
+      /* Added by RH ends */
+      /* Commented by RH begins */
+      //remaining = (in.next(key) != null);
+      //if (remaining) {
+      //  getCurrentValue(value);
+      //}
+      /* Commented by RH ends */
     }
 
     if (pos >= end && in.syncSeen()) {
