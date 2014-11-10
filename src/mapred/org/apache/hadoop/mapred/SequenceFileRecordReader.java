@@ -126,25 +126,22 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
       }
     } else {
       /* Added by RH begins */
-      //while (in.getPosition() < end) {
-      //  remaining = (in.next(key) != null);
-      //  if (remaining) {
-      //    getCurrentValue(value);
-      //    break;
-      //  }
-      //}
-      remaining = (in.next(key) != null);
-      if (remaining) {
-        getCurrentValue(value);
-      } else {
-        return false;
+      while (in.getPosition() < end) {
+        remaining = (in.next(key) != null);
+        if (remaining) {
+          getCurrentValue(value);
+          break;
+        } else {
+          LOG.info("seqRecReader: next(key,val) in the middle " + in.getPosition());
+          in.sync(in.getPosition());
+        }
       }
       /* Added by RH ends */
       /* Commented by RH begins */
       //remaining = (in.next(key) != null);
       //if (remaining) {
       //  getCurrentValue(value);
-      //} 
+      //}
       /* Commented by RH ends */
     }
 
