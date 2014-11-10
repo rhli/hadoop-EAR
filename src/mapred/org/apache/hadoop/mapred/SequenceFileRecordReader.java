@@ -101,10 +101,10 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
     LOG.info("seqRecReader: next(key,val) begins " + in.getPosition());
     /* Added by RH ends */
     if (!more) return false;
-    LOG.info("seqRecReader: here");
+    //LOG.info("seqRecReader: here");
     long pos = in.getPosition();
     /* Added by RH begins */
-    if (pos>=this.end) {
+    if (pos >= this.end) {
       more = false;
       return more;
     }
@@ -126,26 +126,26 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
       }
     } else {
       /* Added by RH begins */
-      while (in.getPosition() < end) {
-        remaining = (in.next(key) != null);
-        if (remaining) {
-          getCurrentValue(value);
-          break;
-        }
-      }
+      //while (in.getPosition() < end) {
+      //  remaining = (in.next(key) != null);
+      //  if (remaining) {
+      //    getCurrentValue(value);
+      //    break;
+      //  }
+      //}
       /* Added by RH ends */
       /* Commented by RH begins */
-      //remaining = (in.next(key) != null);
-      //if (remaining) {
-      //  getCurrentValue(value);
-      //}
+      remaining = (in.next(key) != null);
+      if (remaining) {
+        getCurrentValue(value);
+      }
       /* Commented by RH ends */
     }
 
     if (pos >= end && in.syncSeen()) {
       more = false;
     } else {
-      more = remaining;
+      //more = remaining;
     }
     /* Added by RH begins */
     LOG.info("seqRecReader: next(key,val) ends " + in.getPosition());
