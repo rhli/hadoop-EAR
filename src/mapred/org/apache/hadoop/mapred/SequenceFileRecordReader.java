@@ -58,20 +58,20 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
       SEQUENCE_FILE_TOLERATE_CORRUPTIONS_CONF, false);
 
     /* Commented by RH begins */
-    //if (split.getStart() > in.getPosition())
-    //  in.sync(split.getStart());                  // sync to start
+    if (split.getStart() > in.getPosition())
+      in.sync(split.getStart());                  // sync to start
 
-    //this.start = in.getPosition();
+    this.start = in.getPosition();
     /* Commented by RH ends */
     /* Added by RH begins */
     /* TODO: de-hardcode.. */
-    this.start = split.getStart();
-    if (split.getStart()==0) {
-      in.sync(this.start);
-      this.start = in.getPosition();
-    } else {
-      seek(this.start);
-    }
+    //this.start = split.getStart();
+    //if (split.getStart()==0) {
+    //  in.sync(this.start);
+    //  this.start = in.getPosition();
+    //} else {
+    //  seek(this.start);
+    //}
     LOG.info("seqRecReader start: " + this.start + " end: " + this.end);
     /* Added by RH ends */
     more = start < end;
@@ -126,22 +126,22 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
       }
     } else {
       /* Added by RH begins */
-      while (in.getPosition() < end) {
-        remaining = (in.next(key) != null);
-        if (remaining) {
-          getCurrentValue(value);
-          break;
-        } else {
-          LOG.info("seqRecReader: next(key,val) in the middle " + in.getPosition());
-          in.sync(in.getPosition());
-        }
-      }
+      //while (in.getPosition() < end) {
+      //  remaining = (in.next(key) != null);
+      //  if (remaining) {
+      //    getCurrentValue(value);
+      //    break;
+      //  } else {
+      //    //LOG.info("seqRecReader: next(key,val) in the middle " + in.getPosition());
+      //    in.sync(in.getPosition());
+      //  }
+      //}
       /* Added by RH ends */
       /* Commented by RH begins */
-      //remaining = (in.next(key) != null);
-      //if (remaining) {
-      //  getCurrentValue(value);
-      //}
+      remaining = (in.next(key) != null);
+      if (remaining) {
+        getCurrentValue(value);
+      }
       /* Commented by RH ends */
     }
 
