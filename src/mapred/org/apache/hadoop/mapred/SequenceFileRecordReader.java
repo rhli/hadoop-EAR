@@ -58,21 +58,21 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
       SEQUENCE_FILE_TOLERATE_CORRUPTIONS_CONF, false);
 
     /* Commented by RH begins */
-    //if (split.getStart() > in.getPosition())
-    //  in.sync(split.getStart());                  // sync to start
+    if (split.getStart() > in.getPosition())
+      in.sync(split.getStart());                  // sync to start
 
-    //this.start = in.getPosition();
+    this.start = in.getPosition();
     /* Commented by RH ends */
     /* Added by RH begins */
     /* TODO: de-hardcode.. */
-    this.start = split.getStart();
-    if (split.getStart()==0) {
-      //in.sync(this.start);
-      this.start = in.getPosition();
-    } else {
-      seek(this.start);
-    }
-    LOG.info("seqRecReader start: " + this.start + " end: " + this.end);
+    //this.start = split.getStart();
+    //if (split.getStart()==0) {
+    //  //in.sync(this.start);
+    //  this.start = in.getPosition();
+    //} else {
+    //  seek(this.start);
+    //}
+    //LOG.info("seqRecReader start: " + this.start + " end: " + this.end);
     /* Added by RH ends */
     more = start < end;
   }
@@ -98,16 +98,16 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
     
   public synchronized boolean next(K key, V value) throws IOException {
     /* Added by RH begins */
-    LOG.info("seqRecReader: next(key,val) begins " + in.getPosition());
+    //LOG.info("seqRecReader: next(key,val) begins " + in.getPosition());
     /* Added by RH ends */
     if (!more) return false;
     //LOG.info("seqRecReader: here");
     long pos = in.getPosition();
     /* Added by RH begins */
-    if (pos >= this.end) {
-      more = false;
-      return more;
-    }
+    //if (pos >= this.end) {
+    //  more = false;
+    //  return more;
+    //}
     /* Added by RH ends */
     boolean remaining = false;
     if (tolerateCorruptions) {
@@ -151,7 +151,7 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
       more = remaining;
     }
     /* Added by RH begins */
-    LOG.info("seqRecReader: next(key,val) ends " + in.getPosition());
+    //LOG.info("seqRecReader: next(key,val) ends " + in.getPosition());
     /* Added by RH ends */
     return more;
   }
