@@ -45,8 +45,16 @@ public class DistRaidNode extends RaidNode {
   JobMonitor jobMonitor = null;
   Daemon jobMonitorThread = null;
 
+  /** Added by RH begins.  Identify whether or not EAR is used */
+  private static boolean EARflag = true;
+  /** Added by RH ends */
+
   public DistRaidNode(Configuration conf) throws IOException {
     super(conf);
+    /* TODO: add EAR flag begins */
+    //Class<?> placementClass =
+    //    conf.getClass("", DistRaidNode.class);
+    /* add EAR flag ends */
     this.jobMonitor = new JobMonitor(conf);
     this.jobMonitorThread = new Daemon(this.jobMonitor);
     this.jobMonitorThread.start();
@@ -91,12 +99,22 @@ public class DistRaidNode extends RaidNode {
 
   final static DistRaid raidFiles(Configuration conf, JobMonitor jobMonitor,
       List<FileStatus> paths, PolicyInfo info) throws IOException {
-    /* Commented by RH Oct 27th, 2014 begins */
-    //List<EncodingCandidate> lec = splitPaths(conf,
+    /** Updated by RH Mar 11th 2015 begins */
+    List<EncodingCandidate> lec; 
+    if (EARflag) {
+      lec = splitPathsFromPreEncStripeStore(conf, 
+          Codec.getCodec(info.getCodecId()), paths);
+    } else {
+      lec = splitPaths(conf, Codec.getCodec(info.getCodecId()), paths);
+    }
+    /* --------------------------OUTDATED----------------------------------*/
+    ///** Commented by RH Oct 27th, 2014 begins */
+    ////List<EncodingCandidate> lec = splitPaths(conf,
+    ////    Codec.getCodec(info.getCodecId()), paths);
+    ///** Commented by RH Oct 27th, 2014 ends */
+    //List<EncodingCandidate> lec = splitPathsFromPreEncStripeStore(conf,
     //    Codec.getCodec(info.getCodecId()), paths);
-    /* Commented by RH Oct 27th, 2014 ends */
-    List<EncodingCandidate> lec = splitPathsFromPreEncStripeStore(conf,
-        Codec.getCodec(info.getCodecId()), paths);
+    /** Updated by RH Mar 11th 2015 ends */
     
     // We already checked that no job for this policy is running
     // So we can start a new job.

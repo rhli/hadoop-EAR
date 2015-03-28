@@ -27,18 +27,11 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.util.ReflectionUtils;
-/* Added by RH begins */
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-/* Added by RH ends */
 
 /** An {@link RecordReader} for {@link SequenceFile}s. */
 public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
   public static final String SEQUENCE_FILE_TOLERATE_CORRUPTIONS_CONF =
     "mapred.seqfile.tolerate.corruptions";
-  /* Added by RH begins */
-  private static final Log LOG = LogFactory.getLog(SequenceFileRecordReader.class.getName());
-  /* Added by RH ends */
   
   private SequenceFile.Reader in;
   private long start;
@@ -57,23 +50,10 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
     this.tolerateCorruptions = conf.getBoolean(
       SEQUENCE_FILE_TOLERATE_CORRUPTIONS_CONF, false);
 
-    /* Commented by RH begins */
-    //if (split.getStart() > in.getPosition())
-    //  in.sync(split.getStart());                  // sync to start
+    if (split.getStart() > in.getPosition())
+      in.sync(split.getStart());                  // sync to start
 
-    //this.start = in.getPosition();
-    /* Commented by RH ends */
-    /* Added by RH begins */
-    /* TODO: de-hardcode.. */
-    this.start = split.getStart();
-    if (split.getStart()==0) {
-      //in.sync(this.start);
-      this.start = in.getPosition();
-    } else {
-      seek(this.start);
-    }
-    //LOG.info("seqRecReader start: " + this.start + " end: " + this.end);
-    /* Added by RH ends */
+    this.start = in.getPosition();
     more = start < end;
   }
 
@@ -97,18 +77,8 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
   }
     
   public synchronized boolean next(K key, V value) throws IOException {
-    /* Added by RH begins */
-    //LOG.info("seqRecReader: next(key,val) begins " + in.getPosition());
-    /* Added by RH ends */
     if (!more) return false;
-    //LOG.info("seqRecReader: here");
     long pos = in.getPosition();
-    /* Added by RH begins */
-    if (pos >= this.end) {
-      more = false;
-      return more;
-    }
-    /* Added by RH ends */
     boolean remaining = false;
     if (tolerateCorruptions) {
       try {
@@ -125,24 +95,10 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
         }
       }
     } else {
-      /* Added by RH begins */
-      //while (in.getPosition() < end) {
-      //  remaining = (in.next(key) != null);
-      //  if (remaining) {
-      //    getCurrentValue(value);
-      //    break;
-      //  } else {
-      //    //LOG.info("seqRecReader: next(key,val) in the middle " + in.getPosition());
-      //    in.sync(in.getPosition());
-      //  }
-      //}
-      /* Added by RH ends */
-      /* Commented by RH begins */
       remaining = (in.next(key) != null);
       if (remaining) {
         getCurrentValue(value);
       }
-      /* Commented by RH ends */
     }
 
     if (pos >= end && in.syncSeen()) {
@@ -150,9 +106,6 @@ public class SequenceFileRecordReader<K, V> implements RecordReader<K, V> {
     } else {
       more = remaining;
     }
-    /* Added by RH begins */
-    LOG.info("seqRecReader: next(key,val) ends " + in.getPosition());
-    /* Added by RH ends */
     return more;
   }
   

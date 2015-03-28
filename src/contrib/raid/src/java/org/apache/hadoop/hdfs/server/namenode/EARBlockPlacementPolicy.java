@@ -33,6 +33,7 @@ import org.apache.hadoop.raid.Codec;
 import org.apache.hadoop.hdfs.server.namenode.BlockPlacementPolicyDefault;
 /* Added by RH Oct 21st, 2014 begins */
 import org.apache.hadoop.hdfs.server.namenode.PreEncodingStripeStore;
+import org.apache.hadoop.hdfs.server.namenode.EARLayoutGen;
 /* Added by RH Oct 21st, 2014 ends */
 
 import java.io.IOException;
@@ -63,15 +64,33 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
   private static Set<String> badHosts = new HashSet<String>();
 
   /* Added by RH on Oct 20th, begins */
-  private static PreEncodingStripeStore _preEncStripeStore = new PreEncodingStripeStore();
-  private Map<String,RaidTail> _dirRaidTailMap = new HashMap<String,RaidTail>();
+  //private static PreEncodingStripeStore _preEncStripeStore = new PreEncodingStripeStore();
+  private static PreEncodingStripeStore _preEncStripeStore;
+  private Map<String,RaidTail> _dirRaidTailMap = null; //new HashMap<String,RaidTail>();
+  //private Map<String,RaidTail> _dirRaidTailMap = new HashMap<String,RaidTail>();
   private static Random _random = new Random();
+
+  private static String USER_DIR_PREFIX_KEY="hdfs.raid.user.dir.perfix";
+  private static String _userDirPrefix;
+  private static String RAID_DIR_PREFIX_KEY="hdfs.raid.raid.dir.perfix";
+  private static String _raidDirPrefix;
+  private static EARLayoutGen _earlGen=null;
   /* Added by RH on Oct 20th, ends */
 
   EARBlockPlacementPolicy(Configuration conf,
                          FSClusterStats stats,
                                NetworkTopology clusterMap) {
     initialize(conf, stats, clusterMap, null, null, null);
+    /* Added by RH Mar 23 2015 begins */
+    _userDirPrefix=conf.get(USER_DIR_PREFIX_KEY,"/home/hadoop/");
+    _raidDirPrefix=conf.get(RAID_DIR_PREFIX_KEY,"/home/hadoop/raid/");
+    if (!_userDirPrefix.endsWith("/")) {
+      _userDirPrefix+="/";
+    }
+    if (!_raidDirPrefix.endsWith("/")) {
+      _raidDirPrefix+="/";
+    }
+    /* Added by RH Mar 23 2015 ends */
   }
 
   EARBlockPlacementPolicy() {
@@ -103,7 +122,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
     this.stagingDir = conf.get("dfs.f4.staging", "/staging");
     this.localDir = conf.get("dfs.f4.local", "/local");
     /* Added by RH Oct 23rd, 2014 begins */
-    _preEncStripeStore = new PreEncodingStripeStore();
+    _preEncStripeStore = new PreEncodingStripeStore(conf);
     /* Added by RH Oct 23rd, 2014 ends */
   }
 
@@ -323,38 +342,65 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
    * Added by RH Oct 21st, 2014 begins
    */
   private class RaidTail {
-    //TODO: write every block or write every stripe?
     public String dirLoc;
     public int stripeLen;
-    public Map<String,Set<String>> rackToChosenRackMap;
-    public Map<String,Integer> stripeLoadMap;
-    public Map<String,Integer> rackIndexMap;
+    public int repFac;
+    public Map<Integer,Integer> stripeLoadMap;
+    public Map<Integer,Integer> rackIndexMap;
+    public Map<Integer,int[]> rackLayoutMap; // store the placement get from EARLayoutGen
     public PreEncodingStripeStore preEncStripeStore;
     public int currentIdx;
+    public EARLayoutGen earlGen;
 
-    public Map<String,List<String>> rackToBlkListMap;
+    // currently, we do not use black list
+    //public Map<String,List<String>> rackToBlkListMap;
+    //public Map<String,Set<String>> rackToChosenRackMap;
 
-    RaidTail(String dLoc,int strLen) {
+    RaidTail(String dLoc,int strLen,int rFac,EARLayoutGen elg) {
       dirLoc = dLoc;
       stripeLen = strLen;
-      rackToChosenRackMap = new HashMap<String,Set<String>>();
-      stripeLoadMap = new HashMap<String,Integer>();
-      rackIndexMap = new HashMap<String,Integer>();
-      rackToBlkListMap = new HashMap<String,List<String>>();
+      repFac = rFac;
+      earlGen = elg;
+      //rackToChosenRackMap = new HashMap<String,Set<String>>();
+      stripeLoadMap = new HashMap<Integer,Integer>();
+      rackIndexMap = new HashMap<Integer,Integer>();
+      //rackToBlkListMap = new HashMap<String,List<String>>();
+      rackLayoutMap = new HashMap<Integer,int[]>();
       currentIdx=0;
     }
 
-    public void addBlock(String blkMeta, String pRack, String sRack) {
-      if (!rackToBlkListMap.containsKey(pRack)) {
+    /**
+     * Updated: record the metadata and return the locations for
+     * secondary replicas.
+     */
+    public List<Integer> addBlock(String blkMeta, int pRack) {
+      //if (!rackToBlkListMap.containsKey(pRack)) {
+      List retVal=new ArrayList<Integer>();
+      if (!stripeLoadMap.containsKey(pRack)) {
         //first block with pRack as primary rack
-        rackToBlkListMap.put(pRack,new ArrayList<String>());
+        //rackToBlkListMap.put(pRack,new ArrayList<String>());
+        //rackToChosenRackMap.put(pRack,new HashSet<String>());
+        earlGen.SOPwoCoreRack(pRack,rackLayoutMap.get(pRack));
+        for(int i=1;i<repFac;i++){
+          retVal.add(rackLayoutMap.get(pRack)
+              [repFac*stripeLoadMap.get(pRack)+i]);
+        }
         stripeLoadMap.put(pRack,1);
         rackIndexMap.put(pRack,currentIdx++);
-        rackToChosenRackMap.put(pRack,new HashSet<String>());
+        rackLayoutMap.put(pRack,new int[stripeLen*repFac]);
       } else if(stripeLoadMap.get(pRack)==0) {
+        earlGen.SOPwoCoreRack(pRack,rackLayoutMap.get(pRack));
+        for(int i=1;i<repFac;i++){
+          retVal.add(rackLayoutMap.get(pRack)
+              [repFac*stripeLoadMap.get(pRack)+i]);
+        }
         stripeLoadMap.put(pRack,1);
         rackIndexMap.put(pRack,currentIdx++);
       } else {
+        for(int i=1;i<repFac;i++){
+          retVal.add(rackLayoutMap.get(pRack)
+              [repFac*stripeLoadMap.get(pRack)+i]);
+        }
         stripeLoadMap.put(pRack,stripeLoadMap.get(pRack)+1);
       }
       //rackToBlkListMap.get(pRack).add(blkMeta);
@@ -367,27 +413,59 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       }
       if (stripeLoadMap.get(pRack)==stripeLen) {
         // reset the maps and lists
-        rackToBlkListMap.get(pRack).clear();
-        rackToChosenRackMap.get(pRack).clear();
-        //rackIndexMap.put(pRack,currentIdx++);
+        // elg.SOPwoCoreRack(pRack,rackLayoutMap.get(pRack));
         stripeLoadMap.put(pRack,0);
-      } else {
-        rackToChosenRackMap.get(pRack).add(sRack);
-      }
+      } 
+      return retVal;
     }
 
+    /* Commented by RH Mar 26th 2015 begins */
+    //public void addBlock(String blkMeta, String pRack, String sRack) {
+    //  if (!rackToBlkListMap.containsKey(pRack)) {
+    //    //first block with pRack as primary rack
+    //    rackToBlkListMap.put(pRack,new ArrayList<String>());
+    //    stripeLoadMap.put(pRack,1);
+    //    rackIndexMap.put(pRack,currentIdx++);
+    //    rackToChosenRackMap.put(pRack,new HashSet<String>());
+    //  } else if(stripeLoadMap.get(pRack)==0) {
+    //    stripeLoadMap.put(pRack,1);
+    //    rackIndexMap.put(pRack,currentIdx++);
+    //  } else {
+    //    stripeLoadMap.put(pRack,stripeLoadMap.get(pRack)+1);
+    //  }
+    //  //rackToBlkListMap.get(pRack).add(blkMeta);
+    //  // write to preEncStripeStore
+    //  try {
+    //    _preEncStripeStore.putStripe(rackIndexMap.get(pRack),
+    //        blkMeta,dirLoc);
+    //  } catch(IOException e) {
+    //    LOG.error("write preEncStripeStore failed");
+    //  }
+    //  if (stripeLoadMap.get(pRack)==stripeLen) {
+    //    // reset the maps and lists
+    //    rackToBlkListMap.get(pRack).clear();
+    //    rackToChosenRackMap.get(pRack).clear();
+    //    //rackIndexMap.put(pRack,currentIdx++);
+    //    stripeLoadMap.put(pRack,0);
+    //  } else {
+    //    rackToChosenRackMap.get(pRack).add(sRack);
+    //  }
+    //}
+    /* Commented by RH Mar 26th 2015 ends */
+
+    // We do not use black list for now
     // we currently consider n-k rack failure tolerance.
-    public String[] getBlackList(String pRack) {
-      if (!rackToChosenRackMap.containsKey(pRack)) {
-        return new String[0];
-      }
-      if (rackToChosenRackMap.get(pRack).size()==stripeLoadMap.get(pRack)) {
-        return new String[0];
-      } else {
-        return rackToChosenRackMap.get(pRack).toArray(
-            new String[rackToChosenRackMap.get(pRack).size()]);
-      }
-    }
+    //public String[] getBlackList(String pRack) {
+    //  if (!rackToChosenRackMap.containsKey(pRack)) {
+    //    return new String[0];
+    //  }
+    //  if (rackToChosenRackMap.get(pRack).size()==stripeLoadMap.get(pRack)) {
+    //    return new String[0];
+    //  } else {
+    //    return rackToChosenRackMap.get(pRack).toArray(
+    //        new String[rackToChosenRackMap.get(pRack).size()]);
+    //  }
+    //}
 
     // should never be called
     public void clear() {
@@ -403,7 +481,8 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
    */
 
   private String getDirLoc(String fileName) {
-    return fileName.substring(fileName.indexOf("/user/ncsgroup/")+15,fileName.lastIndexOf("/"));
+    return fileName.substring(fileName.indexOf(_userDirPrefix)+_userDirPrefix.length(),
+        fileName.lastIndexOf("/"));
   }
 
   private DatanodeDescriptor[] chooseTargetEAR(
@@ -414,7 +493,7 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       List<Node> exclNodes,
       long blocksize) {
     // TODO: we can only track block index and filename. Can we get blockID?
-    if (!fileName.contains("/user/ncsgroup/raidTest")) {
+    if (!fileName.contains(_raidDirPrefix)) {
       return super.chooseTarget(
         fileName, numOfReplicas, writer, chosenNodes, exclNodes, blocksize);
     }
@@ -428,45 +507,52 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
       List<DatanodeDescriptor> retVal = new ArrayList<DatanodeDescriptor>();
       DatanodeDescriptor localNode;
       String pRack;
-      List<String> candidateRack = clusterMap.getRacks();
+      List<String> rackList = clusterMap.getRacks();
       if (clusterMap.contains(writer)) {
         localNode = writer;
         pRack = localNode.getNetworkLocation();
       } else {
-        pRack = candidateRack.get(_random.nextInt(candidateRack.size())%candidateRack.size());
+        pRack = rackList.get(_random.nextInt(rackList.size())%rackList.size());
         List<Node> nodesInPRack = clusterMap.getDatanodesInRack(pRack);
         localNode = (DatanodeDescriptor)nodesInPRack.
           get(_random.nextInt(nodesInPRack.size())%nodesInPRack.size());
       }
+      int pRackID = clusterMap.getRacks().indexOf(pRack);
       LOG.info("EAR primary rack: " + pRack);
       retVal.add(localNode);
-      candidateRack.remove(pRack);
-      if (_dirRaidTailMap.containsKey(dirLoc)) {
-        for (String blackListedRack : _dirRaidTailMap.get(dirLoc).getBlackList(pRack)) {
-          candidateRack.remove(blackListedRack);
-        }
+      //candidateRack.remove(pRack);
+      if (_dirRaidTailMap==null) {
+        // create layout generator first
+        _earlGen=new EARLayoutGen(stripeLen,1,numOfReplicas,clusterMap.getNumOfRacks(),
+            clusterMap.getNumOfLeaves()/clusterMap.getNumOfRacks());
+        _dirRaidTailMap = new HashMap<String,RaidTail>();
+      }
+      if (!_dirRaidTailMap.containsKey(dirLoc)) {
+        _dirRaidTailMap.put(dirLoc,new RaidTail(dirLoc,stripeLen,numOfReplicas,_earlGen));
       }
       String blkInfo = fileName + ":" + blocks.getLocatedBlocks().size();
-      LOG.info("EAR: dirLoc: " + dirLoc);
-      if (!_dirRaidTailMap.containsKey(dirLoc)) {
-        _dirRaidTailMap.put(dirLoc,new RaidTail(dirLoc,stripeLen));
+      List<Integer> secondaryLocs = _dirRaidTailMap.get(dirLoc).addBlock(blkInfo,pRackID);
+      int nodePerRack = clusterMap.getNumOfLeaves()/clusterMap.getNumOfRacks();
+      for (Integer i : secondaryLocs) {
+        String rack = clusterMap.getRacks().get(i/nodePerRack);
+        retVal.add((DatanodeDescriptor)clusterMap.getDatanodesInRack(rack).get(i%nodePerRack));
       }
-      String sRack=null;
-      List<Node> nodesInSRack;
-      if (numOfReplicas>1) {
-        sRack = candidateRack.
-          get(_random.nextInt(candidateRack.size())%candidateRack.size());
-        nodesInSRack = clusterMap.getDatanodesInRack(sRack);
-        LOG.info("EAR secondary rack: " + sRack);
-        for (int i=1;i<numOfReplicas;i++) {
-          retVal.add((DatanodeDescriptor)nodesInSRack.
-              get(_random.nextInt(nodesInSRack.size())%nodesInSRack.size()));
-        }
-      }
+      //LOG.info("EAR: dirLoc: " + dirLoc);
+      //String sRack=null;
+      //List<Node> nodesInSRack;
+      //if (numOfReplicas>1) {
+      //  sRack = candidateRack.
+      //    get(_random.nextInt(candidateRack.size())%candidateRack.size());
+      //  nodesInSRack = clusterMap.getDatanodesInRack(sRack);
+      //  LOG.info("EAR secondary rack: " + sRack);
+      //  for (int i=1;i<numOfReplicas;i++) {
+      //    retVal.add((DatanodeDescriptor)nodesInSRack.
+      //        get(_random.nextInt(nodesInSRack.size())%nodesInSRack.size()));
+      //  }
+      //}
 
       // TODO: de-hardcode, judge according to the policy infos
       // Currently, we only deal with file with fixed prefix.
-      _dirRaidTailMap.get(dirLoc).addBlock(blkInfo,pRack,sRack);
       return finalizeTargets(retVal,chosenNodes,writer,localNode);
     } catch (IOException e) {
       FSNamesystem.LOG.error(

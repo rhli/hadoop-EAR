@@ -92,7 +92,7 @@ am__DEPENDENCIES_1 = $(foreach path,$(NEWSUBDIRS),$(wildcard \
 libhadoop_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_libhadoop_la_OBJECTS = file_descriptor.lo errno_enum.lo NativeIO.lo \
 	NativeCrc32.lo bulk_crc32.lo galois.lo jerasure.lo reed_sol.lo \
-	NativeJerasure.lo
+	NativeJerasure.lo 
 libhadoop_la_OBJECTS = $(am_libhadoop_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp

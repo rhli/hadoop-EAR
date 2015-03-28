@@ -52,7 +52,10 @@ public class PreEncodingStripeStore {
   //    new ConcurrentHashMap<List<Block>, Long>();
   //public static final String PRE_ENC_STRIPE_STORE_DIR_KEY =
   //    "hdfs.preencoding.stripe.dir";
-  private static String storeDirName = "/home/ncsgroup/hadoop-20/preEncStripeStore";
+  //TODO: de-hardcode!!
+  //private String storeDirName = "/home/ncsgroup/hadoop-20/preEncStripeStore";
+  private static String STORE_DIR_KEY = "hdfs.raid.preencoding.stripe.dir";
+  private static String storeDirName;
   /*
   public static final String[] STRIPESTORE_SPECIFIC_KEYS = 
       new String[] {
@@ -64,8 +67,19 @@ public class PreEncodingStripeStore {
   //private String storeDirName;
   //Random rand = new Random();
 
-  public PreEncodingStripeStore() {
-    //TODO: de-hardcode!!
+  //public PreEncodingStripeStore() {
+  //  File storeDir = new File(storeDirName);
+  //  if (!storeDir.exists()) {
+  //    storeDir.mkdirs();
+  //  }
+  //}
+
+  /**
+   * With configuration to get store position.
+   */
+  public PreEncodingStripeStore(Configuration conf) {
+    storeDirName=conf.get(STORE_DIR_KEY,"/home/hadoop-20/preEncStripeStore");
+    LOG.info("storeDirName: " + storeDirName);
     File storeDir = new File(storeDirName);
     if (!storeDir.exists()) {
       storeDir.mkdirs();
@@ -89,9 +103,14 @@ public class PreEncodingStripeStore {
   public void putStripe(int stripeID,String blk,String dirLoc) throws IOException {
     File stripeStore = new File(storeDirName,dirLoc);
     if (!stripeStore.exists()) {
-      stripeStore.mkdirs();
+      if(stripeStore.mkdirs()){
+        LOG.info("create preEncStripeStore success");
+      }else{
+        LOG.info("create preEncStripeStore fail");
+      }
     }
     File stripeStoreFile = new File(stripeStore, "stripe" + stripeID);
+    LOG.info("preEncStripeFile: " +  stripeStore + " stripe" + stripeID);
     PrintWriter out = new PrintWriter(new BufferedWriter(
           new FileWriter(stripeStoreFile,true)));
     out.println(blk);

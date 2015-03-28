@@ -273,9 +273,9 @@ public class StatisticsCollector implements Runnable {
             dfs = ((DistributedFileSystem)FileSystem.get(conf)).getClient();
         }
         /* Add by RH end */
-        /* Delete by RH start */
+        /* Commented by RH start */
       //dfs = ((DistributedFileSystem)FileSystem.get(conf)).getClient();
-        /* Delete by RH end */
+        /* Commented by RH end */
       totalPhysical = dfs.getNSDiskStatus().getDfsUsed();
     } catch (IOException e) {
       return -1;

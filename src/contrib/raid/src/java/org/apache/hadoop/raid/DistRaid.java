@@ -36,6 +36,7 @@ import org.apache.hadoop.mapred.RecordReader;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.SequenceFileRecordReader;
+import org.apache.hadoop.mapred.EARSequenceFileRecordReader;
 import org.apache.hadoop.mapred.TaskCompletionEvent;
 import org.apache.hadoop.raid.RaidNode.Statistics;
 import org.apache.hadoop.raid.protocol.PolicyInfo;
@@ -70,6 +71,10 @@ public class DistRaid {
   private static final SimpleDateFormat dateForm = new SimpleDateFormat("yyyy-MM-dd HH:mm");
   private static String jobName = NAME;
 
+  /* added by RH Mar 21th 2015, begins */
+  private boolean EARflag=true;
+  /* added by RH Mar 21th 2015, ends */
+
   public static enum Counter {
     FILES_SUCCEEDED, FILES_FAILED, PROCESSED_BLOCKS, PROCESSED_SIZE, META_BLOCKS, META_SIZE,
     SAVING_SIZE
@@ -91,9 +96,14 @@ public class DistRaid {
 
   public DistRaid(Configuration conf) {
     setConf(createJobConf(conf));
-    /* Added by RH Oct 8th, 2014, begins */ 
-    jobconf.setEncoding(true);
+    /* Added by RH Oct 8th, 2014, begins 
+     * updated by RH Mar 11th, 2015: only set encoding flag when EAR is used */ 
+    if (EARflag) {
+      jobconf.setEncoding(true);
+    }
+    //jobconf.setEncoding(true);
     /* Added by RH Oct 8th, 2014, ends */
+    /* TODO: Distribute pre-encoding stripe store */
     opPerMap = conf.getLong(OP_PER_MAP_KEY, DEFAULT_OP_PER_MAP);
     maxMapsPerNode = conf.getInt(MAX_MAPS_PER_NODE_KEY,
         DEFAULT_MAX_MAPS_PER_NODE);
@@ -282,7 +292,74 @@ public class DistRaid {
   private long totalSaving;
 
   /** Responsible for generating splits of the src file list. */
-  static class DistRaidInputFormat implements InputFormat<Text, PolicyInfo> {
+  static class DistRaidInputFormat implements InputFormat<Text, PolicyInfo> { 
+    /** Do nothing. */ 
+    public void validateInput(JobConf job) { 
+    }
+
+    /**
+     * Produce splits such that each is no greater than the quotient of the
+     * total size and the number of splits requested.
+     * 
+     * @param job
+     *          The handle to the JobConf object
+     * @param numSplits
+     *          Number of splits requested
+     */
+    //public InputSplit[] getSplits(JobConf job, int numSplits) 
+    //  throws IOException { 
+    //  final int srcCount = job.getInt(OP_COUNT_LABEL, -1); 
+    //  final int targetcount = srcCount / numSplits; 
+    //  String srclist = job.get(OP_LIST_LABEL, ""); 
+    //  if (srcCount < 0 || "".equals(srclist)) { 
+    //    throw new RuntimeException("Invalid metadata: #files(" + srcCount 
+    //        + ") listuri(" + srclist + ")"); 
+    //  } 
+    //  Path srcs = new Path(srclist); 
+    //  FileSystem fs = srcs.getFileSystem(job); 
+    //  
+    //  List<FileSplit> splits = new ArrayList<FileSplit>(numSplits); 
+    //  Text key = new Text(); 
+    //  PolicyInfo value = new PolicyInfo(); 
+    //  SequenceFile.Reader in = null; 
+    //  long prev = 0L; 
+    //  int count = 0; // count src 
+    //  try { 
+    //    for (in = new SequenceFile.Reader(fs, srcs, job); in.next(key, value);) { 
+    //      long curr = in.getPosition(); 
+    //      long delta = curr - prev; 
+    //      if (++count > targetcount) { 
+    //        count = 0; 
+    //        splits.add(new FileSplit(srcs, prev, delta, (String[]) null)); 
+    //        prev = curr; 
+    //      } 
+    //    } 
+    //  } finally { 
+    //    in.close(); 
+    //  } 
+    //  long remaining = fs.getFileStatus(srcs).getLen() - prev; 
+    //  if (remaining != 0) { 
+    //    splits.add(new FileSplit(srcs, prev, remaining, (String[]) null)); 
+    //  } 
+    //  LOG.info("jobname= " + jobName + " numSplits=" + numSplits + 
+    //      ", splits.size()=" + splits.size()); 
+    //  return splits.toArray(new FileSplit[splits.size()]); 
+    //} 
+
+    /** {@inheritDoc} */ 
+    //public RecordReader<Text, PolicyInfo> getRecordReader(InputSplit split, 
+    //    JobConf job, Reporter reporter) throws IOException { 
+    //  return new SequenceFileRecordReader<Text, PolicyInfo>(job, 
+    //      (FileSplit) split); 
+    //} 
+  }
+
+
+  /** 
+   * Re-organized by RH, Mar 11th 2015 input format for EAR begins.
+   */ 
+  /** Responsible for generating splits of the src file list. */
+  static class EARDistRaidInputFormat implements InputFormat<Text, PolicyInfo> {
     /** Do nothing. */
     public void validateInput(JobConf job) {
     }
@@ -386,6 +463,7 @@ public class DistRaid {
       //  in.close();
       //}
       /* Commented by RH ends */
+
       long remaining = fs.getFileStatus(srcs).getLen() - prev;
       if (remaining != 0) {
         splits.add(new FileSplit(srcs, prev, remaining, (String[]) null));
@@ -398,10 +476,11 @@ public class DistRaid {
     /** {@inheritDoc} */
     public RecordReader<Text, PolicyInfo> getRecordReader(InputSplit split,
         JobConf job, Reporter reporter) throws IOException {
-      return new SequenceFileRecordReader<Text, PolicyInfo>(job,
+      return new EARSequenceFileRecordReader<Text, PolicyInfo>(job,
           (FileSplit) split);
     }
   }
+  /** Re-organized by RH, Mar 11th 2015 ends.  */ 
 
   /** The mapper for raiding files. */
   static class DistRaidMapper implements
@@ -516,7 +595,7 @@ public class DistRaid {
     RaidUtils.parseAndSetOptions(jobconf, SCHEDULER_OPTION_LABEL);
 
     jobconf.setJarByClass(DistRaid.class);
-    jobconf.setInputFormat(DistRaidInputFormat.class);
+    jobconf.setInputFormat(EARDistRaidInputFormat.class);
     jobconf.setOutputKeyClass(Text.class);
     jobconf.setOutputValueClass(Text.class);
 

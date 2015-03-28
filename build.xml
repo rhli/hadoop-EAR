@@ -600,13 +600,23 @@
       <class name="org.apache.hadoop.util.NativeJerasure" />
     </javah>
 
+    <echo> Running javah NativeEAR.java  </echo>
+    <javah
+      classpath="${build.classes}"
+      destdir="${build.native}/src/org/apache/hadoop/util"
+      force="yes"
+      verbose="yes"
+      >
+      <class name="org.apache.hadoop.util.NativeEAR" />
+    </javah>
+
     <exec dir="${build.native}" executable="sh" failonerror="true">
       <env key="OS_NAME" value="${os.name}"/>
       <env key="OS_ARCH" value="${os.arch}"/>
       <env key="JVM_DATA_MODEL" value="${sun.arch.data.model}"/>
       <env key="HADOOP_NATIVE_SRCDIR" value="${native.src.dir}"/>
       <arg line="${native.src.dir}/configure 
-          LDFLAGS='-L${snappy.lib} -L${basedir}/nativelib/lzma -L${basedir}/nativelib/lz4 -lrt'
+          LDFLAGS='-L${snappy.lib} -L${basedir}/nativelib/lzma -L${basedir}/nativelib/lz4 -lrt -Wl,--no-as-needed'
           CPPFLAGS='-I${snappy.include} -I${basedir}/nativelib/lzma -I${basedir}/nativelib/lz4'"/>
   	</exec>
 

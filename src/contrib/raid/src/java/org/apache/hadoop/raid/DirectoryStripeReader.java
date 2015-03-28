@@ -61,6 +61,13 @@ public class DirectoryStripeReader extends StripeReader {
   /* the block size of parity file */
   long parityBlockSize;
 
+  /* Added by RH Mar 22th begins */
+  private static String USER_DIR_PREFIX_KEY="hdfs.raid.user.dir.perfix";
+  private static String _userDirPrefix;
+  private static String RAID_DIR_PREFIX_KEY="hdfs.raid.raid.dir.perfix";
+  private static String _raidDirPrefix;
+  /* Added by RH Mar 22th ends */
+
   
   public static class BlockInfo {
     public int fileIdx;
@@ -190,11 +197,11 @@ public class DirectoryStripeReader extends StripeReader {
    * Added by RH Oct 24th, begins 
    */
   private String removePrefix(String str){
-    return str.substring(str.indexOf("/user/ncsgroup/raidTest"),str.length());
+    return str.substring(str.indexOf(_raidDirPrefix),str.length());
   }
 
   private String removePrefix2(String str){
-    return str.substring(str.indexOf("/user/ncsgroup/raidTest")+15,str.length());
+    return str.substring(str.indexOf(_raidDirPrefix)+_userDirPrefix.length(),str.length());
   }
   /* Added by RH Oct 24th, ends */
   
@@ -203,6 +210,16 @@ public class DirectoryStripeReader extends StripeReader {
       Path srcDir, List<FileStatus> lfs) 
       throws IOException {
     super(conf, codec, fs, stripeStartIdx);
+    /* Added by RH Mar 23 2015 begins */
+    _userDirPrefix=conf.get(USER_DIR_PREFIX_KEY,"/home/hadoop/");
+    _raidDirPrefix=conf.get(RAID_DIR_PREFIX_KEY,"/home/hadoop/raid/");
+    if (!_userDirPrefix.endsWith("/")) {
+      _userDirPrefix+="/";
+    }
+    if (!_raidDirPrefix.endsWith("/")) {
+      _raidDirPrefix+="/";
+    }
+    /* Added by RH Mar 23 2015 ends */
     if (lfs == null) {
       throw new IOException("Couldn't get files under directory " + srcDir);
     }
@@ -232,7 +249,7 @@ public class DirectoryStripeReader extends StripeReader {
     }
     /* Initialize using preEncStripeStore.
      * Added by RH Oct 26th, 2014 begins. */
-    PreEncodingStripeStore preEncStripeStore = new PreEncodingStripeStore();
+    PreEncodingStripeStore preEncStripeStore = new PreEncodingStripeStore(conf);
     List<List<String>> preEncStripes = preEncStripeStore.getPreEncStripes(
         removePrefix2(srcDir.toString()));
     for (int i=0;i<preEncStripes.size();i++) {
