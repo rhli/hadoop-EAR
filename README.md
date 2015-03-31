@@ -14,7 +14,8 @@ II. Installation and Configuration
 ---------
 0. Configure hadoop:  
 To simplify our description, we refer the hadoop-20/ directory as hadoop directory.  
-Suppose your username is hadoop.
+Suppose your username is hadoop.  
+
   - Basic system settings
     1. In your ~/.bashrc, add the following line
       > export HADOOP_HOME=*absolute address of hadoop directory* 
