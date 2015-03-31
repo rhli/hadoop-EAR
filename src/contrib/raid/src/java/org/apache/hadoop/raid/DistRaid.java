@@ -104,6 +104,26 @@ public class DistRaid {
     //jobconf.setEncoding(true);
     /* Added by RH Oct 8th, 2014, ends */
     /* TODO: Distribute pre-encoding stripe store */
+    /* Added by RH Mar 30th, 2015 begins */
+    Process p;
+    String command = new String("/bin/bash ");
+    command += System.getenv().get("HADOOP_HOME");
+    command += "/bin/spreadPreEncStripeStore.sh";
+    LOG.info("spreadPreEncStripeStoreCmd: " + command);
+    //StringBuffer output=new StringBuffer();
+    try {
+      p = Runtime.getRuntime().exec(command);
+      p.waitFor();
+      //BufferedReader reader = 
+      //  new BufferedReader(new InputStreamReader(p.getInputStream())); 
+      //String line = ""; 
+      //while ((line = reader.readLine())!= null) { 
+      //  output.append(line + "\n"); 
+      //}
+      //System.out.println(output.toString());
+    } catch(Exception e) {
+    }
+    /* Added by RH Mar 30th, 2015 ends */
     opPerMap = conf.getLong(OP_PER_MAP_KEY, DEFAULT_OP_PER_MAP);
     maxMapsPerNode = conf.getInt(MAX_MAPS_PER_NODE_KEY,
         DEFAULT_MAX_MAPS_PER_NODE);
@@ -292,67 +312,67 @@ public class DistRaid {
   private long totalSaving;
 
   /** Responsible for generating splits of the src file list. */
-  static class DistRaidInputFormat implements InputFormat<Text, PolicyInfo> { 
-    /** Do nothing. */ 
-    public void validateInput(JobConf job) { 
-    }
+  //static class DistRaidInputFormat implements InputFormat<Text, PolicyInfo> { 
+  //  /** Do nothing. */ 
+  //  public void validateInput(JobConf job) { 
+  //  }
 
-    /**
-     * Produce splits such that each is no greater than the quotient of the
-     * total size and the number of splits requested.
-     * 
-     * @param job
-     *          The handle to the JobConf object
-     * @param numSplits
-     *          Number of splits requested
-     */
-    //public InputSplit[] getSplits(JobConf job, int numSplits) 
-    //  throws IOException { 
-    //  final int srcCount = job.getInt(OP_COUNT_LABEL, -1); 
-    //  final int targetcount = srcCount / numSplits; 
-    //  String srclist = job.get(OP_LIST_LABEL, ""); 
-    //  if (srcCount < 0 || "".equals(srclist)) { 
-    //    throw new RuntimeException("Invalid metadata: #files(" + srcCount 
-    //        + ") listuri(" + srclist + ")"); 
-    //  } 
-    //  Path srcs = new Path(srclist); 
-    //  FileSystem fs = srcs.getFileSystem(job); 
-    //  
-    //  List<FileSplit> splits = new ArrayList<FileSplit>(numSplits); 
-    //  Text key = new Text(); 
-    //  PolicyInfo value = new PolicyInfo(); 
-    //  SequenceFile.Reader in = null; 
-    //  long prev = 0L; 
-    //  int count = 0; // count src 
-    //  try { 
-    //    for (in = new SequenceFile.Reader(fs, srcs, job); in.next(key, value);) { 
-    //      long curr = in.getPosition(); 
-    //      long delta = curr - prev; 
-    //      if (++count > targetcount) { 
-    //        count = 0; 
-    //        splits.add(new FileSplit(srcs, prev, delta, (String[]) null)); 
-    //        prev = curr; 
-    //      } 
-    //    } 
-    //  } finally { 
-    //    in.close(); 
-    //  } 
-    //  long remaining = fs.getFileStatus(srcs).getLen() - prev; 
-    //  if (remaining != 0) { 
-    //    splits.add(new FileSplit(srcs, prev, remaining, (String[]) null)); 
-    //  } 
-    //  LOG.info("jobname= " + jobName + " numSplits=" + numSplits + 
-    //      ", splits.size()=" + splits.size()); 
-    //  return splits.toArray(new FileSplit[splits.size()]); 
-    //} 
+  //  /**
+  //   * Produce splits such that each is no greater than the quotient of the
+  //   * total size and the number of splits requested.
+  //   * 
+  //   * @param job
+  //   *          The handle to the JobConf object
+  //   * @param numSplits
+  //   *          Number of splits requested
+  //   */
+  //  public InputSplit[] getSplits(JobConf job, int numSplits) 
+  //    throws IOException { 
+  //    final int srcCount = job.getInt(OP_COUNT_LABEL, -1); 
+  //    final int targetcount = srcCount / numSplits; 
+  //    String srclist = job.get(OP_LIST_LABEL, ""); 
+  //    if (srcCount < 0 || "".equals(srclist)) { 
+  //      throw new RuntimeException("Invalid metadata: #files(" + srcCount 
+  //          + ") listuri(" + srclist + ")"); 
+  //    } 
+  //    Path srcs = new Path(srclist); 
+  //    FileSystem fs = srcs.getFileSystem(job); 
+  //    
+  //    List<FileSplit> splits = new ArrayList<FileSplit>(numSplits); 
+  //    Text key = new Text(); 
+  //    PolicyInfo value = new PolicyInfo(); 
+  //    SequenceFile.Reader in = null; 
+  //    long prev = 0L; 
+  //    int count = 0; // count src 
+  //    try { 
+  //      for (in = new SequenceFile.Reader(fs, srcs, job); in.next(key, value);) { 
+  //        long curr = in.getPosition(); 
+  //        long delta = curr - prev; 
+  //        if (++count > targetcount) { 
+  //          count = 0; 
+  //          splits.add(new FileSplit(srcs, prev, delta, (String[]) null)); 
+  //          prev = curr; 
+  //        } 
+  //      } 
+  //    } finally { 
+  //      in.close(); 
+  //    } 
+  //    long remaining = fs.getFileStatus(srcs).getLen() - prev; 
+  //    if (remaining != 0) { 
+  //      splits.add(new FileSplit(srcs, prev, remaining, (String[]) null)); 
+  //    } 
+  //    LOG.info("jobname= " + jobName + " numSplits=" + numSplits + 
+  //        ", splits.size()=" + splits.size()); 
+  //    return splits.toArray(new FileSplit[splits.size()]); 
+  //  } 
 
-    /** {@inheritDoc} */ 
-    //public RecordReader<Text, PolicyInfo> getRecordReader(InputSplit split, 
-    //    JobConf job, Reporter reporter) throws IOException { 
-    //  return new SequenceFileRecordReader<Text, PolicyInfo>(job, 
-    //      (FileSplit) split); 
-    //} 
-  }
+  //  /** {@inheritDoc} */ 
+  //  public RecordReader<Text, PolicyInfo> getRecordReader(InputSplit split, 
+  //      JobConf job, Reporter reporter) throws IOException { 
+  //    return new SequenceFileRecordReader<Text, PolicyInfo>(job, 
+  //        (FileSplit) split); 
+  //  } 
+  //}
 
 
   /** 

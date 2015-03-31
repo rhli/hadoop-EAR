@@ -608,7 +608,7 @@ public class EARLayoutGen{
       int index=0;
       while(true){
         index++;
-        if(i>=2)_graph.backGraph();
+        if(i>=1)_graph.backGraph();
         rackInd[0]=retVal/_nodePerRack;
         while((rackInd[1]=_randGen.generateInt(_rackNum))==rackInd[0]);
         _randGen.generateList(_nodePerRack,_repFac-1,pos);

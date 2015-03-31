@@ -201,7 +201,7 @@ public class DirectoryStripeReader extends StripeReader {
   }
 
   private String removePrefix2(String str){
-    return str.substring(str.indexOf(_raidDirPrefix)+_userDirPrefix.length(),str.length());
+    return str.substring(str.indexOf(_userDirPrefix)+_userDirPrefix.length(),str.length());
   }
   /* Added by RH Oct 24th, ends */
   
@@ -225,6 +225,8 @@ public class DirectoryStripeReader extends StripeReader {
     }
     /* Added by RH Oct 24th, 2014 begins */
     LOG.info("Dir path: " + srcDir);
+    LOG.info("_userDirPrefix: " + _userDirPrefix);
+    LOG.info("_raidDirPrefix: " + _raidDirPrefix);
     fileIndexMap = new HashMap<String,Integer>();
     /* Added by RH Oct 24th, 2014 ends */
     this.parityBlockSize = getParityBlockSize(conf, lfs);
@@ -250,6 +252,8 @@ public class DirectoryStripeReader extends StripeReader {
     /* Initialize using preEncStripeStore.
      * Added by RH Oct 26th, 2014 begins. */
     PreEncodingStripeStore preEncStripeStore = new PreEncodingStripeStore(conf);
+    LOG.info("DirectoryStripeReader before remove prefix: " + srcDir.toString());
+    LOG.info("DirectoryStripeReader after remove prefix: " + removePrefix2(srcDir.toString()));
     List<List<String>> preEncStripes = preEncStripeStore.getPreEncStripes(
         removePrefix2(srcDir.toString()));
     for (int i=0;i<preEncStripes.size();i++) {

@@ -81,16 +81,6 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
                          FSClusterStats stats,
                                NetworkTopology clusterMap) {
     initialize(conf, stats, clusterMap, null, null, null);
-    /* Added by RH Mar 23 2015 begins */
-    _userDirPrefix=conf.get(USER_DIR_PREFIX_KEY,"/home/hadoop/");
-    _raidDirPrefix=conf.get(RAID_DIR_PREFIX_KEY,"/home/hadoop/raid/");
-    if (!_userDirPrefix.endsWith("/")) {
-      _userDirPrefix+="/";
-    }
-    if (!_raidDirPrefix.endsWith("/")) {
-      _raidDirPrefix+="/";
-    }
-    /* Added by RH Mar 23 2015 ends */
   }
 
   EARBlockPlacementPolicy() {
@@ -124,6 +114,18 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
     /* Added by RH Oct 23rd, 2014 begins */
     _preEncStripeStore = new PreEncodingStripeStore(conf);
     /* Added by RH Oct 23rd, 2014 ends */
+    /* Added by RH Mar 23 2015 begins */
+    _userDirPrefix=conf.get(USER_DIR_PREFIX_KEY,"/home/hadoop/");
+    _raidDirPrefix=conf.get(RAID_DIR_PREFIX_KEY,"/home/hadoop/raid/");
+    if (!_userDirPrefix.endsWith("/")) {
+      _userDirPrefix+="/";
+    }
+    if (!_raidDirPrefix.endsWith("/")) {
+      _raidDirPrefix+="/";
+    }
+    LOG.info("userDirPrefix: " + _userDirPrefix);
+    LOG.info("raidDirPrefix: " + _raidDirPrefix);
+    /* Added by RH Mar 23 2015 ends */
   }
 
   /**
@@ -380,14 +382,14 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
         //first block with pRack as primary rack
         //rackToBlkListMap.put(pRack,new ArrayList<String>());
         //rackToChosenRackMap.put(pRack,new HashSet<String>());
+        stripeLoadMap.put(pRack,1);
+        rackIndexMap.put(pRack,currentIdx++);
+        rackLayoutMap.put(pRack,new int[stripeLen*repFac]);
         earlGen.SOPwoCoreRack(pRack,rackLayoutMap.get(pRack));
         for(int i=1;i<repFac;i++){
           retVal.add(rackLayoutMap.get(pRack)
               [repFac*stripeLoadMap.get(pRack)+i]);
         }
-        stripeLoadMap.put(pRack,1);
-        rackIndexMap.put(pRack,currentIdx++);
-        rackLayoutMap.put(pRack,new int[stripeLen*repFac]);
       } else if(stripeLoadMap.get(pRack)==0) {
         earlGen.SOPwoCoreRack(pRack,rackLayoutMap.get(pRack));
         for(int i=1;i<repFac;i++){
