@@ -16,21 +16,21 @@ II. Installation and Configuration
 To simplify our description, we refer the hadoop-20/ directory as hadoop directory.  
 Suppose your username is hadoop.  
 
-  - Basic system settings
+  **Basic system settings**
     1. In your ~/.bashrc, add the following line
       > export HADOOP_HOME=*absolute address of hadoop directory* 
       > export PATH=PATH:$HADOOP_HOME/bin 
     2. Configure masters and slaves
     3. Other configurations
-  - Rack awareness configuration  
+  **Rack awareness configuration**  
     Hadoop uses a topology definition script to realize rack awareness.
     1. Create the scripts
 
 1. Run `bash install.sh` to install EAR.
 
-2. Configure EAR placement:
-  - Configure placement.
-  - Configure locations of pre-encoding stripe store.
+2. Configure EAR placement:  
+  **Configure placement**  
+  **Configure locations of pre-encoding stripe store**
 
 3. Configure Raid:
   - Configure the directory to raid.
