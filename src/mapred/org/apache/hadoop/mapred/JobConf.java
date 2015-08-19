@@ -328,12 +328,14 @@ public class JobConf extends Configuration {
   /* Added by RH, Oct 7th, 2014 begins 
    * This identifies encoding job, if it is an encoding job, we will forbid remote tasks
    * in JobInProgress */
-  public boolean _isEncoding=false;
+  public final static String _ENCODING_KEY="mapred.is.encoding";
+  //public boolean _isEncoding=false;
   public void setEncoding(boolean val){
-      _isEncoding=val;
+      //_isEncoding=val;
+      setBoolean("mapred.is.encoding",val);
   }
   public boolean getEncoding(){
-      return _isEncoding;
+    return getBoolean("mapred.is.encoding",false);
   }
   /* Added by RH, Oct 7th, 2014 ends */
 

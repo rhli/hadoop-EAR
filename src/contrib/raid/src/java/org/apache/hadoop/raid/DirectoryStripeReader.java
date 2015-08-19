@@ -62,9 +62,9 @@ public class DirectoryStripeReader extends StripeReader {
   long parityBlockSize;
 
   /* Added by RH Mar 22th begins */
-  private static String USER_DIR_PREFIX_KEY="hdfs.raid.user.dir.perfix";
+  private static String USER_DIR_PREFIX_KEY="hdfs.raid.user.dir.prefix";
   private static String _userDirPrefix;
-  private static String RAID_DIR_PREFIX_KEY="hdfs.raid.raid.dir.perfix";
+  private static String RAID_DIR_PREFIX_KEY="hdfs.raid.raid.dir.prefix";
   private static String _raidDirPrefix;
   /* Added by RH Mar 22th ends */
 

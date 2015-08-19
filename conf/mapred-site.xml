@@ -8,22 +8,33 @@
 <property>
   <name>mapred.max.tracker.blacklists</name>
   <value>4</value>
-  <description>The number of errors for a taskTracker in various jobs
-               after which the task tracker could be blacklisted across
-               all jobs. The tracker will be given tasks later
-               (after mapred.tasktracker.blacklist.reevaluation.interval
-               msec). The tracker will become a healthy tracker
-               after a restart.
-  </description>
+</property>
+
+<property> 
+    <name>mapred.map.tasks.speculative.execution</name> 
+    <value>false</value> 
 </property>
 
 <property>
   <name>mapred.tasktracker.blacklist.reevaluation.interval</name>
   <value>86400000</value>
-  <description>If a task server has been blacklisted for making
-    mapred.max.tracker.blacklists errors and it has been there for at least
-    this long (in msec), its name will be cleared, and it may be unblacklisted
-    (assuming there aren't any other reasons to keep it there).
+</property>
+
+<property>
+  <name>mapred.job.tracker</name>
+  <value>192.168.0.21:30013</value>
+</property>
+
+<property>
+  <name>mapred.task.tracker.http.address</name>
+  <value>0.0.0.0:30014</value>
+</property>
+
+<property>
+  <name>mapred.tasktracker.map.tasks.maximum</name>
+  <value>4</value>
+  <description>The maximum number of map tasks that will be run
+  simultaneously by a task tracker.
   </description>
 </property>
 

@@ -7,7 +7,17 @@
 
 <property>
    <name>fs.default.name</name>
-   <value>hdfs://localhost:9000</value>
+   <value>hdfs://*IP or hostname of namenode*:9000</value>
+</property>
+
+<property>
+  <name>topology.script.file.name</name>
+  <value>*absolute address of rack aware scripts*</value>
+</property>
+
+<property>
+  <name>fs.hdfs.impl</name>
+  <value>org.apache.hadoop.hdfs.DistributedRaidFileSystem</value>
 </property>
 
 </configuration>

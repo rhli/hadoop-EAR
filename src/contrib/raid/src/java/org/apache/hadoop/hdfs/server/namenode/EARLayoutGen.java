@@ -537,18 +537,18 @@ public class EARLayoutGen{
 
   /**
    * Constructor
-   * @param bN int number of data blocks per node
+   * @param bN int number of data blocks per stripe
    * @param repFac int number of replicas in the replication scheme
    * @param rackNum int number of racks in system
    * @param nodePerRack int number of nodes per rack
    */
-  public EARLayoutGen(int bN,int stripeSize,int repFac,int rackNum,int nodePerRack){
+  public EARLayoutGen(int bN,int stripeSize,int repFac,int rackNum,int nodePerRack,int maxInRack){
       _blockNum=bN;
       _stripeSize=stripeSize;
       _rackNum=rackNum;
       _repFac=repFac;
       _nodePerRack=nodePerRack;
-      _graph=new graph(_blockNum,1,repFac,_rackNum*_nodePerRack,_rackNum);
+      _graph=new graph(_blockNum,maxInRack,repFac,_rackNum*_nodePerRack,_rackNum);
   }
 
   /**
@@ -595,6 +595,9 @@ public class EARLayoutGen{
    * Complete implementation of EAR with out considering core rack since 
    * for default placement, the primary replica is always placed in the writer.
    *
+   * NOTE: We compomises a little bit in the implementation by fix the flow in 
+   * core-rack to one.  This will not affect performance and availability.
+   *
    * @param coreRack int rackID of coreRack
    * @param output int[] list of blocks to be placed
    */
@@ -616,6 +619,13 @@ public class EARLayoutGen{
         _randGen.generateList(_nodePerRack,1,pos);
         for(int j=1;j<_repFac;j++){
           pos[j]+=rackInd[1]*_nodePerRack;
+        }
+        if(i==_blockNum-1) {
+          // We have granted enough flow, we just do not interfere with the last block.
+          System.arraycopy(pos,0,output,i*_repFac,_repFac);
+          break;
+        }
+        for(int j=1;j<_repFac;j++){
           _graph.addEdge(i,pos[j],pos[j]/_nodePerRack);
         }
         if(_graph.incrementalMaxFlow()==0){

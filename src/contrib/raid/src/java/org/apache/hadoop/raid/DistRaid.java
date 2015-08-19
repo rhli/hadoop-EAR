@@ -98,10 +98,9 @@ public class DistRaid {
     setConf(createJobConf(conf));
     /* Added by RH Oct 8th, 2014, begins 
      * updated by RH Mar 11th, 2015: only set encoding flag when EAR is used */ 
-    if (EARflag) {
+    //if (EARflag) {
       jobconf.setEncoding(true);
-    }
-    //jobconf.setEncoding(true);
+    //}
     /* Added by RH Oct 8th, 2014, ends */
     /* TODO: Distribute pre-encoding stripe store */
     /* Added by RH Mar 30th, 2015 begins */
@@ -127,6 +126,7 @@ public class DistRaid {
     opPerMap = conf.getLong(OP_PER_MAP_KEY, DEFAULT_OP_PER_MAP);
     maxMapsPerNode = conf.getInt(MAX_MAPS_PER_NODE_KEY,
         DEFAULT_MAX_MAPS_PER_NODE);
+    jobconf.setEncoding(true);
   }
 
   private static final Random RANDOM = new Random();
@@ -226,6 +226,7 @@ public class DistRaid {
     
     public static EncodingCandidate getEncodingCandidate(String key,
         Configuration jobconf) throws IOException {
+      //LOG.info("getEncodingCandidate(): jobconf.getEncoding()" + ((JobConf)jobconf).getEncoding());
       String[] keys = key.split(delim, 7);
       Path p = new Path(keys[4]);
       long startStripe = Long.parseLong(keys[0]);
@@ -621,6 +622,10 @@ public class DistRaid {
 
     jobconf.setMapperClass(DistRaidMapper.class);
     jobconf.setNumReduceTasks(0);
+    /* Added by RH Apr 5th, 2015 begins */
+    jobconf.setEncoding(true);
+    LOG.info("JobConf setencoding to true");
+    /* Added by RH Apr 5th, 2015 ends */
     return jobconf;
   }
 

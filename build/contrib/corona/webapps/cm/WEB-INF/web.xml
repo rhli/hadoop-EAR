@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+   version="2.5">
+
+
+    <servlet>
+        <servlet-name>org.apache.hadoop.corona.retired_005fjson_jsp</servlet-name>
+        <servlet-class>org.apache.hadoop.corona.retired_005fjson_jsp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>org.apache.hadoop.corona.jobresources_jsp</servlet-name>
+        <servlet-class>org.apache.hadoop.corona.jobresources_jsp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>org.apache.hadoop.corona.active_005fjson_jsp</servlet-name>
+        <servlet-class>org.apache.hadoop.corona.active_005fjson_jsp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>org.apache.hadoop.corona.cm_jsp</servlet-name>
+        <servlet-class>org.apache.hadoop.corona.cm_jsp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>org.apache.hadoop.corona.pool_005fjson_jsp</servlet-name>
+        <servlet-class>org.apache.hadoop.corona.pool_005fjson_jsp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>org.apache.hadoop.corona.machines_jsp</servlet-name>
+        <servlet-class>org.apache.hadoop.corona.machines_jsp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>org.apache.hadoop.corona.cm_005fold_jsp</servlet-name>
+        <servlet-class>org.apache.hadoop.corona.cm_005fold_jsp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>org.apache.hadoop.corona.exec_jsp</servlet-name>
+        <servlet-class>org.apache.hadoop.corona.exec_jsp</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>org.apache.hadoop.corona.retired_005fjson_jsp</servlet-name>
+        <url-pattern>/retired_json.jsp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>org.apache.hadoop.corona.jobresources_jsp</servlet-name>
+        <url-pattern>/jobresources.jsp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>org.apache.hadoop.corona.active_005fjson_jsp</servlet-name>
+        <url-pattern>/active_json.jsp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>org.apache.hadoop.corona.cm_jsp</servlet-name>
+        <url-pattern>/cm.jsp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>org.apache.hadoop.corona.pool_005fjson_jsp</servlet-name>
+        <url-pattern>/pool_json.jsp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>org.apache.hadoop.corona.machines_jsp</servlet-name>
+        <url-pattern>/machines.jsp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>org.apache.hadoop.corona.cm_005fold_jsp</servlet-name>
+        <url-pattern>/cm_old.jsp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>org.apache.hadoop.corona.exec_jsp</servlet-name>
+        <url-pattern>/exec.jsp</url-pattern>
+    </servlet-mapping>
+
+</web-app>
+

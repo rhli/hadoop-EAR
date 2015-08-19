@@ -70,11 +70,12 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
   //private Map<String,RaidTail> _dirRaidTailMap = new HashMap<String,RaidTail>();
   private static Random _random = new Random();
 
-  private static String USER_DIR_PREFIX_KEY="hdfs.raid.user.dir.perfix";
+  private static String USER_DIR_PREFIX_KEY="hdfs.raid.user.dir.prefix";
   private static String _userDirPrefix;
-  private static String RAID_DIR_PREFIX_KEY="hdfs.raid.raid.dir.perfix";
+  private static String RAID_DIR_PREFIX_KEY="hdfs.raid.raid.dir.prefix";
   private static String _raidDirPrefix;
   private static EARLayoutGen _earlGen=null;
+  private static int _maxInRack = 1; // the value c in EAR
   /* Added by RH on Oct 20th, ends */
 
   EARBlockPlacementPolicy(Configuration conf,
@@ -114,7 +115,21 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
     /* Added by RH Oct 23rd, 2014 begins */
     _preEncStripeStore = new PreEncodingStripeStore(conf);
     /* Added by RH Oct 23rd, 2014 ends */
-    /* Added by RH Mar 23 2015 begins */
+    /* Added by RH Mar 23rd 2015 begins */
+    // We use the following two values to distinguish a data block and a parity
+    // block.
+    //
+    // IGNORE THE FOLLOWING COMMENTS IF YOU FOLLOW THE CONFIGURATION GUIDANCE IN 
+    // README.md
+    //
+    // If you do not want configure through the xml files, please change the
+    // following two lines by replacing "hadoop" in the second parameter with 
+    // the user name you use to run hadoop.
+    //
+    // For example, your user name is john, the followings should be changed to
+    //
+    // _userDirPrefix=conf.get(USER_DIR_PREFIX_KEY,"/home/john/");
+    // _raidDirPrefix=conf.get(RAID_DIR_PREFIX_KEY,"/home/john/raid/");
     _userDirPrefix=conf.get(USER_DIR_PREFIX_KEY,"/home/hadoop/");
     _raidDirPrefix=conf.get(RAID_DIR_PREFIX_KEY,"/home/hadoop/raid/");
     if (!_userDirPrefix.endsWith("/")) {
@@ -125,7 +140,10 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
     }
     LOG.info("userDirPrefix: " + _userDirPrefix);
     LOG.info("raidDirPrefix: " + _raidDirPrefix);
-    /* Added by RH Mar 23 2015 ends */
+    /* Added by RH Mar 23rd 2015 ends */
+    /* Added by RH Apr 1st 2015 begins */
+    _maxInRack=conf.getInt("hdfs.ear.max.in.rack",1);
+    /* Added by RH Apr 1st 2015 ends */
   }
 
   /**
@@ -378,18 +396,20 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
     public List<Integer> addBlock(String blkMeta, int pRack) {
       //if (!rackToBlkListMap.containsKey(pRack)) {
       List retVal=new ArrayList<Integer>();
+      LOG.info("pRack ID: " + pRack);
       if (!stripeLoadMap.containsKey(pRack)) {
         //first block with pRack as primary rack
         //rackToBlkListMap.put(pRack,new ArrayList<String>());
         //rackToChosenRackMap.put(pRack,new HashSet<String>());
-        stripeLoadMap.put(pRack,1);
         rackIndexMap.put(pRack,currentIdx++);
         rackLayoutMap.put(pRack,new int[stripeLen*repFac]);
         earlGen.SOPwoCoreRack(pRack,rackLayoutMap.get(pRack));
+        stripeLoadMap.put(pRack,0);
         for(int i=1;i<repFac;i++){
           retVal.add(rackLayoutMap.get(pRack)
               [repFac*stripeLoadMap.get(pRack)+i]);
         }
+        stripeLoadMap.put(pRack,1);
       } else if(stripeLoadMap.get(pRack)==0) {
         earlGen.SOPwoCoreRack(pRack,rackLayoutMap.get(pRack));
         for(int i=1;i<repFac;i++){
@@ -398,7 +418,15 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
         }
         stripeLoadMap.put(pRack,1);
         rackIndexMap.put(pRack,currentIdx++);
-      } else {
+      } 
+      //else if(stripeLoadMap.get(pRack)==stripeLen-1) {
+      //  // Let the block be written freely, because we already have enough flow
+      //  LOG.info("final block in stripe");
+      //  stripeLoadMap.put(pRack,stripeLoadMap.get(pRack)+1);
+      //  stripeLoadMap.put(pRack,0);
+      //  retVal=null;
+      //} 
+      else {
         for(int i=1;i<repFac;i++){
           retVal.add(rackLayoutMap.get(pRack)
               [repFac*stripeLoadMap.get(pRack)+i]);
@@ -520,13 +548,13 @@ public class EARBlockPlacementPolicy extends BlockPlacementPolicyRaid {
           get(_random.nextInt(nodesInPRack.size())%nodesInPRack.size());
       }
       int pRackID = clusterMap.getRacks().indexOf(pRack);
-      LOG.info("EAR primary rack: " + pRack);
+      //LOG.info("EAR primary rack: " + pRack);
       retVal.add(localNode);
       //candidateRack.remove(pRack);
       if (_dirRaidTailMap==null) {
         // create layout generator first
         _earlGen=new EARLayoutGen(stripeLen,1,numOfReplicas,clusterMap.getNumOfRacks(),
-            clusterMap.getNumOfLeaves()/clusterMap.getNumOfRacks());
+            clusterMap.getNumOfLeaves()/clusterMap.getNumOfRacks(),_maxInRack);
         _dirRaidTailMap = new HashMap<String,RaidTail>();
       }
       if (!_dirRaidTailMap.containsKey(dirLoc)) {

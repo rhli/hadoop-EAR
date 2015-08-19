@@ -1,0 +1,19 @@
+<configuration>
+   <policy name = "ncsgroup">
+       <srcPath prefix="hdfs://*IP or hostname of namenode*:9000/user/*your user name*/*raiding directory*"></srcPath>
+     <property>
+       <name>targetReplication</name>
+       <value>1</value>
+     </property>
+     <property>
+       <name>metaReplication</name>
+       <value>1</value>
+     </property>
+     <property>
+       <name>modTimePeriod</name>
+       <value>0</value>
+     </property>
+     <CodecId>dir-rs</CodecId>
+   </policy>
+</configuration>
+

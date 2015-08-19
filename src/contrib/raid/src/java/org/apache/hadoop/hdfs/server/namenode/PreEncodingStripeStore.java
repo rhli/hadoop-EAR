@@ -52,8 +52,6 @@ public class PreEncodingStripeStore {
   //    new ConcurrentHashMap<List<Block>, Long>();
   //public static final String PRE_ENC_STRIPE_STORE_DIR_KEY =
   //    "hdfs.preencoding.stripe.dir";
-  //TODO: de-hardcode!!
-  //private String storeDirName = "/home/ncsgroup/hadoop-20/preEncStripeStore";
   private static String STORE_DIR_KEY = "hdfs.raid.preencoding.stripe.dir";
   private static String storeDirName;
   /*
@@ -78,7 +76,10 @@ public class PreEncodingStripeStore {
    * With configuration to get store position.
    */
   public PreEncodingStripeStore(Configuration conf) {
-    storeDirName=conf.get(STORE_DIR_KEY,"/home/hadoop-20/preEncStripeStore");
+    String defaultAddr=System.getenv().get("HADOOP_HOME");
+    if(!defaultAddr.endsWith("/")) defaultAddr+="/";
+    defaultAddr+="preEncodingStripeStore";
+    storeDirName=conf.get(STORE_DIR_KEY,defaultAddr);
     LOG.info("storeDirName: " + storeDirName);
     File storeDir = new File(storeDirName);
     if (!storeDir.exists()) {
