@@ -11,6 +11,7 @@
 <error line="46" severity="error" message="Line matches the illegal pattern &apos;Trailing whitespace&apos;." source="com.puppycrawl.tools.checkstyle.checks.RegexpCheck"/>
 <error line="146" severity="error" message="Line is longer than 80 characters." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
 <error line="189" severity="error" message="ctor def rcurly at indentation level 0 not at correct indentation, 2" source="com.puppycrawl.tools.checkstyle.checks.indentation.IndentationCheck"/>
+<error line="280" column="37" severity="error" message="Expected @param tag for &apos;methodName&apos;." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck"/>
 <error line="288" severity="error" message="Line is longer than 80 characters." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
 <error line="296" severity="error" message="Line is longer than 80 characters." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
 <error line="299" severity="error" message="Line is longer than 80 characters." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
@@ -73,6 +74,8 @@
 <error line="57" column="30" severity="error" message="&apos;}&apos; is not preceded with whitespace." source="com.puppycrawl.tools.checkstyle.checks.whitespace.WhitespaceAroundCheck"/>
 <error line="61" column="3" severity="error" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck"/>
 <error line="65" column="3" severity="error" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck"/>
+<error line="71" column="3" severity="error" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck"/>
+<error line="72" severity="error" message="method def throws at indentation level 6 not at correct indentation, 4" source="com.puppycrawl.tools.checkstyle.checks.indentation.IndentationCheck"/>
 </file>
 <file name="/home/rhli/Projects/hadoop-EAR/src/contrib/corona/src/java/org/apache/hadoop/corona/ClusterNode.java">
 <error line="35" severity="error" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck"/>
@@ -185,7 +188,11 @@
 <error line="709" column="11" severity="error" message="Catching &apos;Exception&apos; is not allowed." source="com.puppycrawl.tools.checkstyle.checks.coding.IllegalCatchCheck"/>
 <error line="782" severity="error" message="Line matches the illegal pattern &apos;Trailing whitespace&apos;." source="com.puppycrawl.tools.checkstyle.checks.RegexpCheck"/>
 <error line="788" severity="error" message="Line matches the illegal pattern &apos;Trailing whitespace&apos;." source="com.puppycrawl.tools.checkstyle.checks.RegexpCheck"/>
+<error line="788" column="45" severity="error" message="Expected @param tag for &apos;json&apos;." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck"/>
 <error line="789" severity="error" message="Line matches the illegal pattern &apos;Trailing whitespace&apos;." source="com.puppycrawl.tools.checkstyle.checks.RegexpCheck"/>
+<error line="789" column="16" severity="error" message="Expected @param tag for &apos;newTypeToNodeWait&apos;." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck"/>
+<error line="789" column="59" severity="error" message="Expected @param tag for &apos;newTypeToRackWait&apos;." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck"/>
+<error line="790" severity="error" message="method def throws at indentation level 15 not at correct indentation, 4" source="com.puppycrawl.tools.checkstyle.checks.indentation.IndentationCheck"/>
 <error line="808" severity="error" message="Line matches the illegal pattern &apos;Trailing whitespace&apos;." source="com.puppycrawl.tools.checkstyle.checks.RegexpCheck"/>
 <error line="810" severity="error" message="Line is longer than 80 characters." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
 <error line="814" severity="error" message="Line is longer than 80 characters." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
@@ -308,6 +315,7 @@
 <error line="0" severity="error" message="Got an exception - java.lang.RuntimeException: Unable to get class information for InvalidSessionHandle." source="com.puppycrawl.tools.checkstyle.TreeWalker"/>
 <error line="146" severity="error" message="Line is longer than 80 characters." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
 <error line="146" column="78" severity="error" message="&apos;+&apos; is not followed by whitespace." source="com.puppycrawl.tools.checkstyle.checks.whitespace.WhitespaceAroundCheck"/>
+<error line="163" severity="error" message="method def throws at indentation level 6 not at correct indentation, 4" source="com.puppycrawl.tools.checkstyle.checks.indentation.IndentationCheck"/>
 </file>
 <file name="/home/rhli/Projects/hadoop-EAR/src/contrib/corona/src/java/org/apache/hadoop/corona/PoolGroupSchedulable.java">
 </file>
@@ -463,6 +471,7 @@
 <error line="558" column="5" severity="error" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocVariableCheck"/>
 <error line="558" column="5" severity="error" message="Static variable definition in wrong order." source="com.puppycrawl.tools.checkstyle.checks.coding.DeclarationOrderCheck"/>
 <error line="575" severity="error" message="Line is longer than 80 characters." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="618" column="5" severity="error" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck"/>
 <error line="738" severity="error" message="Line is longer than 80 characters." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
 <error line="740" severity="error" message="Line matches the illegal pattern &apos;Trailing whitespace&apos;." source="com.puppycrawl.tools.checkstyle.checks.RegexpCheck"/>
 <error line="741" severity="error" message="Line is longer than 80 characters." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
@@ -505,6 +514,7 @@
 <error line="71" column="3" severity="error" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocVariableCheck"/>
 <error line="75" column="3" severity="error" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocVariableCheck"/>
 <error line="149" severity="error" message="Line is longer than 80 characters." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="292" column="3" severity="error" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck"/>
 <error line="321" severity="error" message="Line is longer than 80 characters." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
 <error line="382" severity="error" message="Line matches the illegal pattern &apos;Trailing whitespace&apos;." source="com.puppycrawl.tools.checkstyle.checks.RegexpCheck"/>
 <error line="383" severity="error" message="Line is longer than 80 characters." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
@@ -541,6 +551,8 @@
 <error line="81" column="3" severity="error" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck"/>
 <error line="96" severity="error" message="Line is longer than 80 characters." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
 <error line="96" column="48" severity="error" message="Expected @param tag for &apos;sessionManager&apos;." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck"/>
+<error line="195" column="3" severity="error" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck"/>
+<error line="195" column="21" severity="error" message="&apos;(&apos; is preceded with whitespace." source="com.puppycrawl.tools.checkstyle.checks.whitespace.MethodParamPadCheck"/>
 <error line="208" severity="error" message="Line matches the illegal pattern &apos;Trailing whitespace&apos;." source="com.puppycrawl.tools.checkstyle.checks.RegexpCheck"/>
 <error line="211" severity="error" message="Line is longer than 80 characters." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
 <error line="214" severity="error" message="Line is longer than 80 characters." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
@@ -789,6 +801,7 @@
 <error line="105" column="3" severity="error" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck"/>
 <error line="109" column="3" severity="error" message="Constructor definition in wrong order." source="com.puppycrawl.tools.checkstyle.checks.coding.DeclarationOrderCheck"/>
 <error line="109" column="3" severity="error" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck"/>
+<error line="143" severity="error" message="method def throws at indentation level 6 not at correct indentation, 4" source="com.puppycrawl.tools.checkstyle.checks.indentation.IndentationCheck"/>
 <error line="232" severity="error" message="Line matches the illegal pattern &apos;Trailing whitespace&apos;." source="com.puppycrawl.tools.checkstyle.checks.RegexpCheck"/>
 <error line="254" severity="error" message="Line matches the illegal pattern &apos;Trailing whitespace&apos;." source="com.puppycrawl.tools.checkstyle.checks.RegexpCheck"/>
 <error line="260" severity="error" message="Line matches the illegal pattern &apos;Trailing whitespace&apos;." source="com.puppycrawl.tools.checkstyle.checks.RegexpCheck"/>

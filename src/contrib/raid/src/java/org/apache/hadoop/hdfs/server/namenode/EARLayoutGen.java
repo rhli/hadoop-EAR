@@ -43,6 +43,8 @@ import org.apache.commons.lang.ArrayUtils;
  * Helper class for EAR placement to generate valid EAR stripe layout.
  */
 public class EARLayoutGen{
+  public static final Log LOG =
+        LogFactory.getLog(BlockPlacementPolicyRaid.class);
   /**
    * Random number and list generator
    */
@@ -612,17 +614,20 @@ public class EARLayoutGen{
       while(true){
         index++;
         if(i>=1)_graph.backGraph();
-        rackInd[0]=retVal/_nodePerRack;
+        rackInd[0]=retVal;
         while((rackInd[1]=_randGen.generateInt(_rackNum))==rackInd[0]);
         _randGen.generateList(_nodePerRack,_repFac-1,pos);
         pos[_repFac-1]=pos[0];
         _randGen.generateList(_nodePerRack,1,pos);
+        pos[0]+=_nodePerRack*_nodePerRack;
         for(int j=1;j<_repFac;j++){
           pos[j]+=rackInd[1]*_nodePerRack;
         }
         if(i==_blockNum-1) {
           // We have granted enough flow, we just do not interfere with the last block.
-          System.arraycopy(pos,0,output,i*_repFac,_repFac);
+          for(int j=0;j<_repFac;j++){
+            output[j+i*_repFac]=pos[j];
+          }
           break;
         }
         for(int j=1;j<_repFac;j++){
@@ -634,7 +639,9 @@ public class EARLayoutGen{
           }
           _graph.restoreGraph();
         }else{
-          System.arraycopy(pos,0,output,i*_repFac,_repFac);
+          for(int j=0;j<_repFac;j++){
+            output[j+i*_repFac]=pos[j];
+          }
           break;
         }
       }
